@@ -9,8 +9,12 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 ## [Não lançado]
 
 ### Adicionado
+- **Encaminhar por e-mail** (Automação → Encaminhar por e-mail): cada nova mensagem das conversas privadas chega por e-mail em tempo real, com todos os dados do contato (nome, telefone, nome no WhatsApp, nome comercial, JID/LID, etiquetas, totais e demais dados do WhatsApp), as últimas mensagens da conversa e a mídia anexada (até 10 MB). Grupos e o histórico sincronizado não são encaminhados. Configuração por sessão com SMTP próprio (atalhos para Gmail, Outlook, Yahoo e iCloud), até 5 destinos, opção de incluir as mensagens enviadas, botão de e-mail de teste e status no painel (enviados, último envio, último erro). Os e-mails de uma conversa compartilham o cabeçalho `References`, e os clientes que agrupam por ele mostram tudo num só fio. Rotas `GET/POST /api/sessions/{id}/email-forward` e `POST /api/sessions/{id}/email-forward/test`.
 - **Instalador para macOS** (`scripts/instalador/instalar-macos.sh`): instala o W-AZAP com um comando (`curl … | bash`) ou com dois cliques (`Instalar W-AZAP.command`), sem Homebrew, Docker ou senha de administrador. Baixa o Node.js 22 e o MySQL 8.4 portáteis (com SHA-256 conferido), gera o `.env` com chaves aleatórias, cria o banco e um usuário próprio, faz o build e registra dois serviços no `launchd` que iniciam no login. Rodar de novo atualiza e mantém a configuração e os dados. Inclui o comando `w-azap` (status, abrir, parar, iniciar, log, atualizar, desinstalar) e o app **W-AZAP** em `~/Applications`.
 - **Workflow `instalador-macos.yml`**: anexa a cada release publicada o `instalar-macos.sh`, o `W-AZAP-instalador-macos.zip` e os checksums.
+
+### Segurança
+- **Encaminhar por e-mail**: só o dono da sessão (ou SUPERADMIN) lê ou altera o destino, e a gravação exige login no navegador (não aceita chave de API). A senha do SMTP é guardada com AES-256-GCM e nunca volta nas respostas. A conexão SMTP exige TLS, o servidor é resolvido uma única vez (contra DNS rebinding) e endereços internos são bloqueados, a menos que `ALLOW_PRIVATE_WEBHOOK_URLS="true"`. O conteúdo das mensagens é escapado no HTML do e-mail, e há um limite de 300 e-mails por hora por sessão.
 
 ## [v2.0.0] - 2026-10-09
 

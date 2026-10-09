@@ -59,6 +59,7 @@ graph LR
 - **🤖 Resposta automática inteligente**: correspondência por palavra-chave ou expressão regular, com **contexto** (grupo/privado/todos) e **anexos de mídia**.
 - **🛡️ Controle de acesso granular**: **whitelist** e **blacklist** para comandos do bot e respostas automáticas.
 - **🔗 Webhooks**: eventos em tempo real (mensagens, conexão, status, grupos) assinados com HMAC-SHA256.
+- **📧 Encaminhar por e-mail**: cada nova mensagem das conversas privadas chega no seu e-mail em tempo real, com todos os dados do contato, as últimas mensagens e a mídia anexada (SMTP próprio, como Gmail ou Outlook).
 - **📇 Contatos completos**: LID, nomes verificados, fotos de perfil, bloqueio e etiquetas.
 - **🎨 Ferramentas criativas**: criador de figurinhas com remoção de fundo (integração com `remove.bg`).
 - **👥 Multiusuário**: papéis `SUPERADMIN`, `OWNER` e `STAFF`, com compartilhamento de sessões.
