@@ -6,9 +6,16 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 - **Corrigido**: correções de bugs;
 - **Segurança**: correções de vulnerabilidades.
 
-## [Não lançado] — W-AZAP
+## [Não lançado]
+
+## [v2.0.0] - 2026-10-09
+
+Primeira versão do **W-AZAP**, fork do WA-AKG v1.6.4. A versão principal mudou porque há mudanças incompatíveis: as variáveis `NEXT_PUBLIC_SWAGGER_*` não são mais usadas, o servidor escuta só em `127.0.0.1` por padrão, as rotas de usuários deixaram de aceitar chave de API e o cadastro público vem desativado.
 
 ### Adicionado
+- **Tema claro, escuro e automático**: seletor na barra superior. A escolha fica salva no navegador, vale para todas as abas abertas e, no modo automático, acompanha o sistema operacional. Um script aplica o tema antes da primeira pintura, então a página não pisca com o tema errado.
+- **Novo visual do painel**: tokens de cor semânticos (`success`, `warning`, `info`) com contraste WCAG AA nos dois temas, componentes `PageHeader` e `EmptyState` compartilhados entre as páginas e menu lateral e menu móvel gerados a partir de uma única configuração (`nav-config.ts`).
+- **Acessibilidade**: link "Pular para o conteúdo", rótulos nos botões de menu e de fechar e respeito a `prefers-reduced-motion` na troca de tema.
 - **Seletor de idiomas**: botão no canto superior direito de todas as telas (login, cadastro, painel) com 14 idiomas: inglês, português (Brasil), espanhol, francês, alemão, italiano, russo, chinês simplificado, japonês, coreano, árabe, hindi, indonésio e turco. O idioma é detectado pelo navegador (`Accept-Language`) e a escolha fica salva no cookie `NEXT_LOCALE`.
 - **Painel traduzido**: todas as páginas internas (sessões, chat, transmissão, grupos, contatos, etiquetas, agendador, respostas automáticas, webhooks, usuários, configurações, monitor do sistema etc.) usam dicionários tipados em `src/lib/i18n/dictionaries/dashboard/`. Datas são formatadas no idioma escolhido (locales do `date-fns`).
 - **Página de sessão expirada** (`/auth/expired`): encerra o login de forma limpa quando a sessão é revogada ou expira.
