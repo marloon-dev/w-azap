@@ -31,6 +31,10 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 - **Documentação no modo escuro**: títulos, parágrafos, listas e links da `/docs` usam as cores do tema e ficam legíveis no escuro. O cabeçalho dos blocos de código ganhou contraste, e os blocos com rolagem podem ser focados pelo teclado.
 - **Contraste no tema claro**: os tons de verde, vermelho, amarelo e azul ficaram um pouco mais escuros, e o texto colorido sobre o próprio fundo claro (selos e avisos) passa no WCAG AA.
 
+### Removido
+- **Referências ao projeto original (WA-AKG)**: o README não aponta mais para o repositório e o pacote n8n do autor original (a seção do n8n agora explica a integração com os nós HTTP Request e Webhook), e o `package.json` não lista mais o autor original como colaborador. O aviso de copyright continua no `LICENSE`, como exige a licença MIT.
+- **Nome padrão do banco**: passou de `wa_akg` para `w_azap` no `docker-compose.yml`, no `.env.example` e na documentação. Quem já usa Docker com o banco antigo deve definir `MYSQL_DATABASE="wa_akg"` no `.env` para continuar usando os dados existentes.
+
 ## [v2.1.0] - 2026-10-09
 
 ### Adicionado

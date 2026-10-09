@@ -104,16 +104,12 @@ O idioma é detectado pelo navegador e pode ser trocado no seletor do canto supe
 
 ---
 
-## 🧩 Integrações: suporte nativo ao n8n
+## 🧩 Integrações com o n8n
 
-O W-AZAP funciona com o **n8n**: dá para montar fluxos complexos de automação de WhatsApp, sem código ou com pouco código, usando os nós da comunidade.
+O W-AZAP funciona com o **n8n** sem nenhum pacote extra:
 
-[![n8n nodes](https://img.shields.io/badge/n8n-nodes--wa--akg-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)](https://www.npmjs.com/package/n8n-nodes-wa-akg)
-
-- **Nó de ação**: controle total de mensagens, grupos, sessões, contatos e etiquetas direto nos seus fluxos.
-- **Nó de gatilho**: recebe webhooks em tempo real (mensagem recebida, entrada em grupo etc.) e dispara seus fluxos automaticamente.
-
-👉 **[Ver no npm (n8n-nodes-wa-akg)](https://www.npmjs.com/package/n8n-nodes-wa-akg)**
+- **Enviar e consultar**: use o nó **HTTP Request** com a API REST (cabeçalho `X-API-Key`). Os endpoints estão na [documentação da API](docs/API_DOCUMENTATION.md).
+- **Receber eventos**: cadastre um webhook no painel (Automação → Webhooks e API) apontando para o nó **Webhook** do n8n, e cada mensagem recebida dispara o seu fluxo.
 
 > [!NOTE]
 > Se o n8n roda na mesma máquina ou na rede local, defina `ALLOW_PRIVATE_WEBHOOK_URLS="true"`. Por segurança, webhooks para endereços internos ficam bloqueados por padrão.
@@ -312,7 +308,6 @@ O W-AZAP não é afiliado, associado nem endossado pelo WhatsApp ou pela Meta. E
 <div align="center">
 
 Mantido por <a href="https://github.com/marloon-dev">marloon-dev</a>.<br/>
-Baseado no projeto <a href="https://github.com/mrifqidaffaaditya/WA-AKG">WA-AKG</a>, criado por <a href="https://github.com/mrifqidaffaaditya">Aditya</a>.<br/>
 Licenciado sob a <a href="LICENSE">MIT</a>.
 
 </div>
