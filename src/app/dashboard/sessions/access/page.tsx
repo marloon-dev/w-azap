@@ -180,9 +180,9 @@ export default function SessionAccessPage() {
 
     const getRoleIcon = (role: string) => {
         switch (role) {
-            case "SUPERADMIN": return <ShieldAlert className="h-4 w-4 text-red-500" />;
-            case "OWNER": return <ShieldCheck className="h-4 w-4 text-blue-500" />;
-            default: return <User className="h-4 w-4 text-gray-500" />;
+            case "SUPERADMIN": return <ShieldAlert className="h-4 w-4 text-destructive" />;
+            case "OWNER": return <ShieldCheck className="h-4 w-4 text-info" />;
+            default: return <User className="h-4 w-4 text-muted-foreground" />;
         }
     };
 
@@ -204,14 +204,14 @@ export default function SessionAccessPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                        <Lock className="h-5 w-5 sm:h-6 sm:w-6" /> {t("sessionAccess.title")}
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                        {t("sessionAccess.title")}
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                         {t("sessionAccess.subtitle")}
                     </p>
                 </div>
@@ -239,7 +239,7 @@ export default function SessionAccessPage() {
                                 {sessions.map(s => (
                                     <SelectItem key={s.sessionId} value={s.sessionId}>
                                         <div className="flex items-center gap-2">
-                                            <span className={`h-2 w-2 rounded-full ${s.status === "CONNECTED" ? "bg-green-500" : "bg-gray-400"}`} />
+                                            <span className={`h-2 w-2 rounded-full ${s.status === "CONNECTED" ? "bg-success" : "bg-muted-foreground"}`} />
                                             {s.name} <span className="text-muted-foreground">({s.sessionId})</span>
                                         </div>
                                     </SelectItem>
@@ -317,7 +317,7 @@ export default function SessionAccessPage() {
                                         className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
                                     >
                                         <div className="flex items-center gap-3 min-w-0">
-                                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
+                                            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/20 to-info/20 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
                                                 {entry.user.name?.charAt(0)?.toUpperCase() || entry.user.email.charAt(0).toUpperCase()}
                                             </div>
                                             <div className="min-w-0">
@@ -368,7 +368,7 @@ export default function SessionAccessPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmRevoke} className="bg-red-600 hover:bg-red-700">
+                        <AlertDialogAction onClick={confirmRevoke} className="bg-destructive hover:bg-destructive">
                             {t("sessionAccess.revokeButton")}
                         </AlertDialogAction>
                     </AlertDialogFooter>

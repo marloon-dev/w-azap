@@ -84,13 +84,13 @@ export default function GroupsPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                            <Users className="h-5 w-5 sm:h-6 sm:w-6" /> {t("groups.title")}
+                        <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                            {t("groups.title")}
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                             {sessionId ? t("groups.subtitle") : t("groups.selectSession")}
                         </p>
                     </div>
@@ -113,7 +113,7 @@ export default function GroupsPage() {
                 {/* Create Dialog */}
                 {isCreateOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                        <div className="bg-white dark:bg-background p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
+                        <div className="bg-card dark:bg-background p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-sm">
                             <h2 className="text-lg sm:text-xl font-bold mb-4">{t("groups.createTitle")}</h2>
                             <div className="space-y-4">
                                 <div>
@@ -133,17 +133,17 @@ export default function GroupsPage() {
                 {loading ? (
                     <div className="text-center p-8">{t("groups.loading")}</div>
                 ) : filteredGroups.length === 0 ? (
-                    <div className="text-center p-8 text-muted-foreground border rounded-lg bg-slate-50">
+                    <div className="text-center p-8 text-muted-foreground border rounded-lg bg-muted/50">
                         {sessionId ? t("groups.emptyFiltered") : t("groups.noSession")}
                     </div>
                 ) : (
                     <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                         {filteredGroups.map(group => (
-                            <div key={group.id} className="bg-white p-4 rounded-lg shadow border flex justify-between items-start">
+                            <div key={group.id} className="bg-card p-4 rounded-lg shadow border flex justify-between items-start">
                                 <div>
                                     <h3 className="font-bold text-lg">{group.subject}</h3>
                                     <div className="text-xs text-muted-foreground mt-1">{group.jid}</div>
-                                    <div className="text-xs text-slate-500 mt-1">{t("groups.participants", { count: group.participants?.length || 0 })}</div>
+                                    <div className="text-xs text-muted-foreground mt-1">{t("groups.participants", { count: group.participants?.length || 0 })}</div>
                                 </div>
                             </div>
                         ))}

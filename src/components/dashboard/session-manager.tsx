@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/table";
 import { useTranslation } from "@/components/i18n-provider";
 import { translateValue } from "@/lib/i18n/translate";
+import { EmptyState } from "@/components/dashboard/empty-state";
+import { cn } from "@/lib/utils";
 
 type Session = {
     id: string;
@@ -84,7 +86,8 @@ export function SessionManager({ user }: { user: any }) {
         });
     }
 
-    const createSession = async () => {
+    const createSession = async (event?: React.FormEvent) => {
+        event?.preventDefault();
         if (!newSessionName) {
             toast.error(t("sessions.nameRequired"));
             return;
@@ -131,20 +134,49 @@ export function SessionManager({ user }: { user: any }) {
         router.push(`/dashboard/sessions/${sessionId}`);
     }
 
+    const statusBadge = (status: string) => {
+        const connected = status === "CONNECTED";
+        return (
+            <span
+                className={cn(
+                    "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium",
+                    connected ? "bg-success/10 text-success" : "bg-muted text-muted-foreground",
+                )}
+            >
+                <span className={cn("size-1.5 rounded-full", connected ? "bg-success" : "bg-muted-foreground")} aria-hidden="true" />
+                {translateValue(t, "status", status)}
+            </span>
+        );
+    };
+
+    const rowActions = (session: Session) => (
+        <div className="flex items-center gap-2">
+            <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => router.push(`/dashboard/sessions/access?session=${session.sessionId}`)}
+            >
+                <UserPlus className="size-4" aria-hidden="true" /> {t("sessions.share")}
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => handleManageSession(session.sessionId)}>
+                <Settings className="size-4" aria-hidden="true" /> {t("sessions.manage")}
+            </Button>
+        </div>
+    );
+
     return (
-        <div className="space-y-8">
-            {/* Create New Session Card */}
-            <Card className="bg-slate-50 border-dashed border-2">
+        <div className="space-y-6">
+            {/* Create new session */}
+            <Card className="gap-4">
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <Plus className="h-5 w-5" /> {t("sessions.createTitle")}
+                    <CardTitle className="flex items-center gap-2 text-base">
+                        <Plus className="size-4 text-primary" aria-hidden="true" /> {t("sessions.createTitle")}
                     </CardTitle>
-                    <CardDescription>
-                        {t("sessions.createDesc")}
-                    </CardDescription>
+                    <CardDescription>{t("sessions.createDesc")}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    <form onSubmit={createSession} className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-start">
                         <div className="space-y-2">
                             <Label htmlFor="session-name">{t("sessions.nameLabel")}</Label>
                             <Input
@@ -152,6 +184,8 @@ export function SessionManager({ user }: { user: any }) {
                                 value={newSessionName}
                                 onChange={e => setNewSessionName(e.target.value)}
                                 placeholder={t("sessions.namePlaceholder")}
+                                required
+                                maxLength={100}
                             />
                         </div>
                         <div className="space-y-2">
@@ -161,102 +195,92 @@ export function SessionManager({ user }: { user: any }) {
                                 value={newSessionId}
                                 onChange={e => setNewSessionId(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
                                 placeholder="unique-id-123"
+                                aria-describedby="session-id-hint"
+                                maxLength={50}
+                                className="font-mono"
                             />
-                            <p className="text-[10px] text-muted-foreground">{t("sessions.idHint")}</p>
+                            <p id="session-id-hint" className="text-xs text-muted-foreground">{t("sessions.idHint")}</p>
                         </div>
-                        <Button onClick={createSession} disabled={loading}>
-                            {loading ? t("ui.creating") : t("sessions.createButton")}
-                        </Button>
-                    </div>
+                        {/* Label height + gap keeps the button aligned with the inputs on desktop */}
+                        <div className="md:pt-[1.375rem]">
+                            <Button type="submit" disabled={loading} className="w-full md:w-auto">
+                                {loading ? t("ui.creating") : t("sessions.createButton")}
+                            </Button>
+                        </div>
+                    </form>
                 </CardContent>
             </Card>
 
-            {/* Sessions Table Card */}
-            <div>
-                {sessions.length === 0 ? (
-                    <div className="text-center py-10 text-muted-foreground bg-slate-50 dark:bg-slate-900 rounded-lg border border-border/50">
-                        {t("sessions.empty")}
-                    </div>
-                ) : (
-                    <Card className="glass-panel border-border/50 shadow-sm overflow-hidden">
-                        <CardHeader className="pb-3 pt-5 px-5">
-                            <CardTitle className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                {t("sessions.activeTitle", { count: sessions.length })}
-                            </CardTitle>
-                            <CardDescription>
-                                {t("sessions.activeDesc")}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0 overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="hover:bg-transparent">
-                                        <TableHead className="px-5 text-xs uppercase tracking-wider font-semibold">{t("sessions.colSession")}</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("ui.status")}</TableHead>
-                                        <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("sessions.colOwner")}</TableHead>
-                                        <TableHead className="text-right px-5 text-xs uppercase tracking-wider font-semibold">{t("ui.actions")}</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {sessions.map(session => (
-                                        <TableRow key={session.id} className="hover:bg-muted/20 dark:hover:bg-muted/5 transition-colors">
-                                            <TableCell className="px-5 py-3 font-medium">
-                                                <div className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{session.name}</div>
-                                                <div className="text-[11px] text-muted-foreground font-mono mt-0.5">{session.sessionId}</div>
-                                            </TableCell>
-                                            <TableCell className="py-3">
-                                                <Badge 
-                                                    variant={session.status === 'CONNECTED' ? 'default' : 'secondary'}
-                                                    className={`text-[10px] font-semibold transition-all px-2 py-0.5 shrink-0 inline-flex items-center ${
-                                                        session.status === 'CONNECTED' 
-                                                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20' 
-                                                            : 'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 hover:bg-slate-100'
-                                                    }`}
-                                                >
-                                                    <span className={`h-1.5 w-1.5 rounded-full mr-1.5 ${
-                                                        session.status === 'CONNECTED' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
-                                                    }`} />
-                                                    {translateValue(t, "status", session.status)}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="py-3">
-                                                {session.user ? (
-                                                    <div className="leading-tight">
-                                                        <div className="font-semibold text-slate-700 dark:text-slate-300 text-xs">{session.user.name || t("ui.noName")}</div>
-                                                        <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{session.user.email}</div>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-xs text-muted-foreground/50">-</span>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="py-3 text-right px-5">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <Button 
-                                                        variant="outline" 
-                                                        size="sm" 
-                                                        className="h-8 px-2.5 text-xs rounded-lg hover:bg-primary/5 transition-colors border-border/50"
-                                                        onClick={() => router.push(`/dashboard/sessions/access?session=${session.sessionId}`)}
-                                                    >
-                                                        <UserPlus className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> {t("sessions.share")}
-                                                    </Button>
-                                                    <Button 
-                                                        variant="outline" 
-                                                        size="sm" 
-                                                        className="h-8 px-2.5 text-xs rounded-lg hover:bg-primary/5 transition-colors border-border/50"
-                                                        onClick={() => handleManageSession(session.sessionId)}
-                                                    >
-                                                        <Settings className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" /> {t("sessions.manage")}
-                                                    </Button>
+            {/* Sessions */}
+            {sessions.length === 0 ? (
+                <Card className="border-dashed py-0 shadow-none">
+                    <EmptyState icon={Smartphone} title={t("sessions.empty")} />
+                </Card>
+            ) : (
+                <Card className="gap-0 overflow-hidden py-0">
+                    <CardHeader className="border-b px-5 py-4 [.border-b]:pb-4">
+                        <CardTitle className="text-base">{t("sessions.activeTitle", { count: sessions.length })}</CardTitle>
+                        <CardDescription>{t("sessions.activeDesc")}</CardDescription>
+                    </CardHeader>
+
+                    {/* Desktop: table */}
+                    <div className="hidden md:block">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent">
+                                    <TableHead className="px-5">{t("sessions.colSession")}</TableHead>
+                                    <TableHead>{t("ui.status")}</TableHead>
+                                    <TableHead>{t("sessions.colOwner")}</TableHead>
+                                    <TableHead className="px-5 text-right">{t("ui.actions")}</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {sessions.map(session => (
+                                    <TableRow key={session.id}>
+                                        <TableCell className="px-5 py-3">
+                                            <div className="text-sm font-medium text-foreground">{session.name}</div>
+                                            <div className="mt-0.5 font-mono text-xs text-muted-foreground">{session.sessionId}</div>
+                                        </TableCell>
+                                        <TableCell className="py-3">{statusBadge(session.status)}</TableCell>
+                                        <TableCell className="py-3">
+                                            {session.user ? (
+                                                <div className="leading-tight">
+                                                    <div className="text-sm text-foreground">{session.user.name || t("ui.noName")}</div>
+                                                    <div className="mt-0.5 text-xs text-muted-foreground">{session.user.email}</div>
                                                 </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+                                            ) : (
+                                                <span className="text-sm text-muted-foreground">—</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="px-5 py-3">
+                                            <div className="flex justify-end">{rowActions(session)}</div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    {/* Mobile: stacked list */}
+                    <ul className="divide-y md:hidden">
+                        {sessions.map(session => (
+                            <li key={session.id} className="space-y-3 p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <p className="truncate text-sm font-medium text-foreground">{session.name}</p>
+                                        <p className="truncate font-mono text-xs text-muted-foreground">{session.sessionId}</p>
+                                        {session.user && (
+                                            <p className="mt-1 truncate text-xs text-muted-foreground">{session.user.name || session.user.email}</p>
+                                        )}
+                                    </div>
+                                    {statusBadge(session.status)}
+                                </div>
+                                {rowActions(session)}
+                            </li>
+                        ))}
+                    </ul>
+                </Card>
+            )}
         </div>
     );
 }

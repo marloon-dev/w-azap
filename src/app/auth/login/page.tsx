@@ -75,18 +75,18 @@ function LoginForm() {
       </div>
       {/* Background Orbs */}
       <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 translate-x-1/3 translate-y-1/3 w-[30rem] h-[30rem] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 translate-x-1/3 translate-y-1/3 w-[30rem] h-[30rem] bg-info/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md p-4 animate-in fade-in zoom-in-95 duration-500">
         <div className="flex flex-col items-center mb-8">
-          <div className="relative flex h-16 w-16 mb-4 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-primary text-white shadow-lg shadow-primary/30">
+          <div className="relative flex h-16 w-16 mb-4 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
             <Bot className="h-8 w-8" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">{t("auth.login.title")}</h1>
           <p className="text-muted-foreground mt-2">{t("auth.login.subtitle")}</p>
         </div>
 
-        <div className="glass-panel rounded-3xl p-8 shadow-2xl shadow-black/5 dark:shadow-black/40">
+        <div className="glass-panel rounded-3xl p-8 shadow-2xl shadow-black/5">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm text-center font-medium animate-in shake duration-300">
               {error}
@@ -104,7 +104,7 @@ function LoginForm() {
                     <FormControl>
                       <Input
                         placeholder="name@example.com"
-                        className="h-12 px-4 rounded-xl bg-background/50 border-white/20 dark:border-white/10 focus-visible:ring-primary/50 transition-all font-medium"
+                        className="h-12 px-4 rounded-xl bg-background/50 border-background/20 focus-visible:ring-primary/50 transition-all font-medium"
                         {...field}
                       />
                     </FormControl>
@@ -122,7 +122,7 @@ function LoginForm() {
                       <Input
                         type="password"
                         placeholder="••••••••"
-                        className="h-12 px-4 rounded-xl bg-background/50 border-white/20 dark:border-white/10 focus-visible:ring-primary/50 transition-all font-medium"
+                        className="h-12 px-4 rounded-xl bg-background/50 border-background/20 focus-visible:ring-primary/50 transition-all font-medium"
                         {...field}
                       />
                     </FormControl>

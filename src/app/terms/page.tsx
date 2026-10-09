@@ -20,8 +20,8 @@ export default function TermsPage() {
     return (
         <div className="min-h-screen bg-background relative overflow-hidden py-24 selection:bg-primary/30 selection:text-primary-foreground">
             {/* Ambient background glows */}
-            <div className="fixed top-0 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
-            <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[30rem] h-[30rem] bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+            <div className="fixed top-0 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-success/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+            <div className="fixed bottom-0 right-1/4 translate-x-1/2 translate-y-1/2 w-[30rem] h-[30rem] bg-info/5 rounded-full blur-[100px] pointer-events-none -z-10" />
 
             <div className="container max-w-4xl px-4 mx-auto relative z-10">
 
@@ -30,7 +30,7 @@ export default function TermsPage() {
                     Back to Home
                 </Link>
 
-                <div className="glass-panel p-8 md:p-12 rounded-3xl shadow-xl shadow-black/5 dark:shadow-black/20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="glass-panel p-8 md:p-12 rounded-3xl shadow-xl shadow-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-4 mb-8">
                         <div className="p-3 bg-primary/10 rounded-2xl">
                             <Scale className="h-8 w-8 text-primary" />
@@ -48,7 +48,7 @@ export default function TermsPage() {
                         </p>
 
                         <h2 className="flex items-center gap-2 mt-8 text-2xl border-b pb-2">
-                            <ShieldCheck className="h-6 w-6 text-emerald-500" />
+                            <ShieldCheck className="h-6 w-6 text-success" />
                             1. Data Security & Responsibility
                         </h2>
                         <p>

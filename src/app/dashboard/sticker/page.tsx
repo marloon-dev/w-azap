@@ -74,9 +74,9 @@ export default function StickerPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
                 <div>
-                    <h2 className="text-xl sm:text-3xl font-bold tracking-tight">{t("sticker.title")}</h2>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("sticker.title")}</h1>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -98,10 +98,10 @@ export default function StickerPage() {
                             <div className="space-y-2">
                                 <Label>{t("sticker.imageFile")}</Label>
                                 <div className="flex items-center justify-center w-full">
-                                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
+                                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted">
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <ImageIcon className="w-8 h-8 mb-2 text-gray-500" />
-                                            <p className="text-sm text-gray-500"><span className="font-semibold">{t("sticker.clickToUpload")}</span> {t("sticker.orDrag")}</p>
+                                            <ImageIcon className="w-8 h-8 mb-2 text-muted-foreground" />
+                                            <p className="text-sm text-muted-foreground"><span className="font-semibold">{t("sticker.clickToUpload")}</span> {t("sticker.orDrag")}</p>
                                         </div>
                                         <input id="dropzone-file" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                                     </label>
@@ -115,7 +115,7 @@ export default function StickerPage() {
                             </div>
 
                             {showAdvanced && (
-                                <div className="space-y-4 border p-4 rounded-md bg-slate-50">
+                                <div className="space-y-4 border p-4 rounded-md bg-muted/50">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                         <div className="space-y-2">
                                             <Label>{t("sticker.packName")}</Label>
@@ -161,7 +161,7 @@ export default function StickerPage() {
                             <CardTitle>{t("sticker.preview")}</CardTitle>
                             <CardDescription>{t("sticker.previewDesc")}</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex flex-col items-center justify-center h-[300px] bg-slate-100/50 rounded-lg m-6 mt-0">
+                        <CardContent className="flex flex-col items-center justify-center h-[300px] bg-muted/50 rounded-lg m-6 mt-0">
                             {preview ? (
                                 <div className="relative w-64 h-64 flex items-center justify-center">
                                     <img src={preview} alt="Preview" className={`max-w-full max-h-full object-contain shadow-lg ${type === 'circle' ? 'rounded-full' : 'rounded-none'}`} />

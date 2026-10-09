@@ -174,8 +174,8 @@ export default function ProfilePage() {
                     <UserCircle className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold tracking-tight">{t("profile.noSession")}</h2>
-                    <p className="text-muted-foreground mt-2 max-w-sm">
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("profile.noSession")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                         {t("profile.noSessionDesc")}
                     </p>
                 </div>
@@ -184,10 +184,10 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="max-w-4xl space-y-6">
+        <div className="mx-auto w-full max-w-5xl space-y-6">
             <div>
-                <h1 className="text-2xl font-bold tracking-tight">{t("profile.title")}</h1>
-                <p className="text-muted-foreground">{t("profile.subtitle")}</p>
+                <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("profile.title")}</h1>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("profile.subtitle")}</p>
             </div>
 
             {loading ? (

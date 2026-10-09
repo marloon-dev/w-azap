@@ -19,7 +19,7 @@ export function RegistrationWarning({ role, registrationEnabled }: RegistrationW
             const timer = setTimeout(() => {
                 toast(t("registrationWarning.title"), {
                     description: t("registrationWarning.description"),
-                    icon: <ShieldAlert className="text-amber-500 w-5 h-5" />,
+                    icon: <ShieldAlert className="text-warning w-5 h-5" />,
                     duration: 8000,
                     position: "top-center",
                     action: {

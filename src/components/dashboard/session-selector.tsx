@@ -5,6 +5,17 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "./session-provider";
 import { useTranslation } from "@/components/i18n-provider";
+import { translateValue } from "@/lib/i18n/translate";
+import { cn } from "@/lib/utils";
+
+function StatusDot({ connected }: { connected: boolean }) {
+    return (
+        <span className="relative flex size-2 shrink-0" aria-hidden="true">
+            {connected && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60" />}
+            <span className={cn("relative inline-flex size-2 rounded-full", connected ? "bg-success" : "bg-destructive")} />
+        </span>
+    );
+}
 
 export function SessionSelector() {
     const { sessions, sessionId, setSessionId, loading, refreshSessions } = useSession();
@@ -12,52 +23,54 @@ export function SessionSelector() {
     const selectedSession = sessions.find(s => s.sessionId === sessionId);
 
     return (
-        <div className="flex items-center gap-1 sm:gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden lg:inline">{t("session.label")}</span>
-            <div className="w-[140px] sm:w-[200px]">
+        <div className="flex min-w-0 items-center gap-1">
+            <span className="hidden text-xs font-medium text-muted-foreground lg:inline">{t("session.label")}</span>
+            <div className="w-[9.5rem] min-w-0 sm:w-52">
                 <Select value={sessionId} onValueChange={setSessionId} disabled={loading || sessions.length === 0}>
-                    <SelectTrigger className="h-9 border border-border/60 bg-background/50 hover:bg-muted/30 transition-colors rounded-xl shadow-sm focus:ring-1 focus:ring-primary/20">
+                    <SelectTrigger
+                        aria-label={t("session.label")}
+                        className="h-9 w-full rounded-md border-border bg-card"
+                    >
                         <SelectValue placeholder={loading ? t("common.loading") : t("session.select")}>
                             {selectedSession ? (
-                                <div className="flex items-center gap-2 text-left">
-                                    <span className="relative flex h-2 w-2">
-                                        {selectedSession.status === "CONNECTED" && (
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        )}
-                                        <span className={`relative inline-flex rounded-full h-2 w-2 ${selectedSession.status === "CONNECTED" ? "bg-emerald-500" : "bg-destructive"}`}></span>
-                                    </span>
-                                    <span className="truncate font-medium text-xs sm:text-sm">{selectedSession.name}</span>
-                                </div>
+                                <span className="flex min-w-0 items-center gap-2 text-left">
+                                    <StatusDot connected={selectedSession.status === "CONNECTED"} />
+                                    <span className="truncate text-sm font-medium">{selectedSession.name}</span>
+                                    <span className="sr-only">({translateValue(t, "status", selectedSession.status)})</span>
+                                </span>
                             ) : null}
                         </SelectValue>
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border border-border/50 shadow-lg p-1">
+                    <SelectContent className="p-1">
                         {sessions.map((s) => (
-                            <SelectItem key={s.sessionId} value={s.sessionId} className="rounded-lg py-2 focus:bg-muted/50 cursor-pointer">
-                                <div className="flex items-center gap-2">
-                                    <span className="relative flex h-2 w-2 flex-shrink-0">
-                                        {s.status === "CONNECTED" && (
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        )}
-                                        <span className={`relative inline-flex rounded-full h-2 w-2 ${s.status === "CONNECTED" ? "bg-emerald-500" : "bg-destructive"}`}></span>
+                            <SelectItem key={s.sessionId} value={s.sessionId} className="cursor-pointer rounded-md py-2">
+                                <span className="flex items-center gap-2">
+                                    <StatusDot connected={s.status === "CONNECTED"} />
+                                    <span className="flex flex-col">
+                                        <span className="text-sm font-medium text-foreground">{s.name}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            <span className="font-mono">{s.sessionId}</span> · {translateValue(t, "status", s.status)}
+                                        </span>
                                     </span>
-                                    <div className="flex flex-col">
-                                        <span className="font-medium text-sm text-foreground">{s.name}</span>
-                                        <span className="text-[10px] text-muted-foreground font-mono">{s.sessionId}</span>
-                                    </div>
-                                </div>
+                                </span>
                             </SelectItem>
                         ))}
                         {sessions.length === 0 && !loading && (
-                            <div className="py-6 px-2 text-xs text-muted-foreground text-center">
-                                {t("session.noneFound")}
-                            </div>
+                            <div className="px-2 py-6 text-center text-xs text-muted-foreground">{t("session.noneFound")}</div>
                         )}
                     </SelectContent>
                 </Select>
             </div>
-            <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-muted/50 rounded-xl" onClick={refreshSessions} title={t("session.refresh")} disabled={loading}>
-                <RefreshCw className={`h-4 w-4 text-muted-foreground hover:text-foreground ${loading ? 'animate-spin' : ''}`} />
+            <Button
+                variant="ghost"
+                size="icon"
+                className="size-9 shrink-0 text-muted-foreground hover:text-foreground"
+                onClick={refreshSessions}
+                aria-label={t("session.refresh")}
+                title={t("session.refresh")}
+                disabled={loading}
+            >
+                <RefreshCw className={cn("size-4", loading && "animate-spin")} aria-hidden="true" />
             </Button>
         </div>
     );

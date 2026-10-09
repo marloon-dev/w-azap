@@ -74,19 +74,19 @@ function formatFileSize(bytes: number): string {
 
 function getTypeBg(type: string) {
     switch (type) {
-        case "image": return "bg-blue-500/10";
+        case "image": return "bg-info/10";
         case "video": return "bg-purple-500/10";
-        case "audio": return "bg-orange-500/10";
-        default: return "bg-emerald-500/10";
+        case "audio": return "bg-warning/10";
+        default: return "bg-success/10";
     }
 }
 
 function getTypeIcon(type: string) {
     switch (type) {
-        case "image": return <ImageIcon className="h-5 w-5 text-blue-500" />;
-        case "video": return <Video className="h-5 w-5 text-purple-500" />;
-        case "audio": return <Music className="h-5 w-5 text-orange-500" />;
-        default: return <FileText className="h-5 w-5 text-emerald-500" />;
+        case "image": return <ImageIcon className="h-5 w-5 text-info" />;
+        case "video": return <Video className="h-5 w-5 text-purple-600 dark:text-purple-400" />;
+        case "audio": return <Music className="h-5 w-5 text-warning" />;
+        default: return <FileText className="h-5 w-5 text-success" />;
     }
 }
 
@@ -297,13 +297,13 @@ export default function MediaPage() {
     return (
         <div className="space-y-4 max-w-6xl mx-auto">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-xl font-bold text-foreground">{t("media.title")}</h1>
-                    <p className="text-sm text-muted-foreground mt-0.5">{t("media.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("media.title")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("media.subtitle")}</p>
                 </div>
                 <Button variant="outline" size="sm" className="gap-2 self-start" onClick={fetchMedia} disabled={loading}>
-                    <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+                    <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> {t("ui.refresh")}
                 </Button>
             </div>
 
@@ -311,9 +311,9 @@ export default function MediaPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                     { icon: <HardDrive className="h-4 w-4 text-primary" />, bg: "bg-primary/10", value: formatFileSize(totalSize), label: t("media.totalSize") },
-                    { icon: <Files className="h-4 w-4 text-blue-500" />, bg: "bg-blue-500/10", value: totalCount, label: t("media.totalFiles") },
-                    { icon: <ImageIcon className="h-4 w-4 text-blue-500" />, bg: "bg-blue-500/10", value: stats.image, label: t("media.images") },
-                    { icon: <Video className="h-4 w-4 text-purple-500" />, bg: "bg-purple-500/10", value: stats.video + stats.audio + stats.document, label: t("media.other") },
+                    { icon: <Files className="h-4 w-4 text-info" />, bg: "bg-info/10", value: totalCount, label: t("media.totalFiles") },
+                    { icon: <ImageIcon className="h-4 w-4 text-info" />, bg: "bg-info/10", value: stats.image, label: t("media.images") },
+                    { icon: <Video className="h-4 w-4 text-purple-600 dark:text-purple-400" />, bg: "bg-purple-500/10", value: stats.video + stats.audio + stats.document, label: t("media.other") },
                 ].map((s) => (
                     <Card key={s.label} className="border-border/40">
                         <CardContent className="p-3 flex items-center gap-3">
@@ -415,8 +415,8 @@ export default function MediaPage() {
                                                     <div className="bg-muted/20 px-4 py-3 flex items-center justify-between border-b border-border/50">
                                                         <button className="flex items-center gap-2.5 flex-1 min-w-0 text-left hover:opacity-80 transition-opacity" onClick={() => toggleCollapse(sessionKey)}>
                                                             <ChevronIcon id={sessionKey} />
-                                                            <div className="h-6 w-6 rounded bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                                                                <Smartphone className="h-3 w-3 text-blue-500" />
+                                                            <div className="h-6 w-6 rounded bg-info/10 flex items-center justify-center flex-shrink-0">
+                                                                <Smartphone className="h-3 w-3 text-info" />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-semibold text-foreground truncate">{sessionGroup.sessionName}</p>
@@ -543,7 +543,7 @@ export default function MediaPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">{t("ui.delete")}</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive">{t("ui.delete")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

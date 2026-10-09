@@ -99,11 +99,11 @@ export default function ContactListPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight">{t("contacts.title")}</h2>
-                        <p className="text-muted-foreground">
+                        <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("contacts.title")}</h1>
+                        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                             {t("contacts.subtitle")}
                         </p>
                     </div>
@@ -184,7 +184,7 @@ export default function ContactListPage() {
                                                     <div className="flex flex-col">
                                                         <span className="font-medium">{contact.name || contact.notify || t("ui.unknown")}</span>
                                                         {contact.verifiedName && (
-                                                            <span className="text-xs text-green-600 flex items-center gap-1">
+                                                            <span className="text-xs text-success flex items-center gap-1">
                                                                 ✓ {contact.verifiedName}
                                                             </span>
                                                         )}

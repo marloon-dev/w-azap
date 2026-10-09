@@ -48,7 +48,7 @@ export default function GlobalError({
           </div>
 
           {error.digest && (
-            <div className="relative mt-8 text-[11px] text-muted-foreground font-mono bg-black/5 dark:bg-white/5 p-3 rounded-lg border border-border/30 w-full text-center break-all" suppressHydrationWarning>
+            <div className="relative mt-8 text-[11px] text-muted-foreground font-mono bg-black/5 p-3 rounded-lg border border-border/30 w-full text-center break-all" suppressHydrationWarning>
               Digest ID: {error.digest}
             </div>
           )}

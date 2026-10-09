@@ -24,10 +24,10 @@ interface Notification {
 }
 
 const TYPE_STYLES: Record<string, { icon: any; bg: string; border: string; dot: string }> = {
-    INFO: { icon: Info, bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-l-blue-500", dot: "bg-blue-500" },
-    WARNING: { icon: AlertTriangle, bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-l-yellow-500", dot: "bg-yellow-500" },
-    SUCCESS: { icon: CheckCircle, bg: "bg-green-50 dark:bg-green-950/30", border: "border-l-green-500", dot: "bg-green-500" },
-    SYSTEM: { icon: Settings, bg: "bg-purple-50 dark:bg-purple-950/30", border: "border-l-purple-500", dot: "bg-purple-500" },
+    INFO: { icon: Info, bg: "bg-info/10", border: "border-l-blue-500", dot: "bg-info" },
+    WARNING: { icon: AlertTriangle, bg: "bg-warning/10", border: "border-l-yellow-500", dot: "bg-warning" },
+    SUCCESS: { icon: CheckCircle, bg: "bg-success/10", border: "border-l-green-500", dot: "bg-success" },
+    SYSTEM: { icon: Settings, bg: "bg-purple-500/10 dark:bg-purple-950/30", border: "border-l-purple-500", dot: "bg-purple-500" },
 };
 
 export default function InboxPage() {
@@ -121,13 +121,12 @@ export default function InboxPage() {
     return (
         <div className="max-w-3xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                        <Inbox className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {t("inbox.title")}
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                         {unreadCount > 0
                             ? t("inbox.unreadCount", { count: unreadCount })
                             : t("inbox.caughtUp")}

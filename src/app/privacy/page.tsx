@@ -20,8 +20,8 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen bg-background relative overflow-hidden py-24 selection:bg-primary/30 selection:text-primary-foreground">
             {/* Ambient background glows */}
-            <div className="fixed top-0 right-1/4 translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
-            <div className="fixed bottom-0 left-1/4 -translate-x-1/2 translate-y-1/2 w-[30rem] h-[30rem] bg-emerald-500/5 dark:bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+            <div className="fixed top-0 right-1/4 translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-info/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+            <div className="fixed bottom-0 left-1/4 -translate-x-1/2 translate-y-1/2 w-[30rem] h-[30rem] bg-success/5 rounded-full blur-[100px] pointer-events-none -z-10" />
 
             <div className="container max-w-4xl px-4 mx-auto relative z-10">
 
@@ -30,10 +30,10 @@ export default function PrivacyPage() {
                     Back to Home
                 </Link>
 
-                <div className="glass-panel p-8 md:p-12 rounded-3xl shadow-xl shadow-black/5 dark:shadow-black/20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="glass-panel p-8 md:p-12 rounded-3xl shadow-xl shadow-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="flex items-center gap-4 mb-8">
-                        <div className="p-3 bg-blue-500/10 rounded-2xl">
-                            <Shield className="h-8 w-8 text-blue-500" />
+                        <div className="p-3 bg-info/10 rounded-2xl">
+                            <Shield className="h-8 w-8 text-info" />
                         </div>
                         <div>
                             <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">Privacy Policy</h1>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
                         </p>
 
                         <h2 className="flex items-center gap-2 mt-8 text-2xl border-b pb-2">
-                            <Lock className="h-6 w-6 text-blue-500" />
+                            <Lock className="h-6 w-6 text-info" />
                             1. Zero-Tracking Architecture
                         </h2>
                         <p>
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
                             W-AZAP utilizes the <code>@whiskeysockets/baileys</code> library to communicate directly with WhatsApp's servers. By using this gateway, your server will establish a direct web-socket connection to WhatsApp. Please be aware that your use of WhatsApp is still subject to Meta's Privacy Policy.
                         </p>
 
-                        <div className="mt-12 p-6 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                        <div className="mt-12 p-6 bg-info/5 rounded-2xl border border-info/10">
                             <p className="font-semibold mb-2">Need Further Details?</p>
                             <p className="text-sm text-muted-foreground mb-0">If you have specific questions about data handling or wish to audit the code, please visit our <Link href="https://github.com/marloon-dev/w-azap">GitHub Repository</Link>.</p>
                         </div>

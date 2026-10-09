@@ -351,9 +351,9 @@ export default function WebhooksPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div>
-                <h1 className="text-xl sm:text-2xl font-bold">{t("webhooks.title")}</h1>
+                <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("webhooks.title")}</h1>
             </div>
 
             {/* API Key Section */}
@@ -368,7 +368,7 @@ export default function WebhooksPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                        <div className="flex-1 bg-slate-100 rounded-md p-2 sm:p-3 font-mono text-xs sm:text-sm overflow-x-auto">
+                        <div className="flex-1 bg-muted rounded-md p-2 sm:p-3 font-mono text-xs sm:text-sm overflow-x-auto">
                             {apiKey ? (
                                 showApiKey ? apiKey : "••••••••••••••••••••••••••••••••"
                             ) : apiKeyHint ? (
@@ -396,11 +396,11 @@ export default function WebhooksPage() {
                         </Button>
                     </div>
                     {apiKey && (
-                        <p className="text-xs font-medium text-amber-600 mt-2">{t("webhooks.apiKeyOnce")}</p>
+                        <p className="text-xs font-medium text-warning mt-2">{t("webhooks.apiKeyOnce")}</p>
                     )}
                     {(apiKey || apiKeyHint) && (
                         <p className="text-xs text-muted-foreground mt-2">
-                            {t("webhooks.example")} <code className="bg-slate-100 px-1 py-0.5 rounded">curl -H "X-API-Key: {(apiKey || apiKeyHint || "").slice(0, 8)}..." http://your-server/api/sessions</code>
+                            {t("webhooks.example")} <code className="bg-muted px-1 py-0.5 rounded">curl -H "X-API-Key: {(apiKey || apiKeyHint || "").slice(0, 8)}..." http://your-server/api/sessions</code>
                         </p>
                     )}
                 </CardContent>
@@ -415,7 +415,7 @@ export default function WebhooksPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => { setShowRegenConfirm(false); generateNewApiKey(); }} className="bg-red-600 hover:bg-red-700">{t("webhooks.regenerate")}</AlertDialogAction>
+                            <AlertDialogAction onClick={() => { setShowRegenConfirm(false); generateNewApiKey(); }} className="bg-destructive hover:bg-destructive">{t("webhooks.regenerate")}</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
@@ -578,8 +578,8 @@ export default function WebhooksPage() {
                                             {testResult && !testResult.testing && (
                                                 <div className={`p-3 rounded-md text-sm font-mono whitespace-pre-wrap ${
                                                     testResult.success
-                                                        ? "bg-green-50 border border-green-200 text-green-800"
-                                                        : "bg-red-50 border border-red-200 text-red-800"
+                                                        ? "bg-success/10 border border-success/30 text-success"
+                                                        : "bg-destructive/10 border border-destructive/30 text-destructive"
                                                 }`}>
                                                     <div className="flex items-center gap-2 mb-1 font-semibold">
                                                         {testResult.success ? t("webhooks.success") : t("webhooks.failed")}
@@ -670,7 +670,7 @@ export default function WebhooksPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">{t("ui.delete")}</AlertDialogAction>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive">{t("ui.delete")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
