@@ -6,7 +6,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
-[![Versão](https://img.shields.io/badge/Vers%C3%A3o-1.6.4-blue?style=for-the-badge)](CHANGELOG.md)
+[![Versão](https://img.shields.io/github/v/release/marloon-dev/w-azap?style=for-the-badge&label=vers%C3%A3o&color=blue)](CHANGELOG.md)
 [![Idiomas](https://img.shields.io/badge/Idiomas-14-orange?style=for-the-badge)](#-14-idiomas)
 
 [![CI](https://github.com/marloon-dev/w-azap/actions/workflows/ci.yml/badge.svg)](https://github.com/marloon-dev/w-azap/actions/workflows/ci.yml)
