@@ -1,0 +1,41 @@
+W-AZAP: instalador para macOS
+=============================
+
+Requisitos: macOS 15 (Sequoia) ou mais novo, Apple Silicon ou Intel,
+3 GB livres e internet. Não precisa de Homebrew, Docker nem senha de
+administrador.
+
+COMO INSTALAR
+-------------
+1. Dê dois cliques em "Instalar W-AZAP.command".
+2. Se o macOS disser que não pode verificar o desenvolvedor, o arquivo não
+   foi assinado pela Apple. Para liberar:
+     Ajustes do Sistema > Privacidade e Segurança > role até o aviso
+     sobre "Instalar W-AZAP.command" > Abrir Mesmo Assim.
+   Depois dê dois cliques de novo.
+3. Acompanhe a janela do Terminal. No fim, o painel abre no navegador.
+   A primeira conta cadastrada vira administrador.
+
+Se preferir, instale direto pelo Terminal (não passa pelo aviso acima):
+
+  curl -fsSL https://github.com/marloon-dev/w-azap/releases/latest/download/instalar-macos.sh | bash
+
+DEPOIS DE INSTALAR
+------------------
+- App "W-AZAP" na pasta Aplicativos da sua conta (~/Applications):
+  inicia o serviço, se preciso, e abre o painel.
+- Comando no Terminal: w-azap status | abrir | parar | iniciar | log |
+  atualizar | desinstalar
+  (se o comando não for encontrado, use ~/.w-azap/bin/w-azap)
+- O W-AZAP inicia sozinho quando você entra no Mac.
+
+ONDE FICAM AS COISAS
+--------------------
+~/.w-azap/app/.env      configuração e chaves (FAÇA BACKUP)
+~/.w-azap/mysql/data    banco de dados (MySQL na porta 3307, só local)
+~/.w-azap/logs          logs da instalação, do servidor e do MySQL
+
+Rodar o instalador de novo atualiza o W-AZAP e mantém a configuração,
+o banco, as sessões do WhatsApp e as mídias.
+
+Documentação: https://github.com/marloon-dev/w-azap
