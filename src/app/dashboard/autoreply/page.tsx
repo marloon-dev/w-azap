@@ -194,7 +194,7 @@ export default function AutoReplyPage() {
 
     return (
         <SessionGuard>
-            <div className="mx-auto w-full max-w-5xl space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("autoReply.title")}</h1>
@@ -326,7 +326,7 @@ export default function AutoReplyPage() {
                                         </CardTitle>
                                         <div className="flex gap-2 flex-wrap text-xs">
                                             <Badge variant="outline" className="text-muted-foreground font-normal shrink-0">{translateValue(t, "autoReply.match", rule.matchType)}</Badge>
-                                            <Badge variant="secondary" className="font-normal shrink-0 text-[10px]">{translateValue(t, "autoReply.trigger", rule.triggerType)}</Badge>
+                                            <Badge variant="secondary" className="font-normal shrink-0 text-xs">{translateValue(t, "autoReply.trigger", rule.triggerType)}</Badge>
                                         </div>
                                     </div>
                                     <div className="shrink-0 flex gap-1">

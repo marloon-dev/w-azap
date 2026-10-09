@@ -8,7 +8,25 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Alterado
+- **Nova identidade visual ("central de linhas")**: cada sessão é tratada como uma linha com sinal. Nova marca (três barras de sinal), fonte Instrument Sans, paleta verde com neutros levemente esverdeados nos dois temas e um verde vivo usado só para status ao vivo. Bordas no lugar de sombras, contraste WCAG AA conferido em todos os pares de cor.
+- **Menu lateral**: a sessão ativa saiu da barra superior e fica no topo do menu, com o status visível. A conta virou um menu (papel, documentação da API, Swagger, versão e sair), os links de desenvolvedor saíram da lista principal e o grupo Administração começa recolhido, a não ser que a página atual esteja nele. O botão de recolher foi para a barra superior.
+- **Painel**: as sessões aparecem primeiro, com indicador de sinal, status, ID e o próximo passo de cada uma (abrir as conversas ou reconectar). Os quatro cartões iguais viraram uma faixa de números (conectadas, mensagens nas últimas 24 h, respostas automáticas e envios agendados). Os "Próximos passos" mostram só o que falta na sua instalação.
+- **Sessões**: lista primeiro e formulário de nova sessão depois. Ao criar uma sessão, o painel abre a página dela para ler o QR code.
+- **Chat**: ocupa toda a área abaixo da barra superior. Balões enviados num verde claro (no lugar do verde sólido), horário legível, linhas da lista acessíveis pelo teclado e botões com rótulo para leitores de tela.
+- **Página inicial, login e cadastro** redesenhados: título em fonte condensada, exemplo real do painel no lugar das bolhas de gradiente, recursos em lista e um exemplo de chamada da API. Os textos da página inicial foram reescritos nos 14 idiomas.
+- **Larguras**: todas as páginas do painel usam a mesma largura máxima, então o título não muda de lugar ao trocar de página.
+- **Legibilidade**: rótulos em caixa alta e textos de 9 a 10 px foram trocados por texto normal de 11 a 12 px. Cores fixas fora da paleta viraram tokens do tema.
+- **Relógio da barra superior**: mostra hora e cidade do fuso das Configurações (padrão `America/Sao_Paulo`).
+
 ### Corrigido
+- **Páginas de erro em indonésio**: a página 404, a de erro inesperado e a de `/error?code=` estavam em indonésio. Agora seguem o idioma escolhido (14 idiomas), dizem o que aconteceu e o que fazer.
+- **Fuso horário padrão**: o padrão era `Asia/Jakarta` (herdado do projeto original) no relógio, no agendador, nas configurações, no `docker-compose.yml` e no `.env.example`. Agora é `America/Sao_Paulo`.
+- **Mensagens recorrentes no fuso errado**: o agendador calculava a próxima data das mensagens recorrentes sempre em `Asia/Jakarta`. Agora usa o fuso das Configurações.
+- **Horário dos logs de webhook**: era exibido sempre no fuso de Jacarta. Agora usa o fuso do navegador.
+- **Chat de grupo ao recarregar**: o endereço da conversa guardava só o número, e um grupo virava conversa privada ao recarregar a página ou voltar no navegador. O endereço agora guarda o JID completo dos grupos.
+- **Número com 0 na frente**: ao abrir uma conversa nova, um número digitado com 0 recebia o código de país da Indonésia (62). Agora recebe o do Brasil (55).
+- **Documentação da API**: o código em linha não mostra mais crases literais, e o índice não exibe "No subsections" nas seções sem subtópicos.
 - **Tema nas páginas públicas**: a página inicial, o login, o cadastro e a documentação (`/docs`) agora têm o seletor de tema, que antes só aparecia no painel.
 - **Documentação no modo escuro**: títulos, parágrafos, listas e links da `/docs` usam as cores do tema e ficam legíveis no escuro. O cabeçalho dos blocos de código ganhou contraste, e os blocos com rolagem podem ser focados pelo teclado.
 - **Contraste no tema claro**: os tons de verde, vermelho, amarelo e azul ficaram um pouco mais escuros, e o texto colorido sobre o próprio fundo claro (selos e avisos) passa no WCAG AA.

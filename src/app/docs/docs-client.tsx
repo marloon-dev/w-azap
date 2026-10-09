@@ -126,31 +126,28 @@ export function DocsClient({ content, toc }: DocsClientProps) {
         <div className="space-y-1">
             <button
                 onClick={() => section.items.length > 0 ? onToggle(section.id) : onScroll(section.id, isMobile)}
-                className="flex items-center justify-between w-full text-left font-semibold text-foreground hover:text-info transition-colors py-2 group" // Increased touch target py-2
+                className="flex items-center justify-between w-full text-left font-semibold text-foreground hover:text-foreground transition-colors py-2 group" // Increased touch target py-2
             >
                 <span className="truncate pr-2">{section.title}</span>
                 {section.items.length > 0 && (
                     <ChevronRight
-                        className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 group-hover:text-info ${isOpen ? "rotate-90" : ""}`}
+                        className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 group-hover:text-foreground ${isOpen ? "rotate-90" : ""}`}
                     />
                 )}
             </button>
 
-            {isOpen && (
-                <div className="space-y-1 ml-2 border-l-2 border-border pl-2"> {/* Removed heavy animate-in for performance */}
+            {isOpen && section.items.length > 0 && (
+                <div className="ml-2 space-y-1 border-l-2 border-border pl-2">
                     {section.items.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => onScroll(item.id, isMobile)}
-                            className="block text-left w-full text-sm text-muted-foreground hover:text-info hover:bg-muted/50 py-2 px-2 rounded transition-colors truncate" // Increased touch target py-2
+                            className="block text-left w-full text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 py-2 px-2 rounded transition-colors truncate" // Increased touch target py-2
                             title={item.text}
                         >
                             {item.text}
                         </button>
                     ))}
-                    {section.items.length === 0 && (
-                        <p className="text-xs text-muted-foreground italic px-2 py-1">No subsections</p>
-                    )}
                 </div>
             )}
         </div>
@@ -234,7 +231,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-info">
-                                For the most up-to-date API reference and interactive testing, please check the <Link href="/swagger" className="font-medium underline hover:text-info">Swagger UI</Link> or the <Link href="/dashboard/api-docs" className="font-medium underline hover:text-info">Dashboard API Docs</Link>.
+                                For the most up-to-date API reference and interactive testing, please check the <Link href="/swagger" className="font-medium underline hover:text-foreground">Swagger UI</Link> or the <Link href="/dashboard/api-docs" className="font-medium underline hover:text-foreground">Dashboard API Docs</Link>.
                             </p>
                         </div>
                     </div>
@@ -258,7 +255,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                 return !inline && match ? (
                                     <div className="my-6 overflow-hidden rounded-xl border border-border bg-gray-950 shadow-sm">
                                         <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-2.5">
-                                            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{match[1]}</span>
+                                            <span className="text-[11px] font-semibold text-gray-400">{match[1]}</span>
                                             <button onClick={() => {
                                                 navigator.clipboard.writeText(codeStr).then(() => {
                                                     const btn = document.activeElement;
@@ -292,7 +289,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                 </div>
                             ),
                             thead: ({ node, ...props }) => <thead {...props} className="bg-muted/50" />,
-                            th: ({ node, ...props }) => <th {...props} className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider" />,
+                            th: ({ node, ...props }) => <th {...props} className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground" />,
                             td: ({ node, ...props }) => <td {...props} className="px-3 sm:px-4 py-3 text-sm text-muted-foreground break-words whitespace-normal" />,
                             pre: ({ node, ...props }) => <pre {...props} /> // Passthrough to code block handler
                         }}

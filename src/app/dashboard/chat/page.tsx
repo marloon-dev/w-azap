@@ -8,7 +8,6 @@ import { getTranslations } from "@/lib/i18n/server";
 
 export default async function ChatPage() {
     const session = await auth();
-    console.log("ChatPage Session (Role debug):", session?.user?.role);
 
     if (!session?.user?.id) return <div>{(await getTranslations()).t("guard.unauthorized")}</div>;
 
@@ -34,8 +33,9 @@ export default async function ChatPage() {
         );
     }
 
+    // Full-bleed workspace: cancels the main padding so the chat fills the area under the top bar
     return (
-        <div className="h-[calc(100vh-6.5rem)] sm:h-[calc(100vh-6rem)]">
+        <div className="-mx-4 -my-6 h-[calc(100dvh-4rem)] sm:-mx-6 sm:-my-8 lg:-mx-8">
             <ChatLayoutClient key={validSessionId} sessionId={validSessionId} />
         </div>
     );

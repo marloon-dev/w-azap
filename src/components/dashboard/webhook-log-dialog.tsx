@@ -291,10 +291,10 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                             {/* Logs List Subheader */}
                             <div className="p-3 px-4 border-b flex items-center justify-between text-xs text-muted-foreground shrink-0 bg-muted/30">
                                 <span className="flex items-center gap-2">
-                                    <span className="bg-muted/80 text-foreground/90 px-2 py-0.5 rounded-full font-semibold text-[10px]">
+                                    <span className="bg-muted/80 text-foreground/90 px-2 py-0.5 rounded-full font-semibold text-xs">
                                         {t("webhookLogs.count", { count: total })}
                                     </span>
-                                    <span className="bg-success/10 text-success px-2 py-0.5 rounded-full flex items-center gap-1 font-semibold text-[10px] border border-success/40">
+                                    <span className="bg-success/10 text-success px-2 py-0.5 rounded-full flex items-center gap-1 font-semibold text-xs border border-success/40">
                                         <span className="h-1 w-1 rounded-full bg-success animate-pulse inline-block" />
                                         {t("webhookLogs.live")}
                                     </span>
@@ -335,10 +335,10 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                             )}
                                         >
                                             <div className="flex items-center justify-between gap-2 w-full">
-                                                <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded bg-muted/80 border text-foreground/90 truncate max-w-[120px] lg:max-w-[160px]">
+                                                <span className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded bg-muted/80 border text-foreground/90 truncate max-w-[120px] lg:max-w-[160px]">
                                                     {log.event}
                                                 </span>
-                                                <span className="text-[10px] text-muted-foreground font-mono">
+                                                <span className="text-xs text-muted-foreground font-mono">
                                                     {formatTimeOnly(log.createdAt, timezone, locale)}
                                                 </span>
                                             </div>
@@ -350,7 +350,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                                         isSuccess ? "bg-success" : "bg-destructive"
                                                     )} />
                                                     <span className={cn(
-                                                        "text-[10px] font-semibold uppercase tracking-wider",
+                                                        "text-xs font-semibold",
                                                         isSuccess ? "text-success" : "text-destructive"
                                                     )}>
                                                         {isSuccess ? t("webhookLogs.success") : t("webhookLogs.failed")}
@@ -359,7 +359,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
 
                                                 {log.responseStatusCode != null && (
                                                     <span className={cn(
-                                                        "text-[10px] font-mono font-bold bg-muted/50 px-1 rounded border",
+                                                        "text-xs font-mono font-bold bg-muted/50 px-1 rounded border",
                                                         isStatusError ? "text-destructive border-destructive/30" : "text-success border-success/30"
                                                     )}>
                                                         {log.responseStatusCode}
@@ -367,13 +367,13 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                                 )}
 
                                                 {log.responseTimeMs != null && (
-                                                    <span className="text-[10px] text-muted-foreground font-mono ml-auto">
+                                                    <span className="text-xs text-muted-foreground font-mono ml-auto">
                                                         {log.responseTimeMs}ms
                                                     </span>
                                                 )}
                                             </div>
 
-                                            <div className="text-[10px] font-mono text-muted-foreground truncate w-full mt-0.5 opacity-80">
+                                            <div className="text-xs font-mono text-muted-foreground truncate w-full mt-0.5 opacity-80">
                                                 {log.requestUrl}
                                             </div>
                                         </button>
@@ -399,7 +399,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                         </Button>
                                     </div>
                                 ) : shown > 0 ? (
-                                    <div className="p-4 text-[10px] text-center text-muted-foreground bg-transparent font-mono select-none">
+                                    <div className="p-4 text-xs text-center text-muted-foreground bg-transparent font-mono select-none">
                                         {t("webhookLogs.allLoaded", { count: total })}
                                     </div>
                                 ) : null}
@@ -436,7 +436,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                                 <Badge
                                                     variant={selectedLog.status === "SUCCESS" ? "default" : "destructive"}
                                                     className={cn(
-                                                        "px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+                                                        "px-2 py-0.5 text-xs font-bold",
                                                         selectedLog.status === "SUCCESS" ? "bg-success hover:bg-success text-success-foreground" : ""
                                                     )}
                                                 >
@@ -462,7 +462,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
 
                                         {/* Row 2: URL bar (Full width, wraps long URLs cleanly but capped to max height with internal scrollbar) */}
                                         <div className="flex items-start gap-2.5 bg-muted/50 border border-border/80 py-1.5 px-3 rounded-lg w-full shadow-inner">
-                                            <span className="text-[9px] font-bold text-muted-foreground select-none bg-muted/60 px-1.5 py-0.5 rounded mt-0.5 shrink-0">
+                                            <span className="text-xs font-bold text-muted-foreground select-none bg-muted/60 px-1.5 py-0.5 rounded mt-0.5 shrink-0">
                                                 POST
                                             </span>
                                             <div className="text-[11px] font-mono text-muted-foreground break-all select-all flex-1 leading-relaxed max-h-[50px] overflow-y-auto custom-scrollbar-light pr-1">
@@ -479,7 +479,7 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                         </div>
 
                                         {/* Row 3: Attempted timestamp and Log ID (Self-wrapping secondary text) */}
-                                        <div className="text-[10px] text-muted-foreground flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono">
+                                        <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono">
                                             <div className="flex items-center gap-1.5">
                                                 <Info className="h-3.5 w-3.5 text-muted-foreground/80" />
                                                 <span>{t("webhookLogs.attempted")}</span>
@@ -550,14 +550,14 @@ export default function WebhookLogDialog({ webhookId, webhookName, targetSession
                                         {/* Tab contents - Full bleed premium editor */}
                                         <div className="flex-1 min-h-0 bg-[#0f141c] text-slate-100 relative flex flex-col border-t border-input">
                                             {/* Code Editor Header */}
-                                            <div className="bg-[#161c24] text-[10px] text-muted-foreground font-semibold py-2 px-4 select-none flex items-center justify-between border-b border-input shrink-0">
+                                            <div className="bg-[#161c24] text-xs text-muted-foreground font-semibold py-2 px-4 select-none flex items-center justify-between border-b border-input shrink-0">
                                                 <span className="font-mono tracking-wide text-muted-foreground">
                                                     {activeTab === "payload" ? "payload.json" : activeTab === "response" ? "response.txt" : "headers.json"}
                                                 </span>
                                                 <Button
                                                     variant="secondary"
                                                     size="sm"
-                                                    className="h-5.5 px-2 py-0 text-[10px] bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-input/50 hover:border-input transition-all font-mono"
+                                                    className="h-5.5 px-2 py-0 text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-input/50 hover:border-input transition-all font-mono"
                                                     onClick={() => {
                                                         const textToCopy = activeTab === "payload" 
                                                             ? formatJson(selectedLog.requestBody)

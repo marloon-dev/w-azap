@@ -24,10 +24,10 @@ interface Notification {
 }
 
 const TYPE_STYLES: Record<string, { icon: any; bg: string; border: string; dot: string }> = {
-    INFO: { icon: Info, bg: "bg-info/10", border: "border-l-blue-500", dot: "bg-info" },
-    WARNING: { icon: AlertTriangle, bg: "bg-warning/10", border: "border-l-yellow-500", dot: "bg-warning" },
-    SUCCESS: { icon: CheckCircle, bg: "bg-success/10", border: "border-l-green-500", dot: "bg-success" },
-    SYSTEM: { icon: Settings, bg: "bg-purple-500/10 dark:bg-purple-950/30", border: "border-l-purple-500", dot: "bg-purple-500" },
+    INFO: { icon: Info, bg: "bg-info/10", border: "border-l-info", dot: "bg-info" },
+    WARNING: { icon: AlertTriangle, bg: "bg-warning/10", border: "border-l-warning", dot: "bg-warning" },
+    SUCCESS: { icon: CheckCircle, bg: "bg-success/10", border: "border-l-success", dot: "bg-success" },
+    SYSTEM: { icon: Settings, bg: "bg-chart-4/10", border: "border-l-chart-4", dot: "bg-chart-4" },
 };
 
 export default function InboxPage() {
@@ -119,7 +119,7 @@ export default function InboxPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -149,7 +149,7 @@ export default function InboxPage() {
                         )}>
                         {f === "all" ? t("inbox.all") : f === "unread" ? t("inbox.unread") : t("inbox.read")}
                         {f === "unread" && unreadCount > 0 && (
-                            <span className="ml-1.5 text-[10px] opacity-70">({unreadCount})</span>
+                            <span className="ml-1.5 text-xs opacity-70">({unreadCount})</span>
                         )}
                     </button>
                 ))}
@@ -224,14 +224,14 @@ export default function InboxPage() {
 
                                     {/* Footer: time + href badge */}
                                     <div className="flex items-center gap-2 mt-2">
-                                        <span className="text-[10px] text-muted-foreground">
+                                        <span className="text-xs text-muted-foreground">
                                             {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: dateFnsLocale(locale) })}
                                         </span>
-                                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 font-normal">
+                                        <Badge variant="outline" className="text-xs px-1.5 py-0 h-4 font-normal">
                                             {translateValue(t, "notificationAdmin.types", n.type)}
                                         </Badge>
                                         {n.href && (
-                                            <span className="text-[10px] text-primary flex items-center gap-0.5 ml-auto">
+                                            <span className="text-xs text-primary flex items-center gap-0.5 ml-auto">
                                                 <ExternalLink className="h-3 w-3" /> {t("inbox.clickToView")}
                                             </span>
                                         )}
@@ -258,7 +258,7 @@ export default function InboxPage() {
                     })}
 
                     {/* Summary */}
-                    <p className="text-[10px] text-center text-muted-foreground pt-4 pb-8">
+                    <p className="text-xs text-center text-muted-foreground pt-4 pb-8">
                         {t("inbox.showing", { shown: filtered.length, total: notifications.length })}
                     </p>
                 </div>

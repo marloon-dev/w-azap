@@ -21,19 +21,18 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                     size="sm"
                     aria-label={t("language.select")}
                     title={t("language.select")}
-                    className={cn("h-10 gap-1.5 rounded-full px-2.5 hover:bg-muted/50", className)}
+                    className={cn("h-9 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground", className)}
                 >
                     {isChanging ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        <Loader2 className="size-[18px] animate-spin" />
                     ) : (
-                        <Globe className="h-4 w-4 text-muted-foreground" />
+                        <Globe className="size-[18px]" />
                     )}
-                    <span className="text-base leading-none">{current.flag}</span>
-                    <span className="hidden text-xs font-semibold uppercase sm:inline">{current.code}</span>
+                    <span className="hidden text-xs font-medium sm:inline">{current.code}</span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-64 p-1 rounded-2xl border border-border/50 shadow-2xl glass-panel">
-                <p className="px-3 pt-2 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+            <PopoverContent align="end" className="w-64 p-1.5">
+                <p className="px-2.5 pt-1.5 pb-2 text-xs font-medium text-muted-foreground">
                     {t("language.label")}
                 </p>
                 <div className="max-h-[340px] overflow-y-auto styled-scrollbar">
@@ -49,8 +48,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                                     if (!selected) await setLocale(l.code);
                                 }}
                                 className={cn(
-                                    "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition-colors",
-                                    selected ? "bg-primary/10 text-primary" : "hover:bg-muted/60"
+                                    "flex w-full items-center gap-3 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
+                                    selected ? "bg-accent text-foreground" : "hover:bg-accent/70"
                                 )}
                             >
                                 <span className="text-lg leading-none">{l.flag}</span>
@@ -58,7 +57,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                                     <span className="truncate font-medium">{l.name}</span>
                                     <span className="truncate text-[11px] text-muted-foreground">{l.englishName}</span>
                                 </span>
-                                {selected && <Check className="h-4 w-4 flex-shrink-0" />}
+                                {selected && <Check className="size-4 shrink-0 text-primary" aria-hidden="true" />}
                             </button>
                         );
                     })}

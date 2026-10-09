@@ -5,6 +5,9 @@ import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { DocsClient } from './docs-client';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { BrandMark } from '@/components/brand-mark';
+import { Button } from '@/components/ui/button';
+import { getTranslations } from '@/lib/i18n/server';
 
 export const metadata = {
     title: 'API Documentation - W-AZAP',
@@ -34,6 +37,7 @@ export interface TocSection {
 }
 
 export default async function PublicDocsPage() {
+    const { t } = await getTranslations();
     const filePath = path.join(process.cwd(), 'docs', 'API_DOCUMENTATION.md');
     const packagePath = path.join(process.cwd(), 'package.json');
     let content = '';
@@ -84,32 +88,22 @@ export default async function PublicDocsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-muted/50 flex flex-col">
-            {/* Header */}
-            <header className="bg-card border-b sticky top-0 z-30 shadow-sm/50">
-                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xl font-extrabold bg-gradient-to-r from-info to-info bg-clip-text text-transparent">
-                            W-AZAP
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-info/10 text-info text-xs font-semibold tracking-wide border border-info/30">
-                            {version}
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex min-h-screen flex-col bg-background">
+            <header className="sticky top-0 z-30 border-b bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/75">
+                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+                    <Link href="/" className="flex items-center gap-2.5 rounded-md">
+                        <BrandMark className="size-8" />
+                        <span className="text-[15px] font-semibold tracking-tight text-foreground">W-AZAP</span>
+                        <span className="text-sm text-muted-foreground" data-numeric>{version}</span>
+                    </Link>
+                    <div className="flex items-center gap-1 sm:gap-2">
                         <ThemeToggle />
-                        <Link
-                            href="/swagger"
-                            className="text-sm font-medium text-muted-foreground hover:text-info transition-colors"
-                        >
+                        <Link href="/swagger" className="hidden rounded-md px-2 text-sm text-muted-foreground transition-colors hover:text-foreground sm:inline">
                             Swagger UI
                         </Link>
-                        <Link
-                            href="/dashboard"
-                            className="text-sm font-medium px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
-                        >
-                            Dashboard
-                        </Link>
+                        <Button asChild size="sm" className="ml-1">
+                            <Link href="/dashboard">{t("common.dashboard")}</Link>
+                        </Button>
                     </div>
                 </div>
             </header>

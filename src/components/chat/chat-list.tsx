@@ -201,25 +201,33 @@ function ChatRow({
                 <ChatContextMenu state={ctxMenu} onClose={() => setCtxMenu(null)} sessionId={sessionId} onSelect={onSelect} />
             )}
             <div
+                role="button"
+                tabIndex={0}
+                aria-current={isSelected ? "true" : undefined}
                 className={cn(
-                    "relative w-full flex items-center gap-3 px-3 py-2.5 transition-colors duration-150 border-b border-border/10 group overflow-hidden cursor-pointer",
-                    isSelected
-                        ? "bg-primary/8 border-l-2 border-l-primary"
-                        : "hover:bg-muted/40 border-l-2 border-l-transparent"
+                    "group relative flex w-full cursor-pointer items-center gap-3 overflow-hidden px-4 py-3 outline-none transition-colors duration-150 focus-visible:bg-accent focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+                    isSelected ? "bg-accent" : "hover:bg-muted/50"
                 )}
                 onClick={() => onSelect(chat.jid, displayName)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onSelect(chat.jid, displayName);
+                    }
+                }}
                 onContextMenu={(e) => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY, jid: chat.jid, name: displayName }); }}
             >
-                <Avatar className="h-10 w-10 flex-shrink-0">
-                    <AvatarImage src={chat.profilePic || ""} />
-                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-info/20 text-primary">
+                {isSelected && <span className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-primary" aria-hidden="true" />}
+                <Avatar className="size-11 shrink-0">
+                    <AvatarImage src={chat.profilePic || ""} alt="" />
+                    <AvatarFallback className="bg-secondary text-xs font-semibold text-secondary-foreground">
                         {displayName.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1 min-w-0 overflow-hidden">
                     <div className="flex justify-between items-baseline gap-2 overflow-hidden">
-                        <h4 className={cn("text-sm truncate flex items-center gap-1.5", isSelected ? "font-semibold text-primary" : "font-medium text-foreground")}>
+                        <h4 className="flex items-center gap-1.5 truncate text-sm font-medium text-foreground">
                             {displayName}
                             {/* Label dots — always visible */}
                             {labelDots.length > 0 && (
@@ -231,18 +239,20 @@ function ChatRow({
                             )}
                         </h4>
                         {chat.lastMessage && (
-                            <span className="text-[10px] text-muted-foreground flex-shrink-0">{getTimeLabel(chat.lastMessage.timestamp, t, locale)}</span>
+                            <time className="shrink-0 text-xs text-muted-foreground">{getTimeLabel(chat.lastMessage.timestamp, t, locale)}</time>
                         )}
                     </div>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{getMessagePreview(chat, t)}</p>
+                    <p className="mt-0.5 truncate text-[13px] text-muted-foreground">{getMessagePreview(chat, t)}</p>
                 </div>
 
                 {/* Label button on hover */}
                 <LabelAssignPopover sessionId={sessionId} jid={chat.jid}>
                     <Button variant="ghost" size="icon"
-                        className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground shrink-0"
-                        onClick={(e) => e.stopPropagation()}>
-                        <Tag className="h-3.5 w-3.5" />
+                        className="size-7 shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100"
+                        aria-label={t("chat.assignLabels")}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}>
+                        <Tag className="size-3.5" aria-hidden="true" />
                     </Button>
                 </LabelAssignPopover>
             </div>
@@ -418,14 +428,14 @@ export function ChatList({ sessionId, onSelectChat, selectedJid }: ChatListProps
     }
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-background">
+        <div className="flex h-full flex-col overflow-hidden bg-card">
             {/* Header */}
-            <div className="shrink-0 px-3 pt-3 pb-2 space-y-2 border-b border-border/10">
+            <div className="shrink-0 space-y-3 border-b px-4 pt-4 pb-3">
                 <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-base text-foreground">
+                    <h2 className="text-base font-semibold tracking-tight text-foreground">
                         {t("chat.chats")}
-                        {chats.length > 0 && <span className="ml-1.5 text-xs font-normal text-muted-foreground">({chats.length})</span>}
-                    </h3>
+                        {chats.length > 0 && <span className="ml-1.5 text-sm font-normal text-muted-foreground" data-numeric>{chats.length}</span>}
+                    </h2>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg"
                         onClick={() => setIsNewChatOpen(!isNewChatOpen)}>
                         {isNewChatOpen ? <X className="h-4 w-4" /> : <MessageSquarePlus className="h-4 w-4" />}
@@ -433,15 +443,15 @@ export function ChatList({ sessionId, onSelectChat, selectedJid }: ChatListProps
                 </div>
 
                 <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                     <Input placeholder={t("chat.searchChats")} value={searchInput}
                         onChange={(e) => handleSearchChange(e.target.value)}
-                        className="h-8 pl-8 text-sm bg-muted/50 border-0 rounded-lg focus-visible:ring-1" />
+                        className="h-9 border-transparent bg-muted pl-9 text-sm dark:bg-muted" />
                 </div>
 
                 {isNewChatOpen && (
-                    <div className="p-2.5 bg-muted/30 rounded-lg space-y-2 border border-border/40">
-                        <Label className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{t("chat.phoneNumber")}</Label>
+                    <div className="space-y-2 rounded-lg border bg-muted/40 p-3">
+                        <Label className="text-xs font-medium text-muted-foreground">{t("chat.phoneNumber")}</Label>
                         <div className="flex gap-1.5">
                             <Input placeholder="628123456789" value={newChatNumber}
                                 onChange={(e) => setNewChatNumber(e.target.value)}
@@ -468,7 +478,7 @@ export function ChatList({ sessionId, onSelectChat, selectedJid }: ChatListProps
                         endReached={handleEndReached} increaseViewportBy={200}
                         components={{ Footer: () => hasMore && !loading ? (
                             <div className="py-4 text-center">
-                                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{t("chat.scrollMore")}</span>
+                                <span className="text-xs text-muted-foreground">{t("chat.scrollMore")}</span>
                             </div>
                         ) : null }} />
                 )}

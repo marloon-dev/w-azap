@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Instrument_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { TopLoader } from "@/components/ui/top-loader";
@@ -8,9 +8,11 @@ import { getLocale } from "@/lib/i18n/server";
 import { loadDictionary } from "@/lib/i18n/dictionaries";
 import { themeInitScript } from "@/lib/theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Instrument Sans: compact, precise grotesk with a width axis (condensed display headlines on public pages)
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
+  subsets: ["latin", "latin-ext"],
+  axes: ["wdth"],
 });
 
 const geistMono = Geist_Mono({
@@ -23,8 +25,8 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://w-azap.app";
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
-    { media: "(prefers-color-scheme: dark)", color: "#14171d" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f6f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1513" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -115,7 +117,7 @@ export default async function RootLayout({
         <link rel="preconnect" href={APP_URL} crossOrigin="anonymous" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-foreground bg-background min-h-screen flex flex-col`}
+        className={`${instrumentSans.variable} ${geistMono.variable} font-sans antialiased text-foreground bg-background min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
         <Providers locale={locale} dictionary={dictionary}>

@@ -573,7 +573,7 @@ export default function SchedulerPage() {
                                             <div>
                                                 <div className="font-bold flex items-center gap-2">
                                                     {msg.jid.split('@')[0]}
-                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-500/10 text-purple-600 dark:text-purple-400">{t("scheduler.group")}</span> : null}
+                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-chart-4/10 text-chart-4">{t("scheduler.group")}</span> : null}
                                                     {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{t("scheduler.channel")}</span> : null}
                                                     <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{translateValue(t, "status", msg.status)}</span>
                                                     {msg.cronExpression && <span className="text-xs px-2 py-0.5 rounded font-normal bg-info/10 text-info">{t("scheduler.recurring")}</span>}
@@ -600,7 +600,7 @@ export default function SchedulerPage() {
                                             <div>
                                                 <div className="font-bold flex items-center gap-2">
                                                     {msg.jid.split('@')[0]}
-                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-500/10 text-purple-600 dark:text-purple-400">{t("scheduler.group")}</span> : null}
+                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-chart-4/10 text-chart-4">{t("scheduler.group")}</span> : null}
                                                     {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{t("scheduler.channel")}</span> : null}
                                                     {msg.status === 'SENT' ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-success/10 text-success flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {t("status.SENT")}</span> : <span className="text-xs px-2 py-0.5 rounded font-normal bg-destructive/10 text-destructive flex items-center gap-1"><XCircle className="w-3 h-3"/> {t("status.FAILED")}</span>}
                                                 </div>

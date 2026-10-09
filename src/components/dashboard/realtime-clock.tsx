@@ -2,33 +2,35 @@
 
 import { useEffect, useState } from "react";
 import moment from "moment-timezone";
-import { Clock } from "lucide-react";
+import { useTranslation } from "@/components/i18n-provider";
 
+export const DEFAULT_TIMEZONE = "America/Sao_Paulo";
+
+/** "America/Sao_Paulo" -> "Sao Paulo" */
+function cityOf(timezone: string) {
+    return timezone.split("/").pop()?.replace(/_/g, " ") ?? timezone;
+}
+
+/** Server time in the system timezone (Settings), which is the clock schedules and logs follow. */
 export function RealtimeClock() {
+    const { t } = useTranslation();
     const [time, setTime] = useState("");
-    const [timezone, setTimezone] = useState("Asia/Jakarta");
+    const [timezone, setTimezone] = useState(DEFAULT_TIMEZONE);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-        // Fetch global timezone
-        fetch('/api/settings/system')
+        fetch("/api/settings/system")
             .then(r => r.json())
             .then(data => {
-                if (data && data.data && data.data.timezone) {
-                    setTimezone(data.data.timezone);
-                }
+                if (data?.data?.timezone) setTimezone(data.data.timezone);
             })
             .catch(() => { });
     }, []);
 
     useEffect(() => {
         if (!mounted) return;
-
-        const updateTime = () => {
-            setTime(moment().tz(timezone).format("HH:mm:ss"));
-        };
-
+        const updateTime = () => setTime(moment().tz(timezone).format("HH:mm"));
         updateTime();
         const interval = setInterval(updateTime, 1000);
         return () => clearInterval(interval);
@@ -37,10 +39,12 @@ export function RealtimeClock() {
     if (!mounted) return null;
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md border border-border text-sm font-medium text-foreground/90">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span>{time}</span>
-            <span className="text-xs text-muted-foreground border-l border-border pl-2 ml-1">{timezone}</span>
-        </div>
+        <span
+            className="inline-flex items-baseline gap-1.5 text-sm text-muted-foreground"
+            title={t("common.timeIn", { timezone })}
+        >
+            <time className="font-medium text-foreground" data-numeric>{time}</time>
+            <span className="text-xs">{cityOf(timezone)}</span>
+        </span>
     );
 }

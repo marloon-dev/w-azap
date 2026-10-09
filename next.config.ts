@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Dev only: the app is opened via 127.0.0.1 (separate cookies from other local apps on localhost)
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  // Dev only: keep the Next.js badge away from the sidebar account menu (bottom-left)
+  devIndicators: { position: "bottom-right" },
   turbopack: {
     root: path.resolve(__dirname),
   },

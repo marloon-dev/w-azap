@@ -43,9 +43,9 @@ export function ThemeToggle({ className }: { className?: string }) {
                     size="icon"
                     aria-label={triggerName}
                     title={triggerName}
-                    className={cn("size-10 rounded-full text-muted-foreground hover:text-foreground", className)}
+                    className={cn("size-9 text-muted-foreground hover:text-foreground", className)}
                 >
-                    <TriggerIcon className="size-[1.15rem]" aria-hidden="true" />
+                    <TriggerIcon className="size-[18px]" aria-hidden="true" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-60 p-1.5">

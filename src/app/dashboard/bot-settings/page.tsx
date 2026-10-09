@@ -273,7 +273,7 @@ export default function BotSettingsPage() {
                                 <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg">
                                     <Label htmlFor="enable-ping" className="flex flex-col space-y-1 cursor-pointer">
                                         <span className="font-medium">{t("botSettings.pingCommand")}</span>
-                                        <span className="font-normal text-[10px] text-muted-foreground">{t("botSettings.respondTo", { command: `${botConfig.prefix}ping` })}</span>
+                                        <span className="font-normal text-xs text-muted-foreground">{t("botSettings.respondTo", { command: `${botConfig.prefix}ping` })}</span>
                                     </Label>
                                     <Switch id="enable-ping" checked={botConfig.enablePing}
                                         onCheckedChange={c => setBotConfig(prev => ({ ...prev, enablePing: c }))} />
@@ -281,7 +281,7 @@ export default function BotSettingsPage() {
                                 <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg">
                                     <Label htmlFor="enable-uptime" className="flex flex-col space-y-1 cursor-pointer">
                                         <span className="font-medium">{t("botSettings.uptimeCommand")}</span>
-                                        <span className="font-normal text-[10px] text-muted-foreground">{t("botSettings.respondTo", { command: `${botConfig.prefix}uptime` })}</span>
+                                        <span className="font-normal text-xs text-muted-foreground">{t("botSettings.respondTo", { command: `${botConfig.prefix}uptime` })}</span>
                                     </Label>
                                     <Switch id="enable-uptime" checked={botConfig.enableUptime}
                                         onCheckedChange={c => setBotConfig(prev => ({ ...prev, enableUptime: c }))} />
@@ -311,7 +311,7 @@ export default function BotSettingsPage() {
                                 <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg">
                                     <Label htmlFor="always-online" className="flex flex-col space-y-1 cursor-pointer">
                                         <span className="font-medium">{t("botSettings.alwaysOnline")}</span>
-                                        <span className="font-normal text-[10px] text-muted-foreground">{t("botSettings.alwaysOnlineDesc")}</span>
+                                        <span className="font-normal text-xs text-muted-foreground">{t("botSettings.alwaysOnlineDesc")}</span>
                                     </Label>
                                     <Switch id="always-online" checked={botConfig.alwaysOnline}
                                         onCheckedChange={c => setBotConfig(prev => ({ ...prev, alwaysOnline: c }))} />
@@ -319,7 +319,7 @@ export default function BotSettingsPage() {
                                 <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg">
                                     <Label htmlFor="auto-read" className="flex flex-col space-y-1 cursor-pointer">
                                         <span className="font-medium">{t("botSettings.autoRead")}</span>
-                                        <span className="font-normal text-[10px] text-muted-foreground">{t("botSettings.autoReadDesc")}</span>
+                                        <span className="font-normal text-xs text-muted-foreground">{t("botSettings.autoReadDesc")}</span>
                                     </Label>
                                     <Switch id="auto-read" checked={botConfig.autoRead}
                                         onCheckedChange={c => setBotConfig(prev => ({ ...prev, autoRead: c }))} />
@@ -337,7 +337,7 @@ export default function BotSettingsPage() {
                                     value={botConfig.welcomeMessage}
                                     onChange={(e) => setBotConfig(prev => ({ ...prev, welcomeMessage: e.target.value }))}
                                 />
-                                <p className="text-[10px] text-muted-foreground">{t("botSettings.welcomeHint")}</p>
+                                <p className="text-xs text-muted-foreground">{t("botSettings.welcomeHint")}</p>
                             </div>
 
                             <div className="pt-2">

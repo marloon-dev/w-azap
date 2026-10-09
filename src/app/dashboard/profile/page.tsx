@@ -184,7 +184,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="mx-auto w-full max-w-5xl space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div>
                 <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("profile.title")}</h1>
                 <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("profile.subtitle")}</p>

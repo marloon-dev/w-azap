@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-instrument-sans);
   --font-mono: var(--font-geist-mono);
 
   --color-background: var(--background);
@@ -37,6 +37,10 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  /* Live status only (dots, pulses); never text */
+  --color-signal: var(--signal);
+  /* Outgoing chat bubble: a quiet tint of the brand green, read with the normal text color */
+  --color-bubble-out: var(--bubble-out);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -63,112 +67,117 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Design tokens
-   Text colors are chosen for WCAG AA (≥ 4.5:1) on their usual surfaces:
-   foreground/muted-foreground on background/card/muted, *-foreground on solid fills.
+   Design tokens: "central de linhas"
+   Each WhatsApp session is a line with a signal. Neutrals carry a faint green-grey
+   tint; the deep "line" green is the only brand color, and the bright "signal"
+   green is reserved for live status (dots, pulses), never for text.
+   Text colors meet WCAG AA (>= 4.5:1) on their usual surfaces; field outlines >= 3:1.
 --------------------------------------------------------------------------- */
 :root {
   color-scheme: light;
   --radius: 0.625rem;
 
-  --background: oklch(0.985 0.003 247);
-  --foreground: oklch(0.21 0.02 256);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.02 256);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 256);
+  --background: #f4f6f5;
+  --foreground: #16201b;
+  --card: #ffffff;
+  --card-foreground: #16201b;
+  --popover: #ffffff;
+  --popover-foreground: #16201b;
 
-  /* Brand: WhatsApp-like green, dark enough for AA as text on its own 10–15% tint and under white text */
-  --primary: oklch(0.49 0.13 157);
-  --primary-foreground: oklch(0.99 0.01 157);
+  --primary: #0b6e4f;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.955 0.006 247);
-  --secondary-foreground: oklch(0.28 0.02 256);
-  --muted: oklch(0.965 0.005 247);
-  --muted-foreground: oklch(0.48 0.02 256);
-  --accent: oklch(0.95 0.008 247);
-  --accent-foreground: oklch(0.21 0.02 256);
+  --secondary: #e8eeeb;
+  --secondary-foreground: #1d2924;
+  --muted: #eef2f0;
+  --muted-foreground: #56635d;
+  --accent: #e7efeb;
+  --accent-foreground: #16201b;
 
-  --border: oklch(0.915 0.008 247);
-  --input: oklch(0.66 0.015 256); /* field outlines: 3:1 against card (WCAG 1.4.11) */
-  --ring: oklch(0.49 0.13 157);
+  --border: #dce3df;
+  --input: #85918b;
+  --ring: #0b6e4f;
 
-  --destructive: oklch(0.52 0.2 27);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.49 0.13 157);
-  --success-foreground: oklch(0.99 0.01 157);
-  --warning: oklch(0.5 0.13 65);
-  --warning-foreground: oklch(0.99 0.01 80);
-  --info: oklch(0.5 0.15 255);
-  --info-foreground: oklch(0.99 0.01 255);
+  --destructive: #c0352b;
+  --destructive-foreground: #ffffff;
+  --success: #0e7a4e;
+  --success-foreground: #ffffff;
+  --warning: #a15c00;
+  --warning-foreground: #ffffff;
+  --info: #2f5fb3;
+  --info-foreground: #ffffff;
+  --signal: #1dbf73;
+  --bubble-out: #dcefe5;
 
-  --chart-1: oklch(0.6 0.15 157);
-  --chart-2: oklch(0.6 0.14 255);
-  --chart-3: oklch(0.65 0.15 65);
-  --chart-4: oklch(0.58 0.17 300);
-  --chart-5: oklch(0.6 0.18 27);
+  --chart-1: #0b6e4f;
+  --chart-2: #2f5fb3;
+  --chart-3: #c27a0e;
+  --chart-4: #7a4fb5;
+  --chart-5: #c0352b;
 
-  --sidebar: oklch(0.99 0.002 247);
-  --sidebar-foreground: oklch(0.3 0.02 256);
-  --sidebar-primary: oklch(0.49 0.13 157);
-  --sidebar-primary-foreground: oklch(0.99 0.01 157);
-  --sidebar-accent: oklch(0.955 0.006 247);
-  --sidebar-accent-foreground: oklch(0.21 0.02 256);
-  --sidebar-border: oklch(0.925 0.007 247);
-  --sidebar-ring: oklch(0.49 0.13 157);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2a3530;
+  --sidebar-primary: #0b6e4f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef2f0;
+  --sidebar-accent-foreground: #16201b;
+  --sidebar-border: #dce3df;
+  --sidebar-ring: #0b6e4f;
 
-  --shadow-color: 220 25% 20%;
+  --shadow-color: 150 20% 12%;
 }
 
 .dark {
   color-scheme: dark;
 
-  --background: oklch(0.165 0.012 256);
-  --foreground: oklch(0.95 0.006 247);
-  --card: oklch(0.2 0.013 256);
-  --card-foreground: oklch(0.95 0.006 247);
-  --popover: oklch(0.22 0.014 256);
-  --popover-foreground: oklch(0.95 0.006 247);
+  --background: #0f1513;
+  --foreground: #e4ebe7;
+  --card: #151d1a;
+  --card-foreground: #e4ebe7;
+  --popover: #1a2420;
+  --popover-foreground: #e4ebe7;
 
-  --primary: oklch(0.74 0.15 157);
-  --primary-foreground: oklch(0.2 0.04 160);
+  --primary: #3fd08f;
+  --primary-foreground: #06261a;
 
-  --secondary: oklch(0.26 0.014 256);
-  --secondary-foreground: oklch(0.93 0.006 247);
-  --muted: oklch(0.24 0.013 256);
-  --muted-foreground: oklch(0.72 0.015 256);
-  --accent: oklch(0.27 0.015 256);
-  --accent-foreground: oklch(0.95 0.006 247);
+  --secondary: #1e2925;
+  --secondary-foreground: #dfe7e3;
+  --muted: #1c2622;
+  --muted-foreground: #9ba8a1;
+  --accent: #1f2b26;
+  --accent-foreground: #e9efec;
 
-  --border: oklch(0.29 0.014 256);
-  --input: oklch(0.52 0.015 256);
-  --ring: oklch(0.74 0.15 157);
+  --border: #26322d;
+  --input: #5f6e67;
+  --ring: #3fd08f;
 
-  --destructive: oklch(0.66 0.19 25);
-  --destructive-foreground: oklch(0.18 0.03 25);
-  --success: oklch(0.74 0.15 157);
-  --success-foreground: oklch(0.2 0.04 160);
-  --warning: oklch(0.8 0.14 80);
-  --warning-foreground: oklch(0.22 0.04 70);
-  --info: oklch(0.74 0.12 250);
-  --info-foreground: oklch(0.2 0.04 255);
+  --destructive: #f07167;
+  --destructive-foreground: #2a0b08;
+  --success: #3be38f;
+  --success-foreground: #06261a;
+  --warning: #e9a23b;
+  --warning-foreground: #2a1800;
+  --info: #7aa7f0;
+  --info-foreground: #0b1a33;
+  --signal: #3be38f;
+  --bubble-out: #183b2d;
 
-  --chart-1: oklch(0.72 0.15 157);
-  --chart-2: oklch(0.72 0.13 250);
-  --chart-3: oklch(0.8 0.14 80);
-  --chart-4: oklch(0.7 0.15 300);
-  --chart-5: oklch(0.7 0.17 25);
+  --chart-1: #3fd08f;
+  --chart-2: #7aa7f0;
+  --chart-3: #e9a23b;
+  --chart-4: #b892f0;
+  --chart-5: #f07167;
 
-  --sidebar: oklch(0.18 0.012 256);
-  --sidebar-foreground: oklch(0.88 0.008 247);
-  --sidebar-primary: oklch(0.74 0.15 157);
-  --sidebar-primary-foreground: oklch(0.2 0.04 160);
-  --sidebar-accent: oklch(0.25 0.014 256);
-  --sidebar-accent-foreground: oklch(0.96 0.006 247);
-  --sidebar-border: oklch(0.27 0.014 256);
-  --sidebar-ring: oklch(0.74 0.15 157);
+  --sidebar: #121a17;
+  --sidebar-foreground: #ccd6d1;
+  --sidebar-primary: #3fd08f;
+  --sidebar-primary-foreground: #06261a;
+  --sidebar-accent: #1c2622;
+  --sidebar-accent-foreground: #eef3f0;
+  --sidebar-border: #232e29;
+  --sidebar-ring: #3fd08f;
 
-  --shadow-color: 220 40% 2%;
+  --shadow-color: 150 30% 2%;
 }
 
 @layer base {
@@ -181,9 +190,18 @@
   body {
     @apply bg-background text-foreground;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "calt";
   }
   h1, h2, h3 {
     @apply tracking-tight;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* Figures line up in tables, counters, clocks and phone numbers */
+  table, time, [data-numeric] {
+    font-variant-numeric: tabular-nums;
   }
   /* Visible keyboard focus for elements that do not style their own */
   :where(a, button, [role="button"], [role="tab"], [role="menuitem"], [role="option"], summary, [tabindex]):focus-visible {
@@ -192,6 +210,12 @@
   ::selection {
     @apply bg-primary/20;
   }
+}
+
+/* Inline code in long-form text: the box marks it, so drop the typography plugin's literal backticks */
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none;
 }
 
 /* Smooth color change while the theme switches (added for ~250ms by the theme provider) */
@@ -221,21 +245,18 @@ html.theme-transition *::after {
 }
 
 @layer utilities {
-  /* Translucent floating surfaces (popovers, sticky bars) */
-  .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-border shadow-lg;
+  /* Live line indicator: a soft ring that breathes around a connected status dot */
+  .signal-pulse {
+    animation: signal-pulse 2.4s ease-out infinite;
+  }
+  @keyframes signal-pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--signal) 55%, transparent); }
+    70%, 100% { box-shadow: 0 0 0 6px color-mix(in oklab, var(--signal) 0%, transparent); }
   }
 
-  .glass-panel {
-    @apply bg-popover/95 backdrop-blur-md border border-border;
-  }
-
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-info;
-  }
-
-  .hover-lift {
-    @apply transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md;
+  /* Condensed display type for public-page headlines (Instrument Sans width axis) */
+  .font-condensed {
+    font-stretch: 78%;
   }
 
   .styled-scrollbar {
@@ -252,23 +273,5 @@ html.theme-transition *::after {
   }
   .styled-scrollbar::-webkit-scrollbar-track {
     background: transparent;
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 0.8; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.04); }
   }
 }

@@ -145,7 +145,7 @@ export default function NotificationAdminPage() {
                                 <div>
                                     <h4 className="font-semibold text-sm">{title || t("notificationAdmin.previewTitle")}</h4>
                                     <p className="text-xs text-muted-foreground mt-1">{message || t("notificationAdmin.previewMessage")}</p>
-                                    <p className="text-[10px] text-muted-foreground mt-2">{t("notificationAdmin.justNow")}</p>
+                                    <p className="text-xs text-muted-foreground mt-2">{t("notificationAdmin.justNow")}</p>
                                 </div>
                             </div>
                         </CardContent>

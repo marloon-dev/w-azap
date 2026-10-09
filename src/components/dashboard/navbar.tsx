@@ -6,7 +6,7 @@ import { SessionSelector } from "@/components/dashboard/session-selector";
 import { Button } from "@/components/ui/button";
 import { RealtimeClock } from "@/components/dashboard/realtime-clock";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Bell, Inbox, Trash2 } from "lucide-react";
+import { Bell, Inbox, PanelLeftClose, PanelLeftOpen, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useSession } from "next-auth/react";
@@ -17,6 +17,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/i18n-provider";
 import { dateFnsLocale } from "@/lib/i18n/date-fns";
+import { useSidebar } from "@/components/dashboard/sidebar-context";
 
 interface NavbarProps {
     appName?: string;
@@ -36,6 +37,7 @@ export function Navbar({ appName }: NavbarProps) {
     const router = useRouter();
     const { data: session } = useSession();
     const { t, locale } = useTranslation();
+    const { isCollapsed, toggleCollapse } = useSidebar();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
@@ -148,16 +150,25 @@ export function Navbar({ appName }: NavbarProps) {
         : t("notifications.title");
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b bg-background/85 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:px-6">
-            <div className="flex items-center">
+        <header className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b bg-background/90 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-background/75 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-2">
                 <MobileNav appName={appName} />
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleCollapse}
+                    aria-label={isCollapsed ? t("common.expand") : t("common.collapse")}
+                    title={isCollapsed ? t("common.expand") : t("common.collapse")}
+                    className="hidden size-9 text-muted-foreground hover:text-foreground md:inline-flex"
+                >
+                    {isCollapsed ? <PanelLeftOpen className="size-[18px]" aria-hidden="true" /> : <PanelLeftClose className="size-[18px]" aria-hidden="true" />}
+                </Button>
+                {/* The sidebar shows the active session; when it is hidden or folded, the bar does */}
+                <SessionSelector className={cn(!isCollapsed && "md:hidden")} />
             </div>
 
-            <div className="flex min-w-0 items-center gap-1 sm:gap-2">
-                <span className="hidden lg:inline"><RealtimeClock /></span>
-                <SessionSelector />
-                <div className="mx-1 hidden h-6 w-px bg-border sm:block" aria-hidden="true" />
-
+            <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
+                <span className="mr-2 hidden lg:inline-flex"><RealtimeClock /></span>
                 <LanguageSwitcher />
                 <ThemeToggle />
 
@@ -168,11 +179,11 @@ export function Navbar({ appName }: NavbarProps) {
                             size="icon"
                             aria-label={bellLabel}
                             title={bellLabel}
-                            className="relative size-10 rounded-full text-muted-foreground hover:text-foreground"
+                            className="relative size-9 text-muted-foreground hover:text-foreground"
                         >
-                            <Bell className={cn("size-5", unreadCount > 0 && "text-primary")} aria-hidden="true" />
+                            <Bell className={cn("size-[18px]", unreadCount > 0 && "text-foreground")} aria-hidden="true" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-1.5 right-1.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold leading-4 text-destructive-foreground ring-2 ring-background" aria-hidden="true">
+                                <span className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold leading-4 text-destructive-foreground ring-2 ring-background" aria-hidden="true" data-numeric>
                                     {unreadCount > 9 ? "9+" : unreadCount}
                                 </span>
                             )}
