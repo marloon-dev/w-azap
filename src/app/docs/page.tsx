@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { DocsClient } from './docs-client';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export const metadata = {
     title: 'API Documentation - W-AZAP',
@@ -95,7 +96,8 @@ export default async function PublicDocsPage() {
                             {version}
                         </span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <ThemeToggle />
                         <Link
                             href="/swagger"
                             className="text-sm font-medium text-muted-foreground hover:text-info transition-colors"

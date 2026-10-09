@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import fs from "fs";
 import path from "path";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getTranslations } from "@/lib/i18n/server";
 
 export const metadata = {
@@ -56,6 +57,7 @@ export default async function Home() {
 
           <div className="flex items-center gap-1 sm:gap-3">
             <LanguageSwitcher />
+            <ThemeToggle />
             <Link href="/auth/login">
               <Button size="sm" className="rounded-full px-6 bg-foreground text-background hover:bg-foreground/90 shadow-xl shadow-foreground/10 hidden sm:flex">
                 {t("common.signIn")}

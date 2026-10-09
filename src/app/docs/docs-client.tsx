@@ -240,25 +240,25 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                     </div>
                 </div>
 
-                <article className="prose prose-slate prose-blue max-w-none prose-headings:scroll-mt-24 break-words"> {/* Added break-words */}
+                <article className="prose prose-slate max-w-none break-words dark:prose-invert prose-headings:scroll-mt-24 prose-headings:text-foreground prose-p:text-foreground/90 prose-li:text-foreground/90 prose-strong:text-foreground prose-a:text-primary">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
                             h2: ({ node, ...props }) => {
                                 const id = props.children?.toString().toLowerCase().replace(/[^\w]+/g, '-') || '';
-                                return <h2 id={id} {...props} className="text-2xl font-bold mt-12 mb-6 border-b pb-2 scroll-mt-24" />
+                                return <h2 id={id} {...props} className="text-2xl font-semibold text-foreground mt-12 mb-6 border-b pb-2 scroll-mt-24" />
                             },
                             h3: ({ node, ...props }) => {
                                 const id = props.children?.toString().toLowerCase().replace(/[^\w]+/g, '-') || '';
-                                return <h3 id={id} {...props} className="text-xl font-semibold mt-8 mb-4 scroll-mt-24" />
+                                return <h3 id={id} {...props} className="text-xl font-semibold text-foreground mt-8 mb-4 scroll-mt-24" />
                             },
                             code: ({ node, inline, className, children, ...props }: any) => {
                                 const match = /language-(\w+)/.exec(className || '');
                                 const codeStr = String(children).replace(/\n$/, '');
                                 return !inline && match ? (
-                                    <div className="rounded-xl overflow-hidden my-6 border border-border shadow-sm ring-1 ring-input/5 bg-gray-950">
-                                        <div className="bg-muted/45 px-4 py-2.5 flex items-center justify-between border-b border-border">
-                                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{match[1]}</span>
+                                    <div className="my-6 overflow-hidden rounded-xl border border-border bg-gray-950 shadow-sm">
+                                        <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-2.5">
+                                            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">{match[1]}</span>
                                             <button onClick={() => {
                                                 navigator.clipboard.writeText(codeStr).then(() => {
                                                     const btn = document.activeElement;
@@ -268,15 +268,15 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                                         setTimeout(() => btn.innerHTML = orig, 2000);
                                                     }
                                                 }).catch(() => {});
-                                            }} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
+                                            }} className="flex cursor-pointer items-center gap-1.5 rounded text-xs text-gray-300 transition-colors hover:text-white">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                                                     <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
                                                     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
                                                 </svg>
                                                 <span className="font-medium">Copy</span>
                                             </button>
                                         </div>
-                                        <pre className="text-gray-100 text-sm leading-loose overflow-x-auto p-5 m-0 selection:bg-gray-700">
+                                        <pre tabIndex={0} aria-label={match[1]} className="m-0 overflow-x-auto p-5 text-sm leading-loose text-gray-100 outline-none selection:bg-gray-700 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
                                             <code className="font-mono">{codeStr}</code>
                                         </pre>
                                     </div>

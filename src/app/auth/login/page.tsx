@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Bot, ArrowRight, Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { useTranslation } from '@/components/i18n-provider';
 import type { Translator } from '@/lib/i18n/translate';
 
@@ -70,8 +71,9 @@ function LoginForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen relative overflow-hidden bg-background">
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
         <LanguageSwitcher />
+        <ThemeToggle />
       </div>
       {/* Background Orbs */}
       <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-primary/20 rounded-full blur-[120px] pointer-events-none" />

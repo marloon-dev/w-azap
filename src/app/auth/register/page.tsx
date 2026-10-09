@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Bot, ArrowRight, Loader2 } from "lucide-react";
 import Link from 'next/link';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { useTranslation } from '@/components/i18n-provider';
 import type { Translator } from '@/lib/i18n/translate';
 
@@ -100,8 +101,9 @@ export default function RegisterPage() {
 
     return (
         <div className="flex items-center justify-center min-h-screen relative overflow-hidden bg-background py-12">
-            <div className="absolute top-4 right-4 z-20">
+            <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
                 <LanguageSwitcher />
+                <ThemeToggle />
             </div>
             {/* Background Orbs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
