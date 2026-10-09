@@ -25,15 +25,27 @@ DEPOIS DE INSTALAR
 - App "W-AZAP" na pasta Aplicativos da sua conta (~/Applications):
   inicia o serviço, se preciso, e abre o painel.
 - Comando no Terminal: w-azap status | abrir | parar | iniciar | log |
-  atualizar | desinstalar
+  atualizar | auto-atualizacao | desinstalar
   (se o comando não for encontrado, use ~/.w-azap/bin/w-azap)
 - O W-AZAP inicia sozinho quando você entra no Mac.
 
+ATUALIZAÇÃO AUTOMÁTICA
+----------------------
+A cada hora (e ao entrar no Mac) o W-AZAP confere se saiu uma versão nova
+e se atualiza sozinho. A versão atual continua funcionando enquanto a nova
+é preparada; se a nova não subir, ele volta para a anterior. Você recebe
+uma notificação do macOS a cada atualização.
+- Ver o histórico:  w-azap log atualizacao
+- Desligar/ligar:   w-azap auto-atualizacao desligar | ligar
+- Atualizar agora:  w-azap atualizar
+
 ONDE FICAM AS COISAS
 --------------------
-~/.w-azap/app/.env      configuração e chaves (FAÇA BACKUP)
+~/.w-azap/dados/.env    configuração e chaves (FAÇA BACKUP)
+~/.w-azap/dados         mídias e fotos de perfil (data/, uploads/)
+~/.w-azap/versoes       versão em uso e a anterior (app/ aponta para a atual)
 ~/.w-azap/mysql/data    banco de dados (MySQL na porta 3307, só local)
-~/.w-azap/logs          logs da instalação, do servidor e do MySQL
+~/.w-azap/logs          logs da instalação, do servidor, das atualizações e do MySQL
 
 Rodar o instalador de novo atualiza o W-AZAP e mantém a configuração,
 o banco, as sessões do WhatsApp e as mídias.
