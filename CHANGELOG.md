@@ -8,6 +8,11 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Corrigido
+- **Tema nas páginas públicas**: a página inicial, o login, o cadastro e a documentação (`/docs`) agora têm o seletor de tema, que antes só aparecia no painel.
+- **Documentação no modo escuro**: títulos, parágrafos, listas e links da `/docs` usam as cores do tema e ficam legíveis no escuro. O cabeçalho dos blocos de código ganhou contraste, e os blocos com rolagem podem ser focados pelo teclado.
+- **Contraste no tema claro**: os tons de verde, vermelho, amarelo e azul ficaram um pouco mais escuros, e o texto colorido sobre o próprio fundo claro (selos e avisos) passa no WCAG AA.
+
 ## [v2.1.0] - 2026-10-09
 
 ### Adicionado
