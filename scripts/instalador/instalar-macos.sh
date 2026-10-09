@@ -607,9 +607,26 @@ case "\${1:-}" in
         for _ in \$(seq 1 60); do responde && break; sleep 1; done
         open "\$(url)" ;;
     reconstruir|rebuild)
-        # Necessário depois de mudar variáveis NEXT_PUBLIC_* ou a porta no .env
+        # Necessário depois de mudar variáveis NEXT_PUBLIC_* ou a porta no .env. O build
+        # é feito numa cópia da versão em uso, que continua no ar até a troca
         export PATH="\$W_HOME/runtime/node/bin:/usr/bin:/bin:/usr/sbin:/sbin" NEXT_TELEMETRY_DISABLED=1
-        (cd "\$APP" && npm run build) && "\$0" reiniciar ;;
+        atual="\$(readlink "\$APP")"
+        nova="\$W_HOME/versoes/\$(cat "\$W_HOME/versao")-\$(date +%Y%m%d%H%M%S)"
+        { cp -cR "\$atual" "\$nova" 2>/dev/null || cp -R "\$atual" "\$nova"; } || exit 1
+        # O Turbopack recusa os links para dados/ durante o build
+        rm -f "\$nova/data" "\$nova/uploads"
+        if ! (cd "\$nova" && npm run build); then
+            rm -rf "\$nova"
+            echo "O build falhou; a versão em uso não mudou."
+            exit 1
+        fi
+        ln -s "\$DADOS/data" "\$nova/data"
+        ln -s "\$DADOS/uploads" "\$nova/uploads"
+        ln -sfn "\$nova" "\$APP"
+        "\$0" reiniciar
+        for pasta in "\$W_HOME"/versoes/*; do
+            [ "\$pasta" = "\$nova" ] || [ "\$pasta" = "\$atual" ] || rm -rf "\$pasta"
+        done ;;
     atualizar|update)
         curl -fsSL "\$INSTALADOR_URL" | bash ;;
     auto-atualizacao|auto-update)
