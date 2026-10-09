@@ -6,6 +6,7 @@ import { TopLoader } from "@/components/ui/top-loader";
 import { prisma } from "@/lib/prisma";
 import { getLocale } from "@/lib/i18n/server";
 import { loadDictionary } from "@/lib/i18n/dictionaries";
+import { themeInitScript } from "@/lib/theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,8 +23,8 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://w-azap.app";
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
+    { media: "(prefers-color-scheme: dark)", color: "#14171d" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -105,6 +106,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="scroll-smooth">
       <head>
+        {/* Applies the saved light/dark/system theme before first paint (no flash of the wrong theme) */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/* Conditional robots meta (noindex for staging/dev) */}
         {!allowIndexing && <meta name="robots" content="noindex, nofollow" />}
         {/* DNS prefetch for performance */}
@@ -112,11 +115,9 @@ export default async function RootLayout({
         <link rel="preconnect" href={APP_URL} crossOrigin="anonymous" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-foreground bg-background selection:bg-primary/30 selection:text-primary-foreground min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased text-foreground bg-background min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
-        {/* Global ambient background glow for premium feel */}
-        <div className="fixed inset-0 -z-50 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-background to-background dark:from-primary/10 dark:via-background dark:to-background pointer-events-none" suppressHydrationWarning={true} />
         <Providers locale={locale} dictionary={dictionary}>
           <TopLoader />
           {children}
