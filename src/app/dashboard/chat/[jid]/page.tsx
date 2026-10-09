@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { canAccessSession } from "@/lib/api-auth";
 import { SessionGuard } from "@/components/dashboard/session-guard";
 import { getTranslations } from "@/lib/i18n/server";
+import { jidFromUrlSegment } from "@/lib/chat-jid";
 
 export default async function ChatWithJidPage({
     params,
@@ -16,9 +17,7 @@ export default async function ChatWithJidPage({
 
     if (!session?.user?.id) return <div>{(await getTranslations()).t("guard.unauthorized")}</div>;
 
-    let clean = rawJid.replace(/\D/g, '');
-    if (clean.startsWith('0')) clean = '62' + clean.substring(1);
-    const resolvedJid = `${clean}@s.whatsapp.net`;
+    const resolvedJid = jidFromUrlSegment(rawJid);
 
     const cookieStore = await cookies();
     const sessionId = cookieStore.get("sessionId")?.value;
