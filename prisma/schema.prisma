@@ -73,6 +73,7 @@ model Session {
   scheduledMessages ScheduledMessage[]
   webhooks    Webhook[]
   botConfig   BotConfig?
+  emailForward EmailForward?
   sessionAccesses SessionAccess[]
 }
 
@@ -289,6 +290,34 @@ model BotConfig {
   updatedAt     DateTime @updatedAt
 
   session       Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+// Real-time forwarding of private conversations to e-mail (one config per session)
+model EmailForward {
+  id              String    @id @default(cuid())
+  sessionId       String    @unique
+  enabled         Boolean   @default(false)
+  recipients      String    @db.Text // Comma-separated addresses
+  includeOutgoing Boolean   @default(false) // Also forward messages sent by this number
+  attachMedia     Boolean   @default(true)
+  contextMessages Int       @default(5) // Previous messages of the chat included in each e-mail
+
+  smtpHost        String
+  smtpPort        Int       @default(587)
+  smtpSecure      Boolean   @default(false) // true = implicit TLS (465); false = STARTTLS
+  smtpUser        String?
+  smtpPass        Json?     // EncryptedBlob (AES-256-GCM), never returned by the API
+  fromAddress     String?
+
+  sentCount       Int       @default(0)
+  lastSentAt      DateTime?
+  lastError       String?   @db.Text
+  lastErrorAt     DateTime?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  session         Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
 model SystemConfig {

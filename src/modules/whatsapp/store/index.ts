@@ -4,6 +4,7 @@ import { normalizeMessageContent } from "@whiskeysockets/baileys";
 import { onMessageReceived, onMessageSent, dispatchWebhook, downloadAndSaveMedia } from "@/lib/webhook";
 import { handleBotCommand, setSessionStartTime } from "../bot/command-handler";
 import { resolveToPhoneJid, isLidJid, normalizeJid } from "@/lib/jid-utils";
+import { forwardMessageByEmail } from "@/lib/email-forward";
 
 import { Server } from "socket.io";
 import { logger } from "@/lib/logger";
@@ -72,6 +73,12 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
                 if (type === 'notify' && savedMessage) {
                     // Run in background, don't await strictly to not block saving
                     handleBotCommand(sock, sessionId, msg).catch(e => logger.error("Bot", "Bot Handler Error", e));
+                }
+
+                // Forward private chats by e-mail: new incoming messages arrive as 'notify'; messages
+                // sent by this number may also arrive as 'append'. History sync is never forwarded.
+                if (savedMessage && (type === 'notify' || (type === 'append' && savedMessage.fromMe))) {
+                    forwardMessageByEmail(savedMessage);
                 }
             } catch (error) {
                 logger.error("Store", "Error saving message", error);
