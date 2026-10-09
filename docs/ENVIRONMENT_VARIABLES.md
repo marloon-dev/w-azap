@@ -95,7 +95,7 @@ O Swagger UI e a especificação exigem **login normal no painel**. As antigas `
 | `ENABLE_RATE_LIMITING` | booleano | `true` | Limita requisições à API contra abuso e força bruta. |
 | `RATE_LIMIT_PER_MINUTE` | número | `60` | Máximo de requisições por minuto por chave de API ou IP. Sessões logadas no navegador recebem 10× esse valor, porque o painel faz consultas periódicas. Respostas acima do limite recebem `429` com `Retry-After`. |
 | `TRUST_PROXY` | booleano | `false` | `true` faz o sistema usar o IP do cabeçalho `X-Forwarded-For` no rate limit. Ative **somente** atrás de um proxy reverso que defina esse cabeçalho; caso contrário, qualquer cliente pode forjar o próprio IP. |
-| `ALLOW_PRIVATE_WEBHOOK_URLS` | booleano | `false` | Webhooks e URLs de mídia para endereços internos (`localhost`, `192.168.x.x`, `10.x.x.x`, metadados de nuvem…) são bloqueados contra SSRF. Use `true` se você envia webhooks de propósito para um serviço da sua rede (ex.: n8n local). |
+| `ALLOW_PRIVATE_WEBHOOK_URLS` | booleano | `false` | Webhooks e URLs de mídia para endereços internos (`localhost`, `192.168.x.x`, `10.x.x.x`, metadados de nuvem…) são bloqueados contra SSRF. Use `true` se você envia webhooks de propósito para um serviço da sua rede (ex.: n8n local). Vale também para o servidor SMTP do **Encaminhar por e-mail** (ex.: um relay na rede local). |
 | `SOCKET_ALLOWED_ORIGINS` | string | — | Origens extras autorizadas a abrir o socket de tempo real, separadas por vírgula (ex.: `https://painel.exemplo.com,https://app.exemplo.com`). `BASE_URL`, `NEXT_PUBLIC_APP_URL`, `NEXTAUTH_URL`, `http://localhost:PORT` e `http://127.0.0.1:PORT` já são permitidas. |
 
 Além disso, há limites fixos, sem variável:

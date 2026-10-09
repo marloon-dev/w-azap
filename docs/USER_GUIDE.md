@@ -116,6 +116,26 @@ Em **Webhooks e API**:
 
 ---
 
+## 📧 Encaminhar por e-mail
+
+Em **Automação → Encaminhar por e-mail**, o W-AZAP envia para o seu e-mail, em tempo real, cada nova mensagem das **conversas privadas** da sessão selecionada (grupos não entram). Cada e-mail traz:
+- a mensagem nova (com a mídia anexada, até 10 MB);
+- todos os dados do contato: nome, telefone, nome no WhatsApp, nome comercial, JID/LID, etiquetas, total de mensagens, data da primeira mensagem e demais dados que o WhatsApp informar;
+- as últimas mensagens da conversa (de 0 a 20, você escolhe);
+- um botão para abrir a conversa no painel.
+
+Como configurar:
+1. Informe até 5 e-mails de destino.
+2. Escolha o provedor (Gmail, Outlook, Yahoo, iCloud ou outro) e preencha usuário e senha do SMTP. **No Gmail, use uma senha de app** (myaccount.google.com/apppasswords); a senha normal não funciona.
+3. Clique em **Enviar e-mail de teste** e, se chegar, ative o encaminhamento e salve.
+
+Opções: incluir também as mensagens que você envia e anexar ou não as mídias. O painel mostra quantos e-mails foram enviados e o último erro, se houver.
+
+> [!NOTE]
+> Só o dono da sessão (ou o Super Admin) pode configurar o encaminhamento; quem tem acesso compartilhado não vê nem altera o destino. A senha do SMTP fica criptografada no banco e nunca é exibida. Para não estourar o limite do provedor, são enviados no máximo 300 e-mails por hora por sessão. A conexão com o SMTP sempre usa TLS (SSL na porta 465 ou STARTTLS na 587).
+
+---
+
 ## ⚙️ Configurações (Super Admin)
 
 Na página **Configurações** você pode alterar:
