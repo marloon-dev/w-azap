@@ -62,6 +62,7 @@ const zhCN: Dictionary = {
             settings: "设置",
             systemMonitor: "系统监控",
             notifications: "通知",
+            emailForward: "邮件转发",
         },
     },
     notifications: {

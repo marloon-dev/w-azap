@@ -62,6 +62,7 @@ const hi: Dictionary = {
             settings: "सेटिंग्स",
             systemMonitor: "सिस्टम मॉनिटर",
             notifications: "सूचनाएँ",
+            emailForward: "ईमेल फ़ॉरवर्डिंग",
         },
     },
     notifications: {

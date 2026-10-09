@@ -62,6 +62,7 @@ const id: Dictionary = {
             settings: "Pengaturan",
             systemMonitor: "Monitor Sistem",
             notifications: "Notifikasi",
+            emailForward: "Teruskan ke Email",
         },
     },
     notifications: {

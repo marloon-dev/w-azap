@@ -8,6 +8,7 @@ import {
     HardDrive,
     ImageIcon,
     LayoutDashboard,
+    Mail,
     Megaphone,
     MessageCircleReply,
     MessageSquare,
@@ -69,6 +70,7 @@ export const navGroups: NavGroup[] = [
             { href: "/dashboard/profile", label: "nav.items.botProfile", icon: UserCircle },
             { href: "/dashboard/scheduler", label: "nav.items.scheduler", icon: CalendarClock },
             { href: "/dashboard/webhooks", label: "nav.items.webhooks", icon: Webhook },
+            { href: "/dashboard/email-forward", label: "nav.items.emailForward", icon: Mail },
         ],
     },
     {

@@ -62,6 +62,7 @@ const ru: Dictionary = {
             settings: "Настройки",
             systemMonitor: "Мониторинг системы",
             notifications: "Уведомления",
+            emailForward: "Пересылка на e-mail",
         },
     },
     notifications: {

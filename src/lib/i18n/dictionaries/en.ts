@@ -62,6 +62,7 @@ const en = {
             settings: "Settings",
             systemMonitor: "System Monitor",
             notifications: "Notifications",
+            emailForward: "E-mail Forwarding",
         },
     },
     notifications: {

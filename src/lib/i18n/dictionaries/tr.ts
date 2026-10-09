@@ -62,6 +62,7 @@ const tr: Dictionary = {
             settings: "Ayarlar",
             systemMonitor: "Sistem İzleyici",
             notifications: "Bildirimler",
+            emailForward: "E-posta Yönlendirme",
         },
     },
     notifications: {

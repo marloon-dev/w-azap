@@ -62,6 +62,7 @@ const ko: Dictionary = {
             settings: "설정",
             systemMonitor: "시스템 모니터",
             notifications: "알림",
+            emailForward: "이메일 전달",
         },
     },
     notifications: {

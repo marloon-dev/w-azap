@@ -62,6 +62,7 @@ const de: Dictionary = {
             settings: "Einstellungen",
             systemMonitor: "Systemmonitor",
             notifications: "Benachrichtigungen",
+            emailForward: "E-Mail-Weiterleitung",
         },
     },
     notifications: {
