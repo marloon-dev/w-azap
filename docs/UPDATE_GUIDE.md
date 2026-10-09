@@ -6,7 +6,7 @@ Mantenha sua instância do **W-AZAP** em dia com os recursos mais novos, as corr
 
 ## ✅ Antes de atualizar
 
-1. **Faça backup do banco de dados** (ex.: `mysqldump -u usuario -p wa_akg > backup.sql`).
+1. **Faça backup do banco de dados** (ex.: `mysqldump -u usuario -p w_azap > backup.sql`).
 2. **Guarde o `.env`**, principalmente `AUTH_SECRET` e `DATA_ENCRYPTION_KEY`. Sem a `DATA_ENCRYPTION_KEY` original, as sessões do WhatsApp não podem ser lidas e todos os QR codes terão de ser escaneados de novo.
 3. Leia a seção [O que muda na 1.6.4](#-o-que-muda-na-164) se estiver vindo de uma versão anterior.
 

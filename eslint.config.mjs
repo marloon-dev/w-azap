@@ -5,7 +5,7 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Legacy debt inherited from WA-AKG: reported as warnings so CI fails only on new errors.
+  // Legacy debt inherited from the original codebase: reported as warnings so CI fails only on new errors.
   // Fix these gradually and promote them back to "error".
   {
     rules: {

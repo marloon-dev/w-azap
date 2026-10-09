@@ -35,7 +35,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Conferir o patch do Baileys
-        run: grep -q "WA-AKG NEWSLETTER MEDIA PAYLOAD DEBUG" node_modules/@whiskeysockets/baileys/lib/Utils/messages.js
+        run: grep -q "W-AZAP NEWSLETTER MEDIA PAYLOAD DEBUG" node_modules/@whiskeysockets/baileys/lib/Utils/messages.js
 
       - name: Gerar o Prisma Client
         run: npx prisma generate

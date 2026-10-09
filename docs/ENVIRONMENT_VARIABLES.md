@@ -21,7 +21,7 @@ Variáveis indispensáveis para a aplicação funcionar.
 | Variável | Tipo | Padrão | Descrição |
 | :--- | :--- | :--- | :--- |
 | `PORT` | número | `3030` (`.env.example`: `3000`) | Porta em que o servidor escuta. Confirme que ela está livre. |
-| `DATABASE_URL` | string | — | String de conexão do banco (ex.: `mysql://usuario:senha@localhost:3306/wa_akg` ou `postgresql://usuario:senha@localhost:5432/wa_akg?schema=public`). |
+| `DATABASE_URL` | string | — | String de conexão do banco (ex.: `mysql://usuario:senha@localhost:3306/w_azap` ou `postgresql://usuario:senha@localhost:5432/w_azap?schema=public`). |
 | `AUTH_SECRET` | string | — | Chave criptográfica que assina os logins (JWT). **O servidor não inicia sem ela.** Gere com `openssl rand -base64 32`. |
 | `BASE_URL` | string | `http://localhost:3000` | URL pública da aplicação. É usada nos redirecionamentos de login, na geração de URLs e na lista de origens permitidas no Socket.IO. |
 | `NODE_ENV` | string | `development` | Modo de execução (`development` \| `production` \| `test`). `npm start` já define `production`. |
@@ -124,7 +124,7 @@ Necessárias **somente** ao usar o `docker-compose.yml`.
 | Variável | Obrigatória | Padrão | Descrição |
 | :--- | :--- | :--- | :--- |
 | `MYSQL_ROOT_PASSWORD` | **Sim** | — | Senha do root no container do MySQL. |
-| `MYSQL_DATABASE` | Não | `wa_akg` | Nome do banco de dados. |
+| `MYSQL_DATABASE` | Não | `w_azap` | Nome do banco de dados. |
 | `ADMIN_EMAIL` | Recomendada | — | E-mail do Super Admin criado na primeira inicialização. |
 | `ADMIN_PASSWORD` | Recomendada | — | Senha do Super Admin criado na primeira inicialização (mínimo de 8 caracteres). |
 

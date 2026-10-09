@@ -46,12 +46,12 @@ Edite o `.env` e defina a `DATABASE_URL`.
 
 ### MySQL
 ```env
-DATABASE_URL="mysql://usuario:senha@host-do-banco:3306/wa_akg"
+DATABASE_URL="mysql://usuario:senha@host-do-banco:3306/w_azap"
 ```
 
 ### PostgreSQL
 ```env
-DATABASE_URL="postgresql://usuario:senha@host-do-banco:5432/wa_akg?schema=public"
+DATABASE_URL="postgresql://usuario:senha@host-do-banco:5432/w_azap?schema=public"
 ```
 
 > [!TIP]
@@ -61,9 +61,9 @@ DATABASE_URL="postgresql://usuario:senha@host-do-banco:5432/wa_akg?schema=public
 
 Não use o `root` na aplicação. No MySQL:
 ```sql
-CREATE DATABASE wa_akg CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'wa_akg'@'localhost' IDENTIFIED BY 'uma-senha-forte';
-GRANT ALL PRIVILEGES ON wa_akg.* TO 'wa_akg'@'localhost';
+CREATE DATABASE w_azap CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'w_azap'@'localhost' IDENTIFIED BY 'uma-senha-forte';
+GRANT ALL PRIVILEGES ON w_azap.* TO 'w_azap'@'localhost';
 FLUSH PRIVILEGES;
 ```
 

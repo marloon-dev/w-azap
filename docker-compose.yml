@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-wa_akg}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-w_azap}
     ports:
       # Only reachable from this host (the app talks to it over the internal Docker network)
       - "127.0.0.1:3306:3306"
@@ -28,7 +28,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-wa_akg}
+      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE:-w_azap}
       - AUTH_SECRET=${AUTH_SECRET}
       - BASE_URL=${BASE_URL:-http://localhost:3000}
       - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}

@@ -3,9 +3,6 @@
   "version": "2.1.0",
   "description": "Gateway e painel de WhatsApp com várias sessões, API REST, webhooks e automação (Next.js + Baileys).",
   "author": "marloon-dev",
-  "contributors": [
-    "Aditya <https://github.com/mrifqidaffaaditya> (WA-AKG, projeto original)"
-  ],
   "homepage": "https://github.com/marloon-dev/w-azap#readme",
   "repository": {
     "type": "git",
