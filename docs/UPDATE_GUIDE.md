@@ -14,7 +14,21 @@ Mantenha sua instância do **W-AZAP** em dia com os recursos mais novos, as corr
 
 ## 🚀 Processo de atualização
 
-### Opção A: atualização automática (recomendada)
+### No Mac, com o instalador: automática
+
+Quem instalou pelo [instalador para macOS](../README.md#-instalador-para-macos) não precisa fazer nada. A cada hora o W-AZAP confere se saiu uma release nova e se atualiza sozinho:
+
+1. baixa o `instalar-macos.sh` da release e confere o SHA-256 com o `SHA256SUMS-instalador.txt`;
+2. monta a versão nova em `~/.w-azap/versoes/` (dependências, `prisma db push` e build) enquanto a atual continua no ar;
+3. reinicia o servidor apontando `~/.w-azap/app` para a versão nova;
+4. se ela não responder em 2 minutos, volta para a anterior e só tenta de novo 6 horas depois.
+
+O `prisma db push` roda sem `--accept-data-loss`: uma mudança que apagaria dados interrompe a atualização e a versão atual continua no ar. O histórico fica em `~/.w-azap/logs/atualizacao.log` (`w-azap log atualizacao`). Para desligar: `w-azap auto-atualizacao desligar`.
+
+> [!NOTE]
+> Instalações feitas antes da v2.3.0 não têm o atualizador. Rode `w-azap atualizar` uma vez para ganhar a atualização automática; o instalador move o `.env` e as mídias de `app/` para `dados/` sozinho.
+
+### Opção A: atualização com PM2
 
 Se você usa PM2 com o script [`start.sh`](../start.sh) do projeto, basta:
 ```bash

@@ -135,11 +135,14 @@ Quando terminar, o painel abre em `http://localhost:3000` (ou na próxima porta 
 | `w-azap status` | Mostra se o MySQL e o servidor estão no ar |
 | `w-azap abrir` | Inicia (se preciso) e abre o painel no navegador |
 | `w-azap parar` / `w-azap iniciar` | Para ou inicia os serviços |
-| `w-azap log` | Acompanha o log do servidor |
-| `w-azap atualizar` | Instala a release mais recente e mantém dados e configuração |
+| `w-azap log` | Acompanha o log do servidor (`w-azap log atualizacao` mostra as atualizações) |
+| `w-azap atualizar` | Instala a release mais recente agora, sem esperar a verificação automática |
+| `w-azap auto-atualizacao desligar` / `ligar` | Desliga ou religa a atualização automática |
 | `w-azap desinstalar` | Remove o W-AZAP (pergunta se apaga também os dados) |
 
-Tudo fica em `~/.w-azap`: o código e o `.env` em `app/`, o banco em `mysql/data/` e os logs em `logs/`. O MySQL do instalador usa a porta `3307` e escuta só em `127.0.0.1`. Faça backup do `.env`, porque a `DATA_ENCRYPTION_KEY` protege as sessões do WhatsApp.
+**Atualização automática:** o W-AZAP confere a cada hora (e ao entrar no Mac) se saiu uma release nova. Quando sai, ele baixa o instalador da release, confere o SHA-256 e monta a versão nova numa pasta separada enquanto a atual continua no ar. O painel só fica fora do ar enquanto o servidor reinicia. Se a versão nova não subir, ele volta sozinho para a anterior e tenta de novo depois. Você recebe uma notificação do macOS em cada atualização. O `.env`, o banco, as sessões do WhatsApp e as mídias são mantidos.
+
+Tudo fica em `~/.w-azap`: o `.env` e as mídias em `dados/`, as versões em `versoes/` (a em uso e a anterior; `app/` aponta para a atual), o banco em `mysql/data/` e os logs em `logs/`. O MySQL do instalador usa a porta `3307` e escuta só em `127.0.0.1`. Faça backup do `.env`, porque a `DATA_ENCRYPTION_KEY` protege as sessões do WhatsApp.
 
 ---
 

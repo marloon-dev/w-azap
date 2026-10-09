@@ -12,6 +12,12 @@
 #
 # Rodar de novo atualiza para a versão do instalador e mantém o .env, o banco,
 # as sessões do WhatsApp e as mídias. Para remover: w-azap desinstalar
+#
+# Atualização automática: um terceiro serviço do launchd confere a cada hora se
+# saiu uma release nova e roda o instalador dela sozinho. Cada versão é montada
+# em versoes/<tag>-<data> enquanto a atual continua no ar; app/ é um link para a
+# versão em uso e os dados (.env, data/, uploads/) ficam em dados/. Se a nova
+# versão não subir, o link volta para a anterior.
 # ==============================================================================
 set -Eeuo pipefail
 PATH_ORIGINAL="$PATH"
@@ -33,8 +39,13 @@ MYSQL_PORTA="${W_AZAP_PORTA_MYSQL:-3307}"
 AGENTES_DIR="$HOME/Library/LaunchAgents"
 
 RUNTIME="$W_HOME/runtime"
-APP="$W_HOME/app"
+APP="$W_HOME/app"            # link para a versão em uso, dentro de versoes/
+VERSOES="$W_HOME/versoes"
+DADOS="$W_HOME/dados"        # .env, data/ e uploads/, compartilhados entre versões
 LOGS="$W_HOME/logs"
+TRAVA="$W_HOME/.instalando"
+# Definido quando o instalador é chamado pelo serviço de atualização automática
+AUTOMATICO="${W_AZAP_AUTOMATICO:-0}"
 MYSQL_CNF="$W_HOME/mysql/my.cnf"
 MYSQL_SOCK="$W_HOME/mysql/mysql.sock"
 # O macOS limita o caminho de um socket Unix a 103 caracteres
@@ -68,7 +79,12 @@ pausar_se_command() {
 
 ao_falhar() {
     local codigo=$?
+    trap - ERR
     erro "A instalação parou (código $codigo)."
+    # Falhou com o servidor parado: volta para a versão anterior em vez de deixar o painel fora do ar
+    if [ "${SERVIDOR_PARADO:-0}" = "1" ]; then
+        voltar_versao_anterior || carregar_agente "$LABEL.servidor" || true
+    fi
     if [ -f "$LOG_INSTALACAO" ]; then
         printf '\nÚltimas linhas do log (%s):\n' "$LOG_INSTALACAO" >&2
         tail -n 25 "$LOG_INSTALACAO" >&2 || true
@@ -117,8 +133,14 @@ gerar_segredo() { openssl rand -base64 32 | tr -d '\n'; }
 gerar_senha() { openssl rand -hex 16; }
 
 valor_env() {
-    # valor_env CHAVE -> valor no .env do app (sem aspas)
-    { grep -E "^$1=" "$APP/.env" 2>/dev/null || true; } | tail -n 1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//'
+    # valor_env CHAVE -> valor no .env (sem aspas)
+    { grep -E "^$1=" "$DADOS/.env" 2>/dev/null || true; } | tail -n 1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//'
+}
+
+substituir_se_mudou() {
+    # substituir_se_mudou arquivo -> troca "arquivo" por "arquivo.novo"; retorna 0 se o conteúdo mudou
+    if cmp -s "$1.novo" "$1"; then rm -f "$1.novo"; return 1; fi
+    mv -f "$1.novo" "$1"
 }
 
 mysql_ativo() { "$RUNTIME/mysql/bin/mysqladmin" --no-defaults --protocol=tcp -h127.0.0.1 -P"$MYSQL_PORTA" ping >/dev/null 2>&1; }
@@ -159,6 +181,15 @@ descarregar_agente() {
     if agente_carregado "$1"; then
         launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
     fi
+}
+
+voltar_versao_anterior() {
+    [ -n "${ANTERIOR:-}" ] && [ -d "$ANTERIOR" ] || return 1
+    descarregar_agente "$LABEL.servidor"
+    ln -sfn "$ANTERIOR" "$APP"
+    SERVIDOR_PARADO=0
+    carregar_agente "$LABEL.servidor"
+    aviso "Voltei para a versão anterior (${ANTERIOR##*/}); ela continua no ar."
 }
 
 # ------------------------------------------------------------------------------
@@ -207,14 +238,35 @@ if [ "$ESPACO_LIVRE_GB" -lt 3 ]; then
     erro "Espaço livre insuficiente: ${ESPACO_LIVRE_GB} GB. São necessários pelo menos 3 GB."; exit 1
 fi
 
-mkdir -p "$RUNTIME" "$LOGS" "$W_HOME/bin" "$W_HOME/mysql" "$W_HOME/downloads"
+mkdir -p "$RUNTIME" "$LOGS" "$W_HOME/bin" "$W_HOME/mysql" "$W_HOME/downloads" "$VERSOES" "$DADOS"
+
+# Uma instalação por vez (a manual e a automática podem coincidir)
+if ! mkdir "$TRAVA" 2>/dev/null; then
+    if kill -0 "$(cat "$TRAVA/pid" 2>/dev/null)" 2>/dev/null; then
+        erro "Já existe uma instalação ou atualização do W-AZAP em andamento."; exit 1
+    fi
+    rm -rf "$TRAVA"; mkdir "$TRAVA"
+fi
+echo "$$" >"$TRAVA/pid"
+trap 'rm -rf "$TRAVA"' EXIT
 : >"$LOG_INSTALACAO"
 
-if [ -f "$APP/.env" ]; then
+# Até a v2.2.0, app/ era uma pasta comum com o .env, data/ e uploads/ dentro
+LEGADO=0
+if [ -d "$APP" ] && [ ! -L "$APP" ]; then
+    LEGADO=1
+    # Enquanto a versão antiga estiver no ar, o .env dela é o que vale
+    if [ -f "$APP/.env" ]; then cp -p "$APP/.env" "$DADOS/.env"; fi
+fi
+
+if [ -f "$DADOS/.env" ]; then
     MODO="atualizar"
     ok "Instalação existente encontrada em $W_HOME: vou atualizar."
 else
     MODO="instalar"
+    if [ "$AUTOMATICO" = "1" ]; then
+        erro "A atualização automática só atualiza uma instalação existente."; exit 1
+    fi
 fi
 ok "macOS $MACOS_VERSAO ($(uname -m)), ${ESPACO_LIVRE_GB} GB livres"
 
@@ -236,8 +288,7 @@ if [ "$MODO" = "instalar" ]; then
     printf 'O W-AZAP vai iniciar sozinho quando você entrar no Mac.\n\n'
     perguntar "Continuar?" s || { echo "Instalação cancelada."; exit 0; }
 else
-    # Para o servidor antes de trocar o Node e o código; o MySQL continua no ar
-    descarregar_agente "$LABEL.servidor"
+    ok "A versão atual continua no ar até a nova estar pronta."
 fi
 
 # ------------------------------------------------------------------------------
@@ -259,10 +310,6 @@ else
     ok "Instalado (${NODE_PASTA#node-}, SHA-256 conferido)"
 fi
 ln -sfn "$RUNTIME/$NODE_PASTA" "$RUNTIME/node"
-# Remove versões antigas do Node deixadas por atualizações anteriores
-for antigo in "$RUNTIME"/node-v*; do
-    if [ -d "$antigo" ] && [ "$antigo" != "$RUNTIME/$NODE_PASTA" ]; then rm -rf "$antigo"; fi
-done
 export PATH="$RUNTIME/node/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export NEXT_TELEMETRY_DISABLED=1
 
@@ -270,6 +317,7 @@ export NEXT_TELEMETRY_DISABLED=1
 passo "MySQL $MYSQL_VERSAO"
 # ------------------------------------------------------------------------------
 MYSQL_PASTA="mysql-$MYSQL_VERSAO-macos15-$MYSQL_ARQ"
+MYSQL_LINK_ANTES="$(readlink "$RUNTIME/mysql" 2>/dev/null || true)"
 if [ -x "$RUNTIME/$MYSQL_PASTA/bin/mysqld" ]; then
     ok "Já instalado"
 else
@@ -291,19 +339,26 @@ tar -xzf "$TMP/codigo.tar.gz" -C "$TMP"
 CODIGO="$(find "$TMP" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
 [ -f "$CODIGO/package.json" ] || { erro "O pacote baixado não parece ser o W-AZAP."; exit 1; }
 
-mkdir -p "$APP"
-# Mantém configuração e dados: .env, data/ (sessões), uploads/ (mídias)
-rsync -a --delete \
-    --exclude '/.env' --exclude '/data/' --exclude '/uploads/' --exclude '/node_modules/' \
-    "$CODIGO/" "$APP/"
+# A versão nova é montada numa pasta própria; a atual segue no ar até a troca
+NOVA="$VERSOES/$VERSAO-$(date +%Y%m%d%H%M%S)"
+mkdir -p "$NOVA"
+rsync -a "$CODIGO/" "$NOVA/"
 rm -rf "$TMP"
-mkdir -p "$APP/data" "$APP/uploads"
-ok "Código em $APP"
+# Configuração e dados ficam em dados/ e valem para todas as versões. Os links
+# de data/ e uploads/ só entram depois do build: o Turbopack recusa pastas fora do projeto
+rm -rf "$NOVA/.env" "$NOVA/data" "$NOVA/uploads"
+ln -s "$DADOS/.env" "$NOVA/.env"
+ok "Código em $NOVA"
 
 # ------------------------------------------------------------------------------
 passo "Banco de dados"
 # ------------------------------------------------------------------------------
-cat >"$MYSQL_CNF" <<CNF
+# Só reinicia o MySQL se a versão ou a configuração mudarem: numa atualização,
+# a versão em uso continua conectada ao banco enquanto a nova é montada
+MYSQL_MUDOU=0
+[ "$MYSQL_LINK_ANTES" = "$RUNTIME/$MYSQL_PASTA" ] || MYSQL_MUDOU=1
+
+cat >"$MYSQL_CNF.novo" <<CNF
 [mysqld]
 basedir=$RUNTIME/mysql
 datadir=$W_HOME/mysql/data
@@ -316,9 +371,10 @@ log-error=$LOGS/mysqld.err
 character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 CNF
+if substituir_se_mudou "$MYSQL_CNF"; then MYSQL_MUDOU=1; fi
 
 mkdir -p "$AGENTES_DIR"
-cat >"$AGENTES_DIR/$LABEL.mysql.plist" <<PLIST
+cat >"$AGENTES_DIR/$LABEL.mysql.plist.novo" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -337,6 +393,7 @@ cat >"$AGENTES_DIR/$LABEL.mysql.plist" <<PLIST
 </dict>
 </plist>
 PLIST
+if substituir_se_mudou "$AGENTES_DIR/$LABEL.mysql.plist"; then MYSQL_MUDOU=1; fi
 
 PRIMEIRA_VEZ_BANCO=0
 if [ ! -d "$W_HOME/mysql/data/mysql" ]; then
@@ -350,7 +407,9 @@ if [ ! -d "$W_HOME/mysql/data/mysql" ]; then
     ok "Banco inicializado"
 fi
 
-carregar_agente "$LABEL.mysql"
+if [ "$MYSQL_MUDOU" = "1" ] || ! agente_carregado "$LABEL.mysql" || ! mysql_ativo; then
+    carregar_agente "$LABEL.mysql"
+fi
 esperar 60 "o MySQL iniciar (veja $LOGS/mysqld.err)" mysql_ativo
 ok "MySQL rodando em 127.0.0.1:$MYSQL_PORTA"
 
@@ -400,7 +459,7 @@ if [ "$MODO" = "instalar" ]; then
     [ "$PORTA" -ne 3000 ] && aviso "A porta 3000 está ocupada; o W-AZAP vai usar a $PORTA."
     URL_BASE="http://localhost:$PORTA"
     umask 077
-    cat >"$APP/.env" <<ENV
+    cat >"$DADOS/.env" <<ENV
 # Gerado pelo instalador do W-AZAP em $(date '+%Y-%m-%d %H:%M').
 # Referência de todas as variáveis: docs/ENVIRONMENT_VARIABLES.md
 # Depois de editar, aplique com: w-azap reconstruir
@@ -434,13 +493,13 @@ ENV
     ok "Arquivo .env criado com chaves aleatórias"
 else
     PORTA="$(valor_env PORT)"; PORTA="${PORTA:-3000}"
-    ok "Mantida a configuração atual ($APP/.env)"
+    ok "Mantida a configuração atual ($DADOS/.env)"
 fi
 
 # ------------------------------------------------------------------------------
 passo "Dependências e build (pode levar alguns minutos)"
 # ------------------------------------------------------------------------------
-cd "$APP"
+cd "$NOVA"
 printf '  Instalando dependências…\n'
 registrar npm ci --legacy-peer-deps --no-audit --no-fund
 # O npm 11+ pode bloquear scripts de instalação; garante o patch do Baileys e o Prisma Client
@@ -448,6 +507,7 @@ registrar npx --no-install patch-package
 registrar npx --no-install prisma generate
 ok "Dependências instaladas"
 
+# Sem --accept-data-loss: uma mudança que apagaria dados para aqui, com a versão atual ainda no ar
 printf '  Atualizando as tabelas do banco…\n'
 if ! registrar npx --no-install prisma db push --skip-generate; then
     erro "O Prisma não conseguiu atualizar o banco. Se a nova versão remove colunas, veja o log antes de continuar."
@@ -457,6 +517,8 @@ ok "Banco atualizado"
 
 printf '  Gerando o build de produção…\n'
 registrar npm run build
+ln -s "$DADOS/data" "$NOVA/data"
+ln -s "$DADOS/uploads" "$NOVA/uploads"
 ok "Build concluído"
 
 # ------------------------------------------------------------------------------
@@ -496,12 +558,13 @@ cat >"$AGENTES_DIR/$LABEL.servidor.plist" <<PLIST
 </plist>
 PLIST
 
-# Comando de controle: w-azap iniciar | parar | status | log | abrir | atualizar | desinstalar
+# Comando de controle: w-azap iniciar | parar | status | log | abrir | atualizar | auto-atualizacao | desinstalar
 cat >"$W_HOME/bin/w-azap" <<SCRIPT
 #!/bin/bash
 # Controle do W-AZAP instalado em $W_HOME
 W_HOME="$W_HOME"
 APP="$APP"
+DADOS="$DADOS"
 LOGS="$LOGS"
 LABEL="$LABEL"
 APPS_DIR="$APPS_DIR"
@@ -510,7 +573,7 @@ MYSQL_PORTA="$MYSQL_PORTA"
 DOMINIO="gui/\$(id -u)"
 INSTALADOR_URL="https://github.com/$REPO/releases/latest/download/instalar-macos.sh"
 
-porta() { grep -E '^PORT=' "\$APP/.env" | tail -n 1 | cut -d= -f2- | tr -d '"'; }
+porta() { grep -E '^PORT=' "\$DADOS/.env" | tail -n 1 | cut -d= -f2- | tr -d '"'; }
 url() { echo "http://localhost:\$(porta)"; }
 carregado() { launchctl print "\$DOMINIO/\$1" >/dev/null 2>&1; }
 carregar() { carregado "\$1" || launchctl bootstrap "\$DOMINIO" "\$AGENTES_DIR/\$1.plist"; }
@@ -533,9 +596,12 @@ case "\${1:-}" in
         if responde; then echo "Servidor: no ar em \$(url)"
         elif carregado "\$LABEL.servidor"; then echo "Servidor: iniciando (veja: w-azap log)"
         else echo "Servidor: parado"; fi
-        echo "Versão:   \$(cat "\$W_HOME/versao" 2>/dev/null)" ;;
+        echo "Versão:   \$(cat "\$W_HOME/versao" 2>/dev/null)"
+        if [ -f "\$W_HOME/sem-auto-atualizacao" ]; then echo "Atualização automática: desligada"
+        else echo "Atualização automática: ligada (confere a cada hora)"; fi ;;
     log|logs)
-        tail -n 100 -f "\$LOGS/servidor.log" ;;
+        if [ "\${2:-}" = "atualizacao" ]; then tail -n 100 "\$LOGS/atualizacao.log"
+        else tail -n 100 -f "\$LOGS/servidor.log"; fi ;;
     abrir|open)
         carregar "\$LABEL.mysql"; carregar "\$LABEL.servidor"
         for _ in \$(seq 1 60); do responde && break; sleep 1; done
@@ -546,12 +612,25 @@ case "\${1:-}" in
         (cd "\$APP" && npm run build) && "\$0" reiniciar ;;
     atualizar|update)
         curl -fsSL "\$INSTALADOR_URL" | bash ;;
+    auto-atualizacao|auto-update)
+        case "\${2:-}" in
+            ligar|on)
+                rm -f "\$W_HOME/sem-auto-atualizacao"
+                carregar "\$LABEL.atualizador"
+                echo "Atualização automática ligada: o W-AZAP confere a cada hora se saiu uma versão nova." ;;
+            desligar|off)
+                touch "\$W_HOME/sem-auto-atualizacao"
+                descarregar "\$LABEL.atualizador"
+                echo "Atualização automática desligada. Atualize quando quiser com: w-azap atualizar" ;;
+            *)
+                echo "Uso: w-azap auto-atualizacao ligar | desligar" ;;
+        esac ;;
     desinstalar|uninstall)
         printf 'Remover o W-AZAP deste Mac? [s/N] '; { read -r r </dev/tty || read -r r; } 2>/dev/null
         case "\$r" in s|S|sim|Sim) ;; *) echo "Cancelado."; exit 0 ;; esac
         printf 'Apagar também os dados (banco, sessões do WhatsApp, mídias e .env)? [s/N] '; { read -r dados </dev/tty || read -r dados; } 2>/dev/null
-        descarregar "\$LABEL.servidor"; descarregar "\$LABEL.mysql"
-        rm -f "\$AGENTES_DIR/\$LABEL.servidor.plist" "\$AGENTES_DIR/\$LABEL.mysql.plist"
+        descarregar "\$LABEL.atualizador"; descarregar "\$LABEL.servidor"; descarregar "\$LABEL.mysql"
+        rm -f "\$AGENTES_DIR/\$LABEL.atualizador.plist" "\$AGENTES_DIR/\$LABEL.servidor.plist" "\$AGENTES_DIR/\$LABEL.mysql.plist"
         rm -rf "\$APPS_DIR/W-AZAP.app"
         for atalho in /usr/local/bin/w-azap "\$HOME/.local/bin/w-azap"; do
             [ "\$(readlink "\$atalho" 2>/dev/null)" = "\$W_HOME/bin/w-azap" ] && rm -f "\$atalho"
@@ -561,15 +640,94 @@ case "\${1:-}" in
                 rm -rf "\$W_HOME"
                 echo "W-AZAP removido por completo." ;;
             *)
-                rm -rf "\$W_HOME/runtime" "\$W_HOME/bin" "\$APP/node_modules" "\$APP/.next"
-                echo "W-AZAP removido. Os dados ficaram em \$W_HOME (banco em mysql/data, .env e sessões em app/)."
+                rm -rf "\$W_HOME/runtime" "\$W_HOME/bin" "\$W_HOME/versoes" "\$APP"
+                echo "W-AZAP removido. Os dados ficaram em \$W_HOME (banco em mysql/data, .env e mídias em dados/)."
                 echo "Reinstalar com o mesmo instalador reaproveita tudo." ;;
         esac ;;
     *)
-        echo "Uso: w-azap iniciar | parar | reiniciar | status | log | abrir | reconstruir | atualizar | desinstalar" ;;
+        echo "Uso: w-azap iniciar | parar | reiniciar | status | log [atualizacao] | abrir | reconstruir | atualizar | auto-atualizacao ligar|desligar | desinstalar" ;;
 esac
 SCRIPT
 chmod +x "$W_HOME/bin/w-azap"
+
+# Atualização automática: chamado pelo launchd no login e a cada hora
+cat >"$W_HOME/bin/atualizar-automatico" <<SCRIPT
+#!/bin/bash
+# Confere se saiu uma release nova do W-AZAP e, se saiu, baixa o instalador
+# dela, confere o SHA-256 e atualiza sem perguntar nada. A versão atual fica no
+# ar durante o build e volta sozinha se a nova não subir.
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+W_HOME="$W_HOME"
+REPO="$REPO"
+FALHA="\$W_HOME/atualizacao-falhou"
+
+notificar() { osascript -e "display notification \"\$1\" with title \"W-AZAP\"" >/dev/null 2>&1 || true; }
+
+[ -f "\$W_HOME/sem-auto-atualizacao" ] && exit 0
+# Outra instalação ou atualização em andamento
+kill -0 "\$(cat "\$W_HOME/.instalando/pid" 2>/dev/null)" 2>/dev/null && exit 0
+
+ATUAL="\$(cat "\$W_HOME/versao" 2>/dev/null)"
+ULTIMA="\$(curl -fsSI --max-time 30 "https://github.com/\$REPO/releases/latest" 2>/dev/null | awk -F/ 'tolower(\$1) ~ /^location:/ {print \$NF}' | tr -d '\r\n')"
+# Sem internet ou sem release publicada: tenta de novo na próxima hora
+case "\$ULTIMA" in v[0-9]*) ;; *) exit 0 ;; esac
+[ "\$ULTIMA" = "\$ATUAL" ] && exit 0
+# Só avança: nunca troca por uma versão mais antiga
+[ "\$(printf '%s\n%s\n' "\${ATUAL#v}" "\${ULTIMA#v}" | sort -V | tail -n 1)" = "\${ULTIMA#v}" ] || exit 0
+# Se esta versão falhou há menos de 6 horas, espera antes de tentar de novo
+if [ "\$(cut -d' ' -f1 "\$FALHA" 2>/dev/null)" = "\$ULTIMA" ] &&
+   [ "\$(( \$(date +%s) - \$(cut -d' ' -f2 "\$FALHA") ))" -lt 21600 ]; then
+    exit 0
+fi
+
+echo
+echo "[\$(date '+%Y-%m-%d %H:%M:%S')] Nova versão: \${ATUAL:-?} -> \$ULTIMA"
+TMP="\$(mktemp -d)"
+trap 'rm -rf "\$TMP"' EXIT
+BASE="https://github.com/\$REPO/releases/download/\$ULTIMA"
+if ! curl -fsSL --retry 3 -o "\$TMP/instalar-macos.sh" "\$BASE/instalar-macos.sh" ||
+   ! curl -fsSL --retry 3 -o "\$TMP/SHA256SUMS" "\$BASE/SHA256SUMS-instalador.txt"; then
+    # O workflow anexa o instalador alguns minutos depois de a release sair
+    echo "O instalador da \$ULTIMA ainda não está disponível; tento de novo na próxima hora."
+    exit 0
+fi
+ESPERADO="\$(awk '\$2 == "instalar-macos.sh" {print \$1}' "\$TMP/SHA256SUMS")"
+OBTIDO="\$(shasum -a 256 "\$TMP/instalar-macos.sh" | awk '{print \$1}')"
+if [ -z "\$ESPERADO" ] || [ "\$ESPERADO" != "\$OBTIDO" ]; then
+    echo "O instalador baixado não confere com o SHA-256 da release; atualização cancelada."
+    echo "\$ULTIMA \$(date +%s)" >"\$FALHA"
+    exit 1
+fi
+
+if W_AZAP_HOME="\$W_HOME" W_AZAP_LABEL="$LABEL" W_AZAP_APPS_DIR="$APPS_DIR" W_AZAP_PORTA_MYSQL="$MYSQL_PORTA" \\
+   W_AZAP_AUTOMATICO=1 W_AZAP_NAO_ABRIR=1 bash "\$TMP/instalar-macos.sh" </dev/null; then
+    rm -f "\$FALHA"
+    notificar "Atualizado para a versão \$ULTIMA."
+else
+    echo "\$ULTIMA \$(date +%s)" >"\$FALHA"
+    notificar "Não deu para atualizar para a \$ULTIMA; a versão \${ATUAL:-atual} continua no ar. Detalhes: w-azap log atualizacao"
+    exit 1
+fi
+SCRIPT
+chmod +x "$W_HOME/bin/atualizar-automatico"
+
+cat >"$AGENTES_DIR/$LABEL.atualizador.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>$LABEL.atualizador</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$W_HOME/bin/atualizar-automatico</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <key>StartInterval</key><integer>3600</integer>
+    <key>StandardOutPath</key><string>$LOGS/atualizacao.log</string>
+    <key>StandardErrorPath</key><string>$LOGS/atualizacao.log</string>
+</dict>
+</plist>
+PLIST
 
 # Deixa o comando w-azap no PATH quando houver uma pasta de usuário adequada
 ATALHO_CLI=""
@@ -594,11 +752,64 @@ if command -v osacompile >/dev/null 2>&1; then
     fi
 fi
 
+# Troca de versão: o painel fica fora do ar só enquanto o servidor reinicia
+ANTERIOR="$(readlink "$APP" 2>/dev/null || true)"
+descarregar_agente "$LABEL.servidor"
+SERVIDOR_PARADO=1
+if [ "$LEGADO" = "1" ]; then
+    # Instalação anterior à v2.3.0: leva os dados de app/ para dados/ e guarda a
+    # versão antiga em versoes/, para poder voltar a ela
+    for item in data uploads; do
+        if [ -d "$APP/$item" ] && [ ! -L "$APP/$item" ]; then
+            if [ -e "$DADOS/$item" ]; then
+                rsync -a "$APP/$item/" "$DADOS/$item/"
+                rm -rf "${APP:?}/$item"
+            else
+                mv "$APP/$item" "$DADOS/$item"
+            fi
+        fi
+        ln -sfn "$DADOS/$item" "$APP/$item"
+    done
+    if [ -f "$APP/.env" ] && [ ! -L "$APP/.env" ]; then cp -p "$APP/.env" "$DADOS/.env"; fi
+    ln -sfn "$DADOS/.env" "$APP/.env"
+    ANTERIOR="$VERSOES/$(cat "$W_HOME/versao" 2>/dev/null || echo antiga)-anterior"
+    mv "$APP" "$ANTERIOR"
+    LEGADO=0
+    ok "Dados movidos para $DADOS"
+fi
+mkdir -p "$DADOS/data/media" "$DADOS/uploads"
+ln -sfn "$NOVA" "$APP"
 carregar_agente "$LABEL.servidor"
 printf '  Aguardando o servidor responder…\n'
-esperar 120 "o servidor do W-AZAP responder" servidor_responde "$PORTA"
+if ! esperar 120 "o servidor do W-AZAP responder" servidor_responde "$PORTA"; then
+    tail -n 25 "$LOGS/servidor.log" >>"$LOG_INSTALACAO" 2>/dev/null || true
+    voltar_versao_anterior || true
+    erro "A versão $VERSAO não subiu (veja $LOGS/servidor.log)."
+    false
+fi
+SERVIDOR_PARADO=0
 echo "$VERSAO" >"$W_HOME/versao"
 ok "Serviço ativo e configurado para iniciar no login"
+
+# Guarda só a versão em uso e a anterior; remove Node.js antigos
+for pasta in "$VERSOES"/*; do
+    [ -d "$pasta" ] || continue
+    if [ "$pasta" != "$NOVA" ] && [ "$pasta" != "$ANTERIOR" ]; then rm -rf "$pasta"; fi
+done
+for antigo in "$RUNTIME"/node-v*; do
+    if [ -d "$antigo" ] && [ "$antigo" != "$RUNTIME/$NODE_PASTA" ]; then rm -rf "$antigo"; fi
+done
+
+if [ -f "$W_HOME/sem-auto-atualizacao" ]; then
+    descarregar_agente "$LABEL.atualizador"
+    aviso "Atualização automática desligada (para ligar: w-azap auto-atualizacao ligar)"
+elif [ "$AUTOMATICO" = "1" ] && agente_carregado "$LABEL.atualizador"; then
+    # Chamado pelo próprio atualizador: recarregá-lo agora encerraria esta atualização
+    ok "Atualização automática ligada"
+else
+    carregar_agente "$LABEL.atualizador"
+    ok "Atualização automática ligada: confere a cada hora se saiu uma versão nova"
+fi
 
 # ------------------------------------------------------------------------------
 trap - ERR
@@ -609,9 +820,9 @@ if [ "$MODO" = "instalar" ]; then
     printf '  %sA primeira conta cadastrada vira administrador (SUPERADMIN).%s\n' "$AMARELO" "$FIM"
 fi
 printf '\n  Controle: %s\n' "${ATALHO_CLI:-$W_HOME/bin/w-azap}"
-printf '    w-azap status | parar | iniciar | log | atualizar | desinstalar\n'
+printf '    w-azap status | parar | iniciar | log | atualizar | auto-atualizacao | desinstalar\n'
 printf '\n  Arquivos: %s (logs em %s)\n' "$W_HOME" "$LOGS"
-printf '  Faça backup de %s/.env: a DATA_ENCRYPTION_KEY protege as sessões do WhatsApp.\n' "$APP"
+printf '  Faça backup de %s/.env: a DATA_ENCRYPTION_KEY protege as sessões do WhatsApp.\n' "$DADOS"
 
 if [ "${W_AZAP_NAO_ABRIR:-0}" != "1" ]; then
     open "$URL_PAINEL" >/dev/null 2>&1 || true
