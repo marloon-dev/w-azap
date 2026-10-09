@@ -8,6 +8,7 @@ import { forwardMessageByEmail } from "@/lib/email-forward";
 
 import { Server } from "socket.io";
 import { logger } from "@/lib/logger";
+import { profilePicFromUpdate } from "@/lib/avatar-files";
 
 export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server | null) => {
     // Set start time for uptime command
@@ -150,7 +151,7 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
                         notify: c.notify,
                         // @ts-ignore
                         verifiedName: c.verifiedName,
-                        profilePic: c.imgUrl || undefined,
+                        profilePic: profilePicFromUpdate(c.imgUrl) ?? undefined,
                         data: c as any
                     },
                     update: {
@@ -160,7 +161,7 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
                         notify: c.notify || undefined,
                         // @ts-ignore
                         verifiedName: c.verifiedName || undefined,
-                        profilePic: c.imgUrl || undefined,
+                        profilePic: profilePicFromUpdate(c.imgUrl),
                         data: c as any
                     }
                 });

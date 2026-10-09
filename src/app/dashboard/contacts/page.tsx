@@ -23,8 +23,8 @@ import {
     PaginationPrevious
 } from "@/components/ui/pagination";
 
-import { Search, Loader2, User, ChevronDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Loader2, ChevronDown } from "lucide-react";
+import { ContactAvatar } from "@/components/contact-avatar";
 import {
     Select,
     SelectContent,
@@ -175,10 +175,7 @@ export default function ContactListPage() {
                                         contacts.map((contact) => (
                                             <TableRow key={contact.id}>
                                                 <TableCell>
-                                                    <Avatar>
-                                                        <AvatarImage src={contact.profilePic || ""} />
-                                                        <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
-                                                    </Avatar>
+                                                    <ContactAvatar sessionId={sessionId} jid={contact.jid} name={contact.name || contact.notify} />
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex flex-col">

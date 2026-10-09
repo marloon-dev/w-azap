@@ -2,7 +2,7 @@
 const DEFAULT_COUNTRY_CODE = "55";
 
 /** JIDs the chat can open: users, groups, LIDs, broadcast lists and channels. */
-const JID_PATTERN = /^[\w.:-]+@(s\.whatsapp\.net|g\.us|lid|broadcast|newsletter)$/;
+export const JID_PATTERN = /^[\w.:-]+@(s\.whatsapp\.net|g\.us|lid|broadcast|newsletter)$/;
 
 /**
  * Turns the chat URL segment back into a WhatsApp JID.
