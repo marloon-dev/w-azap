@@ -1,0 +1,71 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🔒 Segurança'
+    labels:
+      - 'security'
+  - title: '🚀 Novidades'
+    labels:
+      - 'enhancement'
+      - 'feature'
+  - title: '🐛 Correções'
+    labels:
+      - 'bug'
+      - 'fix'
+  - title: '🧰 Manutenção'
+    labels:
+      - 'chore'
+      - 'dependencies'
+      - 'refactor'
+  - title: '📝 Documentação'
+    labels:
+      - 'documentation'
+
+change-template: '- $TITLE (#$NUMBER) por @$AUTHOR'
+no-changes-template: '- Nenhuma mudança registrada'
+
+autolabeler:
+  - label: 'documentation'
+    files:
+      - '*.md'
+      - 'docs/**'
+  - label: 'dependencies'
+    files:
+      - 'package.json'
+      - 'package-lock.json'
+  - label: 'feature'
+    branch:
+      - '/^feat\/.+/'
+  - label: 'fix'
+    branch:
+      - '/^fix\/.+/'
+  - label: 'chore'
+    branch:
+      - '/^chore\/.+/'
+
+version-resolver:
+  major:
+    labels:
+      - 'breaking'
+  minor:
+    labels:
+      - 'enhancement'
+      - 'feature'
+  patch:
+    labels:
+      - 'bug'
+      - 'fix'
+      - 'security'
+      - 'chore'
+      - 'dependencies'
+      - 'documentation'
+      - 'refactor'
+  default: patch
+
+template: |
+  ## O que mudou na v$RESOLVED_VERSION
+
+  $CHANGES
+
+  **Changelog completo:** https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

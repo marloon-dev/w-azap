@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint, tipagem e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Build-time placeholders only (no database is contacted during `next build`)
+      AUTH_SECRET: ci-placeholder-secret-not-used-in-production
+      DATABASE_URL: mysql://ci:ci@localhost:3306/ci
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependências (aplica o patch do Baileys no postinstall)
+        run: npm ci --legacy-peer-deps
+
+      - name: Conferir o patch do Baileys
+        run: grep -q "WA-AKG NEWSLETTER MEDIA PAYLOAD DEBUG" node_modules/@whiskeysockets/baileys/lib/Utils/messages.js
+
+      - name: Gerar o Prisma Client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tipagem
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+  docs:
+    name: Documentação da API sincronizada
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci --legacy-peer-deps
+
+      - name: Regenerar swagger.json e API_DOCUMENTATION.md
+        run: npm run docs:generate
+
+      - name: Falhar se a documentação estiver desatualizada
+        run: |
+          if ! git diff --quiet -- swagger.json docs/API_DOCUMENTATION.md; then
+            echo "::error::A documentação da API está desatualizada. Rode 'npm run docs:generate' e faça commit."
+            git diff --stat -- swagger.json docs/API_DOCUMENTATION.md
+            exit 1
+          fi

@@ -1,0 +1,20 @@
+# Normalize line endings in the repository
+* text=auto eol=lf
+
+# Shell scripts must keep LF to run on Linux/Docker
+*.sh text eol=lf
+
+# patch-package files are applied byte-for-byte
+*.patch -text
+
+# Generated files: collapse in diffs and exclude from language stats
+docs/API_DOCUMENTATION.md linguist-generated=true
+swagger.json linguist-generated=true
+package-lock.json linguist-generated=true
+
+# Binaries
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.webp binary

@@ -1,0 +1,41 @@
+name: ✨ Sugerir funcionalidade
+description: Proponha uma melhoria ou recurso novo para o W-AZAP
+title: "[Funcionalidade]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Tem uma ideia? Ótimo!** Explique com clareza para que ela possa ser avaliada.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema isso resolve?
+      placeholder: "Hoje preciso responder manualmente às mesmas perguntas várias vezes por dia..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Solução proposta
+      description: Descreva a funcionalidade em detalhes (telas, endpoints, comportamento).
+      placeholder: "Respostas automáticas com IA usando um LLM local ou a API da OpenAI..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Existe algum contorno hoje? Já tentou outra abordagem?
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Você pode ajudar a implementar?
+      options:
+        - "Não, é só uma ideia"
+        - "Sim, posso abrir um PR"
+        - "Talvez, depende do escopo"

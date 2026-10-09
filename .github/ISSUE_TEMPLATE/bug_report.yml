@@ -1,0 +1,84 @@
+name: 🐛 Relatar bug
+description: Algo não funciona como deveria no W-AZAP
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Obrigado por relatar!** Quanto mais detalhes, mais rápido conseguimos corrigir.
+        ⚠️ **Vulnerabilidades de segurança não devem ser abertas aqui.** Use [Security › Report a vulnerability](https://github.com/marloon-dev/w-azap/security/advisories/new).
+        Antes de colar logs, remova chaves de API, segredos e números de telefone.
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão do W-AZAP
+      description: Aparece no rodapé da barra lateral do painel ou no `package.json`.
+      placeholder: "1.6.4"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Forma de instalação
+      options:
+        - Docker Compose
+        - PM2 (start.sh ou ecosystem.config.js)
+        - Node.js direto (npm run dev / npm start)
+        - Outra
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: O que aconteceu
+      placeholder: "O bot não responde ao comando #ping..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      placeholder: |
+        1. Rode `npm run dev`
+        2. Escaneie o QR code
+        3. Envie `#ping`
+        4. O bot não responde
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+      placeholder: "O bot deveria responder 'Pong! 🏓'"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / erros
+      description: Saída do terminal, do `pm2 logs w-azap` ou do `docker compose logs app`.
+      render: shell
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Captura de tela
+      description: Arraste a imagem para cá, se ajudar.
+
+  - type: input
+    id: node_version
+    attributes:
+      label: Versão do Node.js
+      description: Saída de `node -v`
+      placeholder: "v22.11.0"
+
+  - type: input
+    id: os
+    attributes:
+      label: Sistema operacional
+      placeholder: "Ubuntu 24.04 / macOS 15 / Windows 11"

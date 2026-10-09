@@ -1,0 +1,49 @@
+# Git
+.git
+.gitattributes
+.gitignore
+.github
+
+# Node
+node_modules
+npm-debug.log*
+.yarn
+
+# Build artifacts
+.next
+out
+*.tsbuildinfo
+
+# Logs / scratch files
+*.log
+logs
+tmp-*.txt
+
+# Runtime data: WhatsApp media and local dev database must never enter the image
+data
+public/media
+.dev-mysql
+uploads
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose*.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# NOTE: patches/ (Baileys patch-package files) is required by `npm ci` — do not ignore *.patch

@@ -1,0 +1,27 @@
+"use client";
+
+import { ChatLayoutClient } from "./chat-layout-client";
+import { useTranslation } from "@/components/i18n-provider";
+
+interface ChatInterfaceProps {
+    sessionId: string | null;
+}
+
+export function ChatInterface({ sessionId }: ChatInterfaceProps) {
+    const { t } = useTranslation();
+    if (!sessionId) {
+        return (
+            <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
+                {t("guard.noSessionSelected")}
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex flex-col h-[calc(100vh-6rem)] gap-4">
+            <div className="flex-1 border rounded-lg overflow-hidden bg-white shadow-sm">
+                <ChatLayoutClient key={sessionId} sessionId={sessionId} />
+            </div>
+        </div>
+    );
+}
