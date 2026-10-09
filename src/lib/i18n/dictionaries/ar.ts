@@ -62,6 +62,7 @@ const ar: Dictionary = {
             settings: "الإعدادات",
             systemMonitor: "مراقبة النظام",
             notifications: "الإشعارات",
+            emailForward: "إعادة التوجيه إلى البريد",
         },
     },
     notifications: {

@@ -62,6 +62,7 @@ const ptBR: Dictionary = {
             settings: "Configurações",
             systemMonitor: "Monitor do Sistema",
             notifications: "Notificações",
+            emailForward: "Encaminhar por e-mail",
         },
     },
     notifications: {

@@ -62,6 +62,7 @@ const ja: Dictionary = {
             settings: "設定",
             systemMonitor: "システムモニター",
             notifications: "通知",
+            emailForward: "メール転送",
         },
     },
     notifications: {
