@@ -85,7 +85,7 @@ export default function ErrorPage({
           </button>
 
           {showDetails && (
-            <div className="mt-4 p-5 bg-black/5 dark:bg-white/5 rounded-xl border border-border/30 text-left space-y-3 max-h-56 overflow-y-auto font-mono text-[11px] leading-relaxed break-all text-muted-foreground custom-scrollbar" suppressHydrationWarning>
+            <div className="mt-4 p-5 bg-black/5 rounded-xl border border-border/30 text-left space-y-3 max-h-56 overflow-y-auto font-mono text-[11px] leading-relaxed break-all text-muted-foreground custom-scrollbar" suppressHydrationWarning>
               <div suppressHydrationWarning>
                 <span className="font-semibold text-foreground">Message:</span> {error.message || 'Unknown runtime error'}
               </div>

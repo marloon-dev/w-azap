@@ -58,7 +58,7 @@ export default function SystemMonitorPage() {
         return (
             <div className="flex h-[80vh] items-center justify-center">
                 <div className="text-center space-y-4">
-                    <Activity className="mx-auto h-12 w-12 text-red-500/50" />
+                    <Activity className="mx-auto h-12 w-12 text-destructive/50" />
                     <h2 className="text-xl font-bold">{t("systemMonitor.accessDenied")}</h2>
                     <p className="text-muted-foreground">{t("systemMonitor.accessDeniedDesc")}</p>
                 </div>
@@ -68,10 +68,10 @@ export default function SystemMonitorPage() {
 
     if (loading && !data) {
         return (
-            <div className="p-4 sm:p-8 space-y-6">
+            <div className="mx-auto w-full max-w-7xl space-y-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">{t("systemMonitor.title")} <Badge className="ml-2" variant="outline">{t("systemMonitor.live")}</Badge></h1>
-                    <p className="text-muted-foreground">{t("systemMonitor.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("systemMonitor.title")} <Badge className="ml-2 align-middle" variant="outline">{t("systemMonitor.live")}</Badge></h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("systemMonitor.subtitle")}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
@@ -104,17 +104,17 @@ export default function SystemMonitorPage() {
     const processMemPercent = (data.process.rss / data.memory.total) * 100;
 
     return (
-        <div className="p-4 sm:p-8 space-y-6 max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="mx-auto w-full max-w-7xl space-y-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground flex items-center gap-2">
                         {t("systemMonitor.title")}
-                        <span className="relative flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        <span className="relative flex h-3 w-3" title={t("systemMonitor.live")}>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
                         </span>
                     </h1>
-                    <p className="text-muted-foreground">{t("systemMonitor.subtitle")}</p>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("systemMonitor.subtitle")}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg border leading-tight">
                     <Server className="h-4 w-4 shrink-0" />
@@ -134,7 +134,7 @@ export default function SystemMonitorPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{data.cpu.load.toFixed(1)}%</div>
-                        <Progress value={data.cpu.load} className="h-2 mt-3" indicatorClassName={data.cpu.load > 85 ? "bg-red-500" : data.cpu.load > 60 ? "bg-orange-500" : "bg-blue-500"} />
+                        <Progress value={data.cpu.load} className="h-2 mt-3" indicatorClassName={data.cpu.load > 85 ? "bg-destructive" : data.cpu.load > 60 ? "bg-warning" : "bg-info"} />
                         <p className="text-xs text-muted-foreground mt-2">{t("systemMonitor.coresAverage", { count: data.cpu.cores.length })}</p>
                     </CardContent>
                 </Card>
@@ -145,7 +145,7 @@ export default function SystemMonitorPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{memPercent.toFixed(1)}%</div>
-                        <Progress value={memPercent} className="h-2 mt-3" indicatorClassName={memPercent > 85 ? "bg-red-500" : memPercent > 60 ? "bg-amber-500" : "bg-purple-500"} />
+                        <Progress value={memPercent} className="h-2 mt-3" indicatorClassName={memPercent > 85 ? "bg-destructive" : memPercent > 60 ? "bg-warning" : "bg-purple-500"} />
                         <p className="text-xs text-muted-foreground mt-2">
                             {formatBytes(data.memory.used)} / {formatBytes(data.memory.total)}
                         </p>
@@ -158,7 +158,7 @@ export default function SystemMonitorPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatBytes(data.process.rss)}</div>
-                        <Progress value={processMemPercent} className="h-2 mt-3" indicatorClassName="bg-green-500" />
+                        <Progress value={processMemPercent} className="h-2 mt-3" indicatorClassName="bg-success" />
                         <p className="text-xs text-muted-foreground mt-2">
                             {t("systemMonitor.processInfo", { uptime: formatUptime(data.process.uptime), heap: formatBytes(data.process.heapUsed) })}
                         </p>
@@ -172,11 +172,11 @@ export default function SystemMonitorPage() {
                     <CardContent>
                         <div className="text-2xl font-bold space-y-1 mt-1">
                             <div className="flex items-center text-sm">
-                                <span className="text-blue-500 font-bold w-10">↓ RX</span>
+                                <span className="text-info font-bold w-10">↓ RX</span>
                                 <span>{formatBytes(data.network[0]?.rx_sec || 0)}/s</span>
                             </div>
                             <div className="flex items-center text-sm">
-                                <span className="text-green-500 font-bold w-10">↑ TX</span>
+                                <span className="text-success font-bold w-10">↑ TX</span>
                                 <span>{formatBytes(data.network[0]?.tx_sec || 0)}/s</span>
                             </div>
                         </div>
@@ -200,10 +200,10 @@ export default function SystemMonitorPage() {
                             {data.cpu.cores.map((load: number, i: number) => (
                                 <div key={i} className="bg-muted/40 p-3 rounded-lg border text-center relative overflow-hidden">
                                     {/* Fake progress bg */}
-                                    {load > 0 && <div className={`absolute bottom-0 left-0 right-0 opacity-20 transition-all duration-300 ${load > 85 ? 'bg-red-500' : 'bg-blue-500'}`} style={{ height: `${load}%` }} />}
+                                    {load > 0 && <div className={`absolute bottom-0 left-0 right-0 opacity-20 transition-all duration-300 ${load > 85 ? 'bg-destructive' : 'bg-info'}`} style={{ height: `${load}%` }} />}
                                     <div className="relative z-10">
                                         <p className="text-xs text-muted-foreground font-mono">{t("systemMonitor.core", { index: i })}</p>
-                                        <p className={`text-lg font-bold ${load > 85 ? 'text-red-500' : ''}`}>{load.toFixed(1)}%</p>
+                                        <p className={`text-lg font-bold ${load > 85 ? 'text-destructive' : ''}`}>{load.toFixed(1)}%</p>
                                     </div>
                                 </div>
                             ))}
@@ -230,8 +230,8 @@ export default function SystemMonitorPage() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Progress value={d.usePercent} className="h-2" indicatorClassName={d.usePercent > 90 ? "bg-red-500" : "bg-primary"} />
-                                    <span className={`text-xs w-10 text-right ${d.usePercent > 90 ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>{d.usePercent.toFixed(1)}%</span>
+                                    <Progress value={d.usePercent} className="h-2" indicatorClassName={d.usePercent > 90 ? "bg-destructive" : "bg-primary"} />
+                                    <span className={`text-xs w-10 text-right ${d.usePercent > 90 ? 'text-destructive font-bold' : 'text-muted-foreground'}`}>{d.usePercent.toFixed(1)}%</span>
                                 </div>
                             </div>
                         ))}

@@ -1,15 +1,13 @@
 import { prisma } from "@/lib/prisma";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
     Plus,
     Wifi,
     WifiOff,
-    MessageSquare,
     Bot,
     Send,
-    Settings,
     QrCode,
     ArrowRight,
     Activity,
@@ -21,6 +19,8 @@ import { getAccessibleSessions } from "@/lib/api-auth";
 import { redirect } from "next/navigation";
 import { getTranslations } from "@/lib/i18n/server";
 import { translateValue } from "@/lib/i18n/translate";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { EmptyState } from "@/components/dashboard/empty-state";
 
 export const dynamic = 'force-dynamic';
 
@@ -36,12 +36,12 @@ export default async function DashboardPage() {
     const totalSessions = sessions.length;
     const connectedSessions = sessions.filter(s => s.status === 'CONNECTED').length;
     const disconnectedSessions = totalSessions - connectedSessions; // Anything not connected is disconnected
-    const otherSessions = 0;
 
     // Fetch auto-reply count for accessible sessions
     let autoReplyCount = 0;
     try {
-        const sessionIds = sessions.map(s => s.sessionId);
+        // AutoReply.sessionId references Session.id (CUID), not the public session slug
+        const sessionIds = sessions.map(s => s.id);
         if (sessionIds.length > 0) {
             autoReplyCount = await prisma.autoReply.count({
                 where: { sessionId: { in: sessionIds } }
@@ -57,32 +57,32 @@ export default async function DashboardPage() {
             value: totalSessions,
             icon: QrCode,
             description: t("home.totalSessionsDesc"),
-            color: "text-blue-600",
-            bg: "bg-blue-50",
+            color: "text-info",
+            bg: "bg-info/10",
         },
         {
             title: t("home.connected"),
             value: connectedSessions,
             icon: Wifi,
             description: t("home.connectedDesc"),
-            color: "text-emerald-600",
-            bg: "bg-emerald-50",
+            color: "text-success",
+            bg: "bg-success/10",
         },
         {
             title: t("home.disconnected"),
             value: disconnectedSessions,
             icon: WifiOff,
             description: t("home.disconnectedDesc"),
-            color: "text-red-500",
-            bg: "bg-red-50",
+            color: "text-destructive",
+            bg: "bg-destructive/10",
         },
         {
             title: t("home.autoReplyRules"),
             value: autoReplyCount,
             icon: Zap,
             description: t("home.autoReplyRulesDesc"),
-            color: "text-amber-600",
-            bg: "bg-amber-50",
+            color: "text-warning",
+            bg: "bg-warning/10",
         },
     ];
 
@@ -94,122 +94,114 @@ export default async function DashboardPage() {
     ];
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">{t("home.title")}</h2>
-                    <p className="text-sm text-slate-500 mt-1">{t("home.subtitle")}</p>
-                </div>
-                <Link href="/dashboard/sessions">
-                    <Button size="sm" className="gap-2">
-                        <Plus className="h-4 w-4" /> {t("home.addSession")}
+        <div className="mx-auto w-full max-w-7xl space-y-8">
+            <PageHeader
+                title={t("home.title")}
+                description={t("home.subtitle")}
+                actions={
+                    <Button asChild size="sm" className="gap-2">
+                        <Link href="/dashboard/sessions">
+                            <Plus className="size-4" aria-hidden="true" /> {t("home.addSession")}
+                        </Link>
                     </Button>
-                </Link>
-            </div>
+                }
+            />
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Stats */}
+            <section aria-label={t("home.sessions")} className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat) => {
                     const Icon = stat.icon;
                     return (
-                        <Card key={stat.title} className="glass-panel border-border/50 shadow-sm hover:shadow-md hover:shadow-primary/5 transition-all duration-300">
-                            <CardContent className="p-4 sm:p-5">
-                                <div className="flex items-start justify-between">
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{stat.title}</p>
-                                        <p className="text-2xl sm:text-3xl font-extrabold text-foreground">{stat.value}</p>
-                                        <p className="text-xs text-muted-foreground/70">{stat.description}</p>
-                                    </div>
-                                    <div className={`${stat.bg} p-2.5 rounded-xl border object-contain border-white/20 dark:border-white/10 shadow-sm`}>
-                                        <Icon className={`h-5 w-5 ${stat.color}`} />
-                                    </div>
+                        <Card key={stat.title} className="gap-0 py-0">
+                            <CardContent className="flex items-start justify-between gap-3 p-4 sm:p-5">
+                                <div className="min-w-0 space-y-1">
+                                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                                    <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">{stat.value}</p>
+                                    <p className="text-xs text-muted-foreground">{stat.description}</p>
                                 </div>
+                                <span className={`${stat.bg} flex size-10 shrink-0 items-center justify-center rounded-lg`} aria-hidden="true">
+                                    <Icon className={`size-5 ${stat.color}`} />
+                                </span>
                             </CardContent>
                         </Card>
                     );
                 })}
-            </div>
+            </section>
 
-            {/* Quick Actions */}
-            <div>
-                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">{t("home.quickActions")}</h3>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Quick actions */}
+            <section aria-labelledby="quick-actions-title">
+                <h2 id="quick-actions-title" className="mb-3 text-base font-semibold text-foreground">{t("home.quickActions")}</h2>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     {quickActions.map((action) => {
                         const Icon = action.icon;
                         return (
-                            <Link key={action.href} href={action.href}>
-                                <Card className="glass-panel border-border/50 shadow-sm hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer h-full">
-                                    <CardContent className="p-4 flex items-center gap-3">
-                                        <div className="bg-muted/50 p-2.5 rounded-xl group-hover:bg-primary transition-colors border border-border/50 shadow-sm">
-                                            <Icon className="h-5 w-5 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-semibold text-foreground truncate">{action.label}</p>
-                                            <p className="text-xs text-muted-foreground/80 truncate">{action.description}</p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                            <Link
+                                key={action.href}
+                                href={action.href}
+                                className="group flex items-center gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-primary/40 hover:bg-accent/50"
+                            >
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground" aria-hidden="true">
+                                    <Icon className="size-5" />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="block text-sm font-medium text-foreground">{action.label}</span>
+                                    <span className="block text-xs text-muted-foreground">{action.description}</span>
+                                </span>
                             </Link>
                         );
                     })}
                 </div>
-            </div>
+            </section>
 
-            {/* Sessions List */}
-            <div>
-                <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t("home.sessions")}</h3>
-                    <Link href="/dashboard/sessions" className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors">
-                        {t("home.viewAll")} <ArrowRight size={14} />
+            {/* Sessions */}
+            <section aria-labelledby="sessions-title">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                    <h2 id="sessions-title" className="text-base font-semibold text-foreground">{t("home.sessions")}</h2>
+                    <Link href="/dashboard/sessions" className="flex items-center gap-1 rounded-md text-sm font-medium text-primary transition-colors hover:text-primary/80">
+                        {t("home.viewAll")} <ArrowRight className="size-4" aria-hidden="true" />
                     </Link>
                 </div>
 
                 {sessions.length === 0 ? (
-                    <Card className="border-dashed border-2 border-slate-200 shadow-none">
-                        <CardContent className="py-12 text-center">
-                            <div className="bg-slate-100 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <QrCode className="h-6 w-6 text-slate-400" />
-                            </div>
-                            <p className="text-sm font-medium text-slate-600 mb-1">{t("home.noSessions")}</p>
-                            <p className="text-xs text-slate-400 mb-4">{t("home.noSessionsDesc")}</p>
-                            <Link href="/dashboard/sessions">
-                                <Button size="sm" variant="outline" className="gap-2">
-                                    <Plus className="h-4 w-4" /> {t("home.createSession")}
+                    <Card className="border-dashed py-0 shadow-none">
+                        <EmptyState
+                            icon={QrCode}
+                            title={t("home.noSessions")}
+                            description={t("home.noSessionsDesc")}
+                            action={
+                                <Button asChild size="sm" className="gap-2">
+                                    <Link href="/dashboard/sessions">
+                                        <Plus className="size-4" aria-hidden="true" /> {t("home.createSession")}
+                                    </Link>
                                 </Button>
-                            </Link>
-                        </CardContent>
+                            }
+                        />
                     </Card>
                 ) : (
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {sessions.map(s => {
                             const isConnected = s.status === 'CONNECTED';
-                            const isDisconnected = !isConnected;
-
                             return (
-                                <Link key={s.id} href={`/dashboard/sessions/${s.sessionId}`}>
-                                    <Card className="glass-panel border-border/50 shadow-sm hover:shadow-md hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer h-full">
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-bold text-foreground truncate">{s.name}</p>
-                                                    <p className="text-xs text-muted-foreground font-mono truncate mt-1">{s.sessionId}</p>
-                                                </div>
-                                                <div className={`flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full flex-shrink-0
-                                                    ${isConnected ? 'bg-emerald-50 text-emerald-700' : isDisconnected ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}
-                                                `}>
-                                                    <span className={`h-1.5 w-1.5 rounded-full ${isConnected ? 'bg-emerald-500' : isDisconnected ? 'bg-red-400' : 'bg-amber-400'}`} />
-                                                    {translateValue(t, "status", s.status)}
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
+                                <li key={s.id}>
+                                    <Link
+                                        href={`/dashboard/sessions/${s.sessionId}`}
+                                        className="flex h-full items-start justify-between gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-primary/40 hover:bg-accent/50"
+                                    >
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block truncate text-sm font-semibold text-foreground">{s.name}</span>
+                                            <span className="mt-1 block truncate font-mono text-xs text-muted-foreground">{s.sessionId}</span>
+                                        </span>
+                                        <span className={`flex shrink-0 items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium ${isConnected ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                                            <span className={`size-1.5 rounded-full ${isConnected ? 'bg-success' : 'bg-destructive'}`} aria-hidden="true" />
+                                            {translateValue(t, "status", s.status)}
+                                        </span>
+                                    </Link>
+                                </li>
                             );
                         })}
-                    </div>
+                    </ul>
                 )}
-            </div>
+            </section>
         </div>
     );
 }

@@ -366,7 +366,7 @@ export default function SchedulerPage() {
         sendAtStr: string, setSendAtStr: any,
         sendTimeStr: string, setSendTimeStr: any
     ) => (
-        <div className="space-y-4 border p-4 rounded-md bg-slate-50 mt-4">
+        <div className="space-y-4 border p-4 rounded-md bg-muted/50 mt-4">
             <Label className="font-semibold text-base">{t("scheduler.scheduleType")}</Label>
             <RadioGroup value={isRec} onValueChange={setRec} className="flex gap-4">
                 <div className="flex items-center space-x-2">
@@ -380,7 +380,7 @@ export default function SchedulerPage() {
             </RadioGroup>
 
             {isRec === "once" && (
-                <div className="space-y-2 mt-4 pt-4 border-t border-slate-200">
+                <div className="space-y-2 mt-4 pt-4 border-t border-border">
                     <Label>{t("scheduler.sendAt")}</Label>
                     <Input type="datetime-local" value={sendAtStr} onChange={e => setSendAtStr(e.target.value)} />
                     <p className="text-xs text-muted-foreground">{t("scheduler.sendAtHint")}</p>
@@ -388,7 +388,7 @@ export default function SchedulerPage() {
             )}
 
             {isRec === "recurring" && (
-                <div className="space-y-4 pt-4 mt-2 border-t border-slate-200">
+                <div className="space-y-4 pt-4 mt-2 border-t border-border">
                     <Label className="font-medium">{t("scheduler.repeatInterval")}</Label>
                     <Select value={type} onValueChange={setType}>
                         <SelectTrigger>
@@ -438,7 +438,7 @@ export default function SchedulerPage() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="space-y-2 pt-2 border-t border-slate-200">
+                            <div className="space-y-2 pt-2 border-t border-border">
                                 <Label>{t("scheduler.timeOfDay")}</Label>
                                 <Input type="time" value={sendTimeStr} onChange={e => setSendTimeStr(e.target.value)} className="w-32" />
                             </div>
@@ -464,13 +464,13 @@ export default function SchedulerPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                            <CalendarClock className="h-5 w-5 sm:h-6 sm:w-6" /> {t("scheduler.title")}
+                        <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                            {t("scheduler.title")}
                         </h1>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
                             {selectedSessionId ? t("scheduler.subtitle") : t("scheduler.selectSession")}
                         </p>
                     </div>
@@ -565,7 +565,7 @@ export default function SchedulerPage() {
                         <TabsTrigger value="history">{t("scheduler.historyLogs")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="pending" className="mt-0">
-                        {loading ? <div className="text-center p-8">{t("ui.loading")}</div> : filteredMessages.length === 0 ? <div className="text-center p-8 text-muted-foreground border rounded bg-slate-50">{t("scheduler.noPending")}</div> : (
+                        {loading ? <div className="text-center p-8">{t("ui.loading")}</div> : filteredMessages.length === 0 ? <div className="text-center p-8 text-muted-foreground border rounded bg-muted/50">{t("scheduler.noPending")}</div> : (
                             <div className="grid gap-4">
                                 {filteredMessages.map(msg => (
                                     <Card key={msg.id}>
@@ -573,17 +573,17 @@ export default function SchedulerPage() {
                                             <div>
                                                 <div className="font-bold flex items-center gap-2">
                                                     {msg.jid.split('@')[0]}
-                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-100 text-purple-800">{t("scheduler.group")}</span> : null}
-                                                    {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-orange-100 text-orange-800">{t("scheduler.channel")}</span> : null}
-                                                    <span className="text-xs px-2 py-0.5 rounded font-normal bg-yellow-100 text-yellow-800">{translateValue(t, "status", msg.status)}</span>
-                                                    {msg.cronExpression && <span className="text-xs px-2 py-0.5 rounded font-normal bg-blue-100 text-blue-800">{t("scheduler.recurring")}</span>}
+                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-500/10 text-purple-600 dark:text-purple-400">{t("scheduler.group")}</span> : null}
+                                                    {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{t("scheduler.channel")}</span> : null}
+                                                    <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{translateValue(t, "status", msg.status)}</span>
+                                                    {msg.cronExpression && <span className="text-xs px-2 py-0.5 rounded font-normal bg-info/10 text-info">{t("scheduler.recurring")}</span>}
                                                 </div>
                                                 <div className="text-sm font-medium mt-1">{msg.content || t("scheduler.mediaOnly")}</div>
                                                 <div className="text-xs text-muted-foreground mt-1">{t("scheduler.nextRun", { time: moment(msg.sendAt).tz(systemTimezone).format('YYYY-MM-DD HH:mm:ss') })}</div>
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button variant="ghost" size="sm" onClick={() => handleEdit(msg)}>{t("ui.edit")}</Button>
-                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(msg.id)} className="text-red-500 hover:bg-red-50"><Trash2 className="w-4 h-4" /></Button>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(msg.id)} className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -592,7 +592,7 @@ export default function SchedulerPage() {
                         )}
                     </TabsContent>
                     <TabsContent value="history" className="mt-0">
-                        {loading ? <div className="text-center p-8">{t("ui.loading")}</div> : filteredMessages.length === 0 ? <div className="text-center p-8 text-muted-foreground border rounded bg-slate-50">{t("scheduler.noHistory")}</div> : (
+                        {loading ? <div className="text-center p-8">{t("ui.loading")}</div> : filteredMessages.length === 0 ? <div className="text-center p-8 text-muted-foreground border rounded bg-muted/50">{t("scheduler.noHistory")}</div> : (
                             <div className="grid gap-4">
                                 {filteredMessages.map(msg => (
                                     <Card key={msg.id} className="opacity-80">
@@ -600,15 +600,15 @@ export default function SchedulerPage() {
                                             <div>
                                                 <div className="font-bold flex items-center gap-2">
                                                     {msg.jid.split('@')[0]}
-                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-100 text-purple-800">{t("scheduler.group")}</span> : null}
-                                                    {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-orange-100 text-orange-800">{t("scheduler.channel")}</span> : null}
-                                                    {msg.status === 'SENT' ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-green-100 text-green-800 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {t("status.SENT")}</span> : <span className="text-xs px-2 py-0.5 rounded font-normal bg-red-100 text-red-800 flex items-center gap-1"><XCircle className="w-3 h-3"/> {t("status.FAILED")}</span>}
+                                                    {msg.jid.includes("@g.us") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-purple-500/10 text-purple-600 dark:text-purple-400">{t("scheduler.group")}</span> : null}
+                                                    {msg.jid.includes("@newsletter") ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-warning/10 text-warning">{t("scheduler.channel")}</span> : null}
+                                                    {msg.status === 'SENT' ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-success/10 text-success flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {t("status.SENT")}</span> : <span className="text-xs px-2 py-0.5 rounded font-normal bg-destructive/10 text-destructive flex items-center gap-1"><XCircle className="w-3 h-3"/> {t("status.FAILED")}</span>}
                                                 </div>
                                                 <div className="text-sm font-medium mt-1">{msg.content || t("scheduler.mediaOnly")}</div>
                                                 <div className="text-xs text-muted-foreground mt-1">{t("scheduler.processed", { time: moment(msg.sendAt).tz(systemTimezone).format('YYYY-MM-DD HH:mm:ss') })}</div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(msg.id)} className="text-red-500 hover:bg-red-50"><Trash2 className="w-4 h-4" /></Button>
+                                                <Button variant="ghost" size="icon" onClick={() => setDeleteId(msg.id)} className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -626,7 +626,7 @@ export default function SchedulerPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                            <AlertDialogAction onClick={confirmDelete} className="bg-red-600">{t("ui.delete")}</AlertDialogAction>
+                            <AlertDialogAction onClick={confirmDelete} className="bg-destructive">{t("ui.delete")}</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

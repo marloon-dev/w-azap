@@ -34,7 +34,7 @@ function CopyButton({ code }: { code: string }) {
         }).catch(() => toast.error("Copy failed"));
     }, [code]);
     return (
-        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer">
             {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
             {copied ? "Copied!" : "Copy"}
         </button>
@@ -126,30 +126,30 @@ export function DocsClient({ content, toc }: DocsClientProps) {
         <div className="space-y-1">
             <button
                 onClick={() => section.items.length > 0 ? onToggle(section.id) : onScroll(section.id, isMobile)}
-                className="flex items-center justify-between w-full text-left font-semibold text-gray-900 hover:text-blue-600 transition-colors py-2 group" // Increased touch target py-2
+                className="flex items-center justify-between w-full text-left font-semibold text-foreground hover:text-info transition-colors py-2 group" // Increased touch target py-2
             >
                 <span className="truncate pr-2">{section.title}</span>
                 {section.items.length > 0 && (
                     <ChevronRight
-                        className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 group-hover:text-blue-500 ${isOpen ? "rotate-90" : ""}`}
+                        className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200 group-hover:text-info ${isOpen ? "rotate-90" : ""}`}
                     />
                 )}
             </button>
 
             {isOpen && (
-                <div className="space-y-1 ml-2 border-l-2 border-slate-100 pl-2"> {/* Removed heavy animate-in for performance */}
+                <div className="space-y-1 ml-2 border-l-2 border-border pl-2"> {/* Removed heavy animate-in for performance */}
                     {section.items.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => onScroll(item.id, isMobile)}
-                            className="block text-left w-full text-sm text-gray-500 hover:text-blue-600 hover:bg-slate-50 py-2 px-2 rounded transition-colors truncate" // Increased touch target py-2
+                            className="block text-left w-full text-sm text-muted-foreground hover:text-info hover:bg-muted/50 py-2 px-2 rounded transition-colors truncate" // Increased touch target py-2
                             title={item.text}
                         >
                             {item.text}
                         </button>
                     ))}
                     {section.items.length === 0 && (
-                        <p className="text-xs text-gray-300 italic px-2 py-1">No subsections</p>
+                        <p className="text-xs text-muted-foreground italic px-2 py-1">No subsections</p>
                     )}
                 </div>
             )}
@@ -171,7 +171,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                     />
                 ))
             ) : (
-                <p className="text-sm text-gray-400 text-center py-4">No results found</p>
+                <p className="text-sm text-muted-foreground text-center py-4">No results found</p>
             )}
         </nav>
     );
@@ -179,13 +179,13 @@ export function DocsClient({ content, toc }: DocsClientProps) {
     return (
         <div className="flex-1 max-w-7xl mx-auto w-full flex items-start relative px-4 sm:px-6 lg:px-8">
             {/* Sidebar (Desktop) */}
-            <aside className="hidden lg:block w-72 sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto border-r border-gray-100 pr-6 mt-8 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+            <aside className="hidden lg:block w-72 sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto border-r border-border pr-6 mt-8 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
                 <div className="mb-8 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                         type="text"
                         placeholder="Filter documentation..."
-                        className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                        className="w-full pl-9 pr-4 py-2.5 text-sm bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-info/20 focus:border-info/60 transition-all placeholder:text-muted-foreground"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -197,22 +197,22 @@ export function DocsClient({ content, toc }: DocsClientProps) {
             <div className="lg:hidden fixed bottom-4 right-4 z-50">
                 <Sheet open={openMobileMenu} onOpenChange={setOpenMobileMenu}>
                     <SheetTrigger asChild>
-                        <Button size="icon" className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 text-white transition-transform hover:scale-105 active:scale-95">
+                        <Button size="icon" className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg shadow-info/20 bg-info hover:bg-info text-info-foreground transition-transform hover:scale-105 active:scale-95">
                             <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-[85vw] sm:w-[400px] p-0 flex flex-col"> {/* Adjusted width for mobile */}
-                        <div className="p-6 border-b bg-gray-50/50">
-                            <h2 className="text-lg font-bold text-gray-900">Documentation</h2>
-                            <p className="text-xs text-gray-500 mt-1">Navigate through sections</p>
+                        <div className="p-6 border-b bg-muted/25">
+                            <h2 className="text-lg font-bold text-foreground">Documentation</h2>
+                            <p className="text-xs text-muted-foreground mt-1">Navigate through sections</p>
                         </div>
                         <div className="p-4 flex-1 overflow-y-auto overscroll-contain"> {/* Added overscroll-contain */}
                             <div className="mb-6 relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <input
                                     type="text"
                                     placeholder="Search topic..."
-                                    className="w-full pl-9 pr-4 py-3 text-base bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" // Larger text/padding for mobile
+                                    className="w-full pl-9 pr-4 py-3 text-base bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-info" // Larger text/padding for mobile
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -225,16 +225,16 @@ export function DocsClient({ content, toc }: DocsClientProps) {
 
             {/* Main Content */}
             <main className="flex-1 min-w-0 py-6 lg:py-8 lg:pl-12 overflow-x-hidden">
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 mb-8 rounded-r-lg">
+                <div className="bg-info/10 border-l-4 border-info/60 p-3 sm:p-4 mb-8 rounded-r-lg">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg className="h-5 w-5 text-info" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm text-blue-700">
-                                For the most up-to-date API reference and interactive testing, please check the <Link href="/swagger" className="font-medium underline hover:text-blue-600">Swagger UI</Link> or the <Link href="/dashboard/api-docs" className="font-medium underline hover:text-blue-600">Dashboard API Docs</Link>.
+                            <p className="text-sm text-info">
+                                For the most up-to-date API reference and interactive testing, please check the <Link href="/swagger" className="font-medium underline hover:text-info">Swagger UI</Link> or the <Link href="/dashboard/api-docs" className="font-medium underline hover:text-info">Dashboard API Docs</Link>.
                             </p>
                         </div>
                     </div>
@@ -256,9 +256,9 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                 const match = /language-(\w+)/.exec(className || '');
                                 const codeStr = String(children).replace(/\n$/, '');
                                 return !inline && match ? (
-                                    <div className="rounded-xl overflow-hidden my-6 border border-gray-200 shadow-sm ring-1 ring-gray-900/5 bg-gray-950">
-                                        <div className="bg-gray-50/90 px-4 py-2.5 flex items-center justify-between border-b border-gray-200">
-                                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">{match[1]}</span>
+                                    <div className="rounded-xl overflow-hidden my-6 border border-border shadow-sm ring-1 ring-input/5 bg-gray-950">
+                                        <div className="bg-muted/45 px-4 py-2.5 flex items-center justify-between border-b border-border">
+                                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{match[1]}</span>
                                             <button onClick={() => {
                                                 navigator.clipboard.writeText(codeStr).then(() => {
                                                     const btn = document.activeElement;
@@ -268,7 +268,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                                         setTimeout(() => btn.innerHTML = orig, 2000);
                                                     }
                                                 }).catch(() => {});
-                                            }} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors cursor-pointer">
+                                            }} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" className="h-3.5 w-3.5" aria-hidden="true">
                                                     <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
                                                     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
@@ -281,19 +281,19 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                                         </pre>
                                     </div>
                                 ) : (
-                                    <code className="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm font-mono border border-gray-200 break-all" {...props}>
+                                    <code className="bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono border border-border break-all" {...props}>
                                         {children}
                                     </code>
                                 )
                             },
                             table: ({ node, ...props }) => (
                         <div className="overflow-x-auto my-6 border rounded-lg shadow-sm">
-                                    <table {...props} className="min-w-full divide-y divide-gray-200 text-sm sm:text-base" />
+                                    <table {...props} className="min-w-full divide-y divide-border text-sm sm:text-base" />
                                 </div>
                             ),
-                            thead: ({ node, ...props }) => <thead {...props} className="bg-gray-50" />,
-                            th: ({ node, ...props }) => <th {...props} className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" />,
-                            td: ({ node, ...props }) => <td {...props} className="px-3 sm:px-4 py-3 text-sm text-gray-500 break-words whitespace-normal" />,
+                            thead: ({ node, ...props }) => <thead {...props} className="bg-muted/50" />,
+                            th: ({ node, ...props }) => <th {...props} className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider" />,
+                            td: ({ node, ...props }) => <td {...props} className="px-3 sm:px-4 py-3 text-sm text-muted-foreground break-words whitespace-normal" />,
                             pre: ({ node, ...props }) => <pre {...props} /> // Passthrough to code block handler
                         }}
                     >
@@ -301,7 +301,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                     </ReactMarkdown>
                 </article>
 
-                <footer className="mt-20 pt-8 border-t text-center text-sm text-gray-400">
+                <footer className="mt-20 pt-8 border-t text-center text-sm text-muted-foreground">
                     <p>© {new Date().getFullYear()} W-AZAP. All rights reserved.</p>
                 </footer>
             </main>

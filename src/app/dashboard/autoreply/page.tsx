@@ -194,11 +194,11 @@ export default function AutoReplyPage() {
 
     return (
         <SessionGuard>
-            <div className="max-w-5xl space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">{t("autoReply.title")}</h1>
-                    <p className="text-muted-foreground">{t("autoReply.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("autoReply.title")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("autoReply.subtitle")}</p>
                 </div>
 
                 <Dialog open={isCreateOpen} onOpenChange={(open) => {
@@ -362,7 +362,7 @@ export default function AutoReplyPage() {
                                     {rule.response}
                                 </div>
                                 {rule.isMedia && (
-                                    <div className="mt-3 text-xs flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-1 rounded w-fit">
+                                    <div className="mt-3 text-xs flex items-center gap-1 text-info bg-info/10 px-2 py-1 rounded w-fit">
                                         <ImageIcon className="w-3 h-3" /> {t("autoReply.includesMedia")}
                                     </div>
                                 )}

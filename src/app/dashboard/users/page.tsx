@@ -125,9 +125,9 @@ export default function UsersPage() {
 
     const getRoleIcon = (role: string) => {
         switch (role) {
-            case "SUPERADMIN": return <ShieldAlert className="h-4 w-4 text-red-500" />;
-            case "OWNER": return <ShieldCheck className="h-4 w-4 text-blue-500" />;
-            default: return <User className="h-4 w-4 text-gray-500" />;
+            case "SUPERADMIN": return <ShieldAlert className="h-4 w-4 text-destructive" />;
+            case "OWNER": return <ShieldCheck className="h-4 w-4 text-info" />;
+            default: return <User className="h-4 w-4 text-muted-foreground" />;
         }
     };
 
@@ -137,13 +137,13 @@ export default function UsersPage() {
     // If empty list and not loading, likely unauthorized or empty.
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-                        <UsersIcon className="h-5 w-5 sm:h-6 sm:w-6" /> {t("users.title")}
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                        {t("users.title")}
                     </h1>
-                    <p className="text-sm text-muted-foreground">{t("users.subtitle")}</p>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("users.subtitle")}</p>
                 </div>
                 <Button size="sm" onClick={() => {
                     setEditingUser(null);
@@ -225,7 +225,7 @@ export default function UsersPage() {
                             <div className="p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500">
+                                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center font-bold text-muted-foreground">
                                             {user.name?.charAt(0) || user.email.charAt(0)}
                                         </div>
                                         <div>
@@ -244,7 +244,7 @@ export default function UsersPage() {
                                     <span>{t("users.joined", { date: new Date(user.createdAt).toLocaleDateString(locale) })}</span>
                                 </div>
                             </div>
-                            <div className="bg-slate-50 p-3 flex justify-end gap-2 border-t">
+                            <div className="bg-muted/50 p-3 flex justify-end gap-2 border-t">
                                 <Button size="sm" variant="ghost" onClick={() => {
                                     setEditingUser(user);
                                     setFormData({
@@ -276,7 +276,7 @@ export default function UsersPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("ui.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">{t("users.continue")}</AlertDialogAction>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive">{t("users.continue")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

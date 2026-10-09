@@ -338,11 +338,11 @@ export default function LabelsPage() {
 
     return (
         <SessionGuard>
-            <div className="max-w-5xl space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{t("labels.title")}</h1>
-                    <p className="text-sm text-muted-foreground">{t("labels.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("labels.title")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("labels.subtitle")}</p>
                 </div>
 
                 <Dialog open={isCreateOpen} onOpenChange={(open) => {

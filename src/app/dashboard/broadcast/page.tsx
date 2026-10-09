@@ -201,10 +201,10 @@ export default function BroadcastPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
                 <div>
-                    <h2 className="text-xl sm:text-3xl font-bold tracking-tight">{t("broadcast.title")}</h2>
-                    <p className="text-muted-foreground text-sm mt-1">{t("broadcast.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("broadcast.title")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("broadcast.subtitle")}</p>
                 </div>
 
                 {/* Tabs */}
@@ -298,17 +298,17 @@ export default function BroadcastPage() {
                         {broadcastProgress && (
                             <Card className={`border-2 transition-colors ${
                                 broadcastProgress.status === "completed"
-                                    ? (broadcastProgress.failed === 0 ? "border-green-500/30 bg-green-50/30 dark:bg-green-950/10" : "border-yellow-500/30 bg-yellow-50/30 dark:bg-yellow-950/10")
-                                    : "border-blue-500/30 bg-blue-50/30 dark:bg-blue-950/10"
+                                    ? (broadcastProgress.failed === 0 ? "border-success/30 bg-success/15" : "border-warning/30 bg-warning/15")
+                                    : "border-info/30 bg-info/15"
                             }`}>
                                 <CardHeader className="pb-3">
                                     <CardTitle className="flex items-center gap-2 text-lg">
                                         {broadcastProgress.status === "running" ? (
-                                            <><Radio className="h-5 w-5 text-blue-500 animate-pulse" /><span>{t("broadcast.inProgress")}</span></>
+                                            <><Radio className="h-5 w-5 text-info animate-pulse" /><span>{t("broadcast.inProgress")}</span></>
                                         ) : broadcastProgress.failed === 0 ? (
-                                            <><CheckCircle2 className="h-5 w-5 text-green-500" /><span>{t("broadcast.completed")}</span></>
+                                            <><CheckCircle2 className="h-5 w-5 text-success" /><span>{t("broadcast.completed")}</span></>
                                         ) : (
-                                            <><AlertTriangle className="h-5 w-5 text-yellow-500" /><span>{t("broadcast.completedWithErrors")}</span></>
+                                            <><AlertTriangle className="h-5 w-5 text-warning" /><span>{t("broadcast.completedWithErrors")}</span></>
                                         )}
                                     </CardTitle>
                                     <CardDescription>ID: {broadcastProgress.broadcastId}</CardDescription>
@@ -326,13 +326,13 @@ export default function BroadcastPage() {
 
                                     <div className="grid grid-cols-3 gap-3">
                                         <div className="bg-background rounded-lg p-3 text-center border">
-                                            <div className="text-2xl font-bold text-green-600">{broadcastProgress.sent}</div>
+                                            <div className="text-2xl font-bold text-success">{broadcastProgress.sent}</div>
                                             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
                                                 <CheckCircle2 className="h-3 w-3" /> {t("broadcast.sent")}
                                             </div>
                                         </div>
                                         <div className="bg-background rounded-lg p-3 text-center border">
-                                            <div className="text-2xl font-bold text-red-500">{broadcastProgress.failed}</div>
+                                            <div className="text-2xl font-bold text-destructive">{broadcastProgress.failed}</div>
                                             <div className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-1">
                                                 <XCircle className="h-3 w-3" /> {t("broadcast.failed")}
                                             </div>
@@ -349,7 +349,7 @@ export default function BroadcastPage() {
 
                                     {broadcastProgress.status === "running" && broadcastProgress.current && (
                                         <div className="flex items-center gap-2 text-sm px-3 py-2 bg-muted/50 rounded-lg">
-                                            <RefreshCw className="h-3.5 w-3.5 animate-spin text-blue-500" />
+                                            <RefreshCw className="h-3.5 w-3.5 animate-spin text-info" />
                                             <span className="text-muted-foreground">{t("broadcast.nowSending")}</span>
                                             <span className="font-mono font-medium">{formatJid(broadcastProgress.current)}</span>
                                         </div>
@@ -357,14 +357,14 @@ export default function BroadcastPage() {
 
                                     {broadcastProgress.status === "completed" && broadcastProgress.errors && broadcastProgress.errors.length > 0 && (
                                         <div className="space-y-2">
-                                            <h4 className="text-sm font-semibold text-red-600 flex items-center gap-1.5">
+                                            <h4 className="text-sm font-semibold text-destructive flex items-center gap-1.5">
                                                 <XCircle className="h-4 w-4" /> {t("broadcast.failedCount", { count: broadcastProgress.errors.length })}
                                             </h4>
-                                            <div className="max-h-40 overflow-y-auto bg-red-50 dark:bg-red-950/30 rounded-lg p-2 space-y-1">
+                                            <div className="max-h-40 overflow-y-auto bg-destructive/10 rounded-lg p-2 space-y-1">
                                                 {broadcastProgress.errors.map((err, i) => (
                                                     <div key={i} className="flex justify-between items-center text-xs py-1 px-2 bg-background/60 rounded">
                                                         <span className="font-mono">{formatJid(err.jid)}</span>
-                                                        <span className="text-red-500 truncate ml-2 max-w-[200px]">{err.error}</span>
+                                                        <span className="text-destructive truncate ml-2 max-w-[200px]">{err.error}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -404,10 +404,10 @@ export default function BroadcastPage() {
                                             <div className="shrink-0">
                                                 {log.status === "completed" ? (
                                                     log.failed === 0
-                                                        ? <CheckCircle2 className="h-8 w-8 text-green-500" />
-                                                        : <AlertTriangle className="h-8 w-8 text-yellow-500" />
+                                                        ? <CheckCircle2 className="h-8 w-8 text-success" />
+                                                        : <AlertTriangle className="h-8 w-8 text-warning" />
                                                 ) : (
-                                                    <Radio className="h-8 w-8 text-blue-500 animate-pulse" />
+                                                    <Radio className="h-8 w-8 text-info animate-pulse" />
                                                 )}
                                             </div>
 
@@ -416,10 +416,10 @@ export default function BroadcastPage() {
                                                 <p className="text-sm font-medium truncate">{log.message}</p>
                                                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                                                     <span className="flex items-center gap-1">
-                                                        <CheckCircle2 className="h-3 w-3 text-green-500" /> {log.sent}
+                                                        <CheckCircle2 className="h-3 w-3 text-success" /> {log.sent}
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <XCircle className="h-3 w-3 text-red-500" /> {log.failed}
+                                                        <XCircle className="h-3 w-3 text-destructive" /> {log.failed}
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="h-3 w-3" /> {formatTime(log.startedAt)}
@@ -445,8 +445,8 @@ export default function BroadcastPage() {
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
                                 {selectedLog?.status === "completed"
-                                    ? <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                    : <Radio className="h-5 w-5 text-blue-500 animate-pulse" />
+                                    ? <CheckCircle2 className="h-5 w-5 text-success" />
+                                    : <Radio className="h-5 w-5 text-info animate-pulse" />
                                 }
                                 {t("broadcast.detailTitle")}
                             </DialogTitle>
@@ -461,11 +461,11 @@ export default function BroadcastPage() {
                                 {/* Summary */}
                                 <div className="grid grid-cols-3 gap-3">
                                     <div className="bg-muted/30 rounded-lg p-3 text-center">
-                                        <div className="text-xl font-bold text-green-600">{selectedLog.sent}</div>
+                                        <div className="text-xl font-bold text-success">{selectedLog.sent}</div>
                                         <div className="text-xs text-muted-foreground">{t("broadcast.sent")}</div>
                                     </div>
                                     <div className="bg-muted/30 rounded-lg p-3 text-center">
-                                        <div className="text-xl font-bold text-red-500">{selectedLog.failed}</div>
+                                        <div className="text-xl font-bold text-destructive">{selectedLog.failed}</div>
                                         <div className="text-xs text-muted-foreground">{t("broadcast.failed")}</div>
                                     </div>
                                     <div className="bg-muted/30 rounded-lg p-3 text-center">
@@ -494,20 +494,20 @@ export default function BroadcastPage() {
                                             {selectedLog.recipients.map(r => (
                                                 <div key={r.id}
                                                     className={`flex items-center justify-between gap-2 text-xs py-1.5 px-2 rounded ${
-                                                        r.status === "sent" ? "bg-green-500/5" :
-                                                        r.status === "failed" ? "bg-red-500/5" : "bg-muted/30"
+                                                        r.status === "sent" ? "bg-success/5" :
+                                                        r.status === "failed" ? "bg-destructive/5" : "bg-muted/30"
                                                     }`}
                                                 >
                                                     <span className="font-mono truncate">{formatJid(r.jid)}</span>
                                                     <div className="flex items-center gap-2 shrink-0">
                                                         <span className={`px-1.5 py-0.5 rounded font-medium ${
-                                                            r.status === "sent" ? "text-green-600 bg-green-500/10" :
-                                                            r.status === "failed" ? "text-red-500 bg-red-500/10" : "text-muted-foreground bg-muted/50"
+                                                            r.status === "sent" ? "text-success bg-success/10" :
+                                                            r.status === "failed" ? "text-destructive bg-destructive/10" : "text-muted-foreground bg-muted/50"
                                                         }`}>
                                                             {translateValue(t, "status", r.status?.toUpperCase())}
                                                         </span>
                                                         {r.error && (
-                                                            <span className="text-red-500 max-w-[200px] truncate" title={r.error}>{r.error}</span>
+                                                            <span className="text-destructive max-w-[200px] truncate" title={r.error}>{r.error}</span>
                                                         )}
                                                     </div>
                                                 </div>

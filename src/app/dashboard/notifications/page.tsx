@@ -65,10 +65,10 @@ export default function NotificationAdminPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div>
-                <h1 className="text-xl sm:text-3xl font-bold flex items-center gap-2">
-                    <Bell className="h-6 w-6 sm:h-8 sm:w-8" /> {t("notificationAdmin.title")}
+                <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+                    {t("notificationAdmin.title")}
                 </h1>
             </div>
 
@@ -133,19 +133,19 @@ export default function NotificationAdminPage() {
                 </Card>
 
                 <div className="space-y-6">
-                    <Card className="bg-slate-50 border-dashed">
+                    <Card className="bg-muted/50 border-dashed">
                         <CardHeader>
                             <CardTitle className="text-base text-muted-foreground">{t("notificationAdmin.preview")}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="bg-white p-4 rounded-lg shadow-sm border flex gap-3 items-start">
-                                <div className={`p-2 rounded-full ${type === 'WARNING' ? 'bg-yellow-100 text-yellow-600' : type === 'SUCCESS' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                            <div className="bg-card p-4 rounded-lg shadow-sm border flex gap-3 items-start">
+                                <div className={`p-2 rounded-full ${type === 'WARNING' ? 'bg-warning/10 text-warning' : type === 'SUCCESS' ? 'bg-success/10 text-success' : 'bg-info/10 text-info'}`}>
                                     <Bell className="h-5 w-5" />
                                 </div>
                                 <div>
                                     <h4 className="font-semibold text-sm">{title || t("notificationAdmin.previewTitle")}</h4>
                                     <p className="text-xs text-muted-foreground mt-1">{message || t("notificationAdmin.previewMessage")}</p>
-                                    <p className="text-[10px] text-slate-400 mt-2">{t("notificationAdmin.justNow")}</p>
+                                    <p className="text-[10px] text-muted-foreground mt-2">{t("notificationAdmin.justNow")}</p>
                                 </div>
                             </div>
                         </CardContent>

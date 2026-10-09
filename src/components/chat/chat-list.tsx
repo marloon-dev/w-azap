@@ -211,7 +211,7 @@ function ChatRow({
             >
                 <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage src={chat.profilePic || ""} />
-                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-blue-500/20 text-primary">
+                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-info/20 text-primary">
                         {displayName.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>

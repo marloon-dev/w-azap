@@ -178,10 +178,10 @@ export default function BotSettingsPage() {
 
     return (
         <SessionGuard>
-            <div className="space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
                 <div>
-                    <h2 className="text-xl sm:text-3xl font-bold tracking-tight">{t("botSettings.title")}</h2>
-                    <p className="text-muted-foreground text-sm mt-1">{t("botSettings.subtitle")}</p>
+                    <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("botSettings.title")}</h1>
+                    <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("botSettings.subtitle")}</p>
                 </div>
 
                 {/* Bot Mode & Access Section */}
@@ -301,7 +301,7 @@ export default function BotSettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Zap className="h-5 w-5 text-yellow-500" />
+                                <Zap className="h-5 w-5 text-warning" />
                                 {t("botSettings.automationTitle")}
                             </CardTitle>
                             <CardDescription>{t("botSettings.automationDesc")}</CardDescription>
@@ -411,7 +411,7 @@ export default function BotSettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <AlertCircle className="h-5 w-5 text-orange-500" />
+                                <AlertCircle className="h-5 w-5 text-warning" />
                                 {t("botSettings.antiBanTitle")}
                             </CardTitle>
                             <CardDescription>
@@ -419,9 +419,9 @@ export default function BotSettingsPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg bg-orange-500/5 border-orange-500/20">
+                            <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg bg-warning/5 border-warning/20">
                                 <Label htmlFor="anti-spam" className="flex flex-col space-y-1">
-                                    <span className="font-semibold text-orange-700 dark:text-orange-400">{t("botSettings.antiSpam")}</span>
+                                    <span className="font-semibold text-warning">{t("botSettings.antiSpam")}</span>
                                     <span className="font-normal text-xs text-muted-foreground">{t("botSettings.antiSpamDesc")}</span>
                                 </Label>
                                 <Switch id="anti-spam" checked={botConfig.antiSpamEnabled}
@@ -431,8 +431,8 @@ export default function BotSettingsPage() {
                             {botConfig.antiSpamEnabled && (
                                 <div className="grid gap-6 animate-in fade-in slide-in-from-top-1 duration-200">
                                     {/* How it works */}
-                                    <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 space-y-2">
-                                        <p className="text-sm font-semibold text-blue-700 dark:text-blue-400">{t("botSettings.howItWorks")}</p>
+                                    <div className="rounded-lg border border-info/20 bg-info/5 p-4 space-y-2">
+                                        <p className="text-sm font-semibold text-info">{t("botSettings.howItWorks")}</p>
                                         <p className="text-xs text-muted-foreground leading-relaxed">
                                             <RichText text={t("botSettings.howItWorksDesc")} />
                                         </p>
@@ -452,7 +452,7 @@ export default function BotSettingsPage() {
                                             />
                                             <p className="text-xs text-muted-foreground">
                                                 {t("botSettings.thresholdHint")}
-                                                <span className="text-orange-600 dark:text-orange-400"> {t("botSettings.thresholdTip")}</span>
+                                                <span className="text-warning"> {t("botSettings.thresholdTip")}</span>
                                             </p>
                                         </div>
                                         <div className="grid gap-2">
@@ -465,7 +465,7 @@ export default function BotSettingsPage() {
                                             />
                                             <p className="text-xs text-muted-foreground">
                                                 {t("botSettings.windowHint")}
-                                                <span className="text-orange-600 dark:text-orange-400"> {t("botSettings.windowTip")}</span>
+                                                <span className="text-warning"> {t("botSettings.windowTip")}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -499,7 +499,7 @@ export default function BotSettingsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-3">
+                                    <div className="rounded-lg border border-warning/20 bg-warning/5 p-3">
                                         <p className="text-xs text-muted-foreground">
                                             <RichText text={t("botSettings.recommended")} />
                                         </p>

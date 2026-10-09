@@ -83,20 +83,20 @@ export default function SettingsPage() {
     const inputClass = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
     return (
-        <div className="space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div>
-                <h2 className="text-xl sm:text-3xl font-bold tracking-tight">{t("settings.title")}</h2>
-                <p className="text-muted-foreground text-sm mt-1">{t("settings.subtitle")}</p>
+                <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("settings.title")}</h1>
+                <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("settings.subtitle")}</p>
             </div>
 
             {!isSuperAdmin && (
-                <Card className="border-yellow-200 bg-yellow-50">
+                <Card className="border-warning/30 bg-warning/10">
                     <CardContent className="pt-6">
                         <div className="flex items-start gap-3">
-                            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                            <AlertCircle className="h-5 w-5 text-warning mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium text-yellow-900">{t("settings.viewOnly")}</p>
-                                <p className="text-xs text-yellow-700 mt-1">
+                                <p className="text-sm font-medium text-warning">{t("settings.viewOnly")}</p>
+                                <p className="text-xs text-warning mt-1">
                                     {t("settings.viewOnlyDesc")}
                                 </p>
                             </div>

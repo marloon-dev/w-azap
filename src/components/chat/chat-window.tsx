@@ -154,7 +154,7 @@ function ContextMenu({ state, onClose, onReply, onDelete }: { state: ContextMenu
             {items.map((item, i) => (
                 <button key={i} onClick={item.action} className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors cursor-pointer",
-                    item.dangerous ? "text-red-500 hover:bg-red-500/10" : "text-foreground hover:bg-muted"
+                    item.dangerous ? "text-destructive hover:bg-destructive/10" : "text-foreground hover:bg-muted"
                 )}>
                     <item.icon className="h-3.5 w-3.5 shrink-0" />
                     {item.label}
@@ -420,7 +420,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                     </Button>
                 )}
                 <Avatar className="h-9 w-9 shrink-0">
-                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-blue-500/20 text-primary">
+                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-info/20 text-primary">
                         {displayName.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
@@ -463,7 +463,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                     {/* Reply button: my msg on left */}
                                     {msg.fromMe && (
                                         <button onClick={() => { setReplyingTo(msg); scrollToBottom(true); }}
-                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 order-first"
+                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-warning hover:bg-warning/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 order-first"
                                             title={t("chatWindow.reply")}>
                                             <CornerUpLeft className="h-3.5 w-3.5" />
                                         </button>
@@ -538,7 +538,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                         )}
                                         {/* DOCUMENT */}
                                         {msg.type !== 'TEXT' && msg.type !== 'IMAGE' && msg.type !== 'STICKER' && msg.type !== 'VIDEO' && msg.type !== 'AUDIO' && (
-                                            <div className={cn("flex items-center justify-between gap-2 py-1.5 px-2 rounded-lg mb-1", msg.fromMe ? "bg-white/15" : "bg-muted/50")}>
+                                            <div className={cn("flex items-center justify-between gap-2 py-1.5 px-2 rounded-lg mb-1", msg.fromMe ? "bg-card/15" : "bg-muted/50")}>
                                                 <div className="flex items-center gap-2 truncate min-w-0">
                                                     <FileText className="h-3.5 w-3.5 shrink-0" />
                                                     <span className="text-xs font-medium truncate">{t("chatWindow.typeMessage", { type: translateValue(t, "messageTypes", msg.type) })}</span>
@@ -557,7 +557,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                     {/* Reply button: other msg on right */}
                                     {!msg.fromMe && (
                                         <button onClick={() => { setReplyingTo(msg); scrollToBottom(true); }}
-                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0"
+                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-warning hover:bg-warning/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0"
                                             title={t("chatWindow.reply")}>
                                             <CornerUpLeft className="h-3.5 w-3.5" />
                                         </button>
@@ -588,10 +588,10 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                         </PopoverTrigger>
                         <PopoverContent className="w-44 p-1.5" side="top" align="start">
                             <div className="flex flex-col gap-0.5">
-                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('image')}><ImageIcon className="h-3.5 w-3.5 text-blue-500" /> {t("chatWindow.image")}</Button>
-                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('video')}><Video className="h-3.5 w-3.5 text-purple-500" /> {t("chatWindow.video")}</Button>
-                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('audio')}><Music className="h-3.5 w-3.5 text-orange-500" /> {t("chatWindow.audio")}</Button>
-                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('document')}><FileText className="h-3.5 w-3.5 text-emerald-500" /> {t("chatWindow.document")}</Button>
+                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('image')}><ImageIcon className="h-3.5 w-3.5 text-info" /> {t("chatWindow.image")}</Button>
+                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('video')}><Video className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" /> {t("chatWindow.video")}</Button>
+                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('audio')}><Music className="h-3.5 w-3.5 text-warning" /> {t("chatWindow.audio")}</Button>
+                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('document')}><FileText className="h-3.5 w-3.5 text-success" /> {t("chatWindow.document")}</Button>
                             </div>
                         </PopoverContent>
                     </Popover>
@@ -599,9 +599,9 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                     <div className="flex-1">
                         {/* Reply preview bar */}
                         {replyingTo && (
-                            <div className="mb-2 flex items-start gap-2 px-2 py-1.5 rounded-lg bg-muted/50 border-l-2 border-amber-500 text-xs animate-in slide-in-from-bottom-1 overflow-hidden">
+                            <div className="mb-2 flex items-start gap-2 px-2 py-1.5 rounded-lg bg-muted/50 border-l-2 border-warning/60 text-xs animate-in slide-in-from-bottom-1 overflow-hidden">
                                 <div className="flex-1 min-w-0 overflow-hidden">
-                                    <span className="font-semibold text-amber-500 block text-[10px]">{t("chatWindow.replyingTo", { name: replyingTo.fromMe ? t("chatWindow.replyingToYou") : (replyingTo.pushName || jid.split('@')[0]) })}</span>
+                                    <span className="font-semibold text-warning block text-[10px]">{t("chatWindow.replyingTo", { name: replyingTo.fromMe ? t("chatWindow.replyingToYou") : (replyingTo.pushName || jid.split('@')[0]) })}</span>
                                     <span className="text-muted-foreground truncate block w-full">{replyingTo.content || `[${replyingTo.type}]`}</span>
                                 </div>
                                 <button onClick={() => setReplyingTo(null)} className="p-0.5 text-muted-foreground hover:text-foreground shrink-0"><X className="h-3 w-3" /></button>
