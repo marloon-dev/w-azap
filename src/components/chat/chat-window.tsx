@@ -350,7 +350,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
 
     return (
         <div
-            className="flex-1 flex flex-col bg-muted/20 min-w-0 min-h-0 relative"
+            className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-background"
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={(e) => {
@@ -413,20 +413,22 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
             )}
 
             {/* Header */}
-            <div className="shrink-0 px-3 py-2.5 border-b bg-background/80 backdrop-blur-sm flex items-center gap-3 z-10">
+            <div className="z-10 flex h-16 shrink-0 items-center gap-3 border-b bg-card px-4">
                 {onBack && (
-                    <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden shrink-0 text-muted-foreground hover:text-foreground" onClick={onBack}>
-                        <ArrowLeft className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="size-9 shrink-0 text-muted-foreground hover:text-foreground md:hidden" onClick={onBack} aria-label={t("chatWindow.back")}>
+                        <ArrowLeft className="size-4" aria-hidden="true" />
                     </Button>
                 )}
-                <Avatar className="h-9 w-9 shrink-0">
-                    <AvatarFallback className="text-xs font-medium bg-gradient-to-br from-primary/20 to-info/20 text-primary">
+                <Avatar className="size-10 shrink-0">
+                    <AvatarFallback className="bg-secondary text-xs font-semibold text-secondary-foreground">
                         {displayName.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-foreground truncate">{displayName}</h3>
-                    <p className="text-[10px] text-muted-foreground truncate">{jid}</p>
+                    <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground">{displayName}</h2>
+                    {jid.endsWith("@s.whatsapp.net") && (
+                        <p className="truncate text-xs text-muted-foreground" data-numeric>+{jid.split("@")[0]}</p>
+                    )}
                 </div>
             </div>
 
@@ -442,7 +444,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                     )}
                     {!hasMore && messages.length > 0 && (
                         <div className="text-center py-4">
-                            <span className="text-[10px] font-medium text-muted-foreground bg-background/80 px-3 py-1 rounded-full border border-border/30">{t("chatWindow.beginning")}</span>
+                            <span className="rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">{t("chatWindow.beginning")}</span>
                         </div>
                     )}
                     {messages.length === 0 && !loading && (
@@ -454,7 +456,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                             <div key={msg.keyId} id={`msg-${msg.keyId}`}>
                                 {showDate && (
                                     <div className="flex justify-center my-3">
-                                        <span className="text-[10px] font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm border border-border/30">
+                                        <span className="rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
                                             {getDateLabel(msg.timestamp)}
                                         </span>
                                     </div>
@@ -463,24 +465,24 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                     {/* Reply button: my msg on left */}
                                     {msg.fromMe && (
                                         <button onClick={() => { setReplyingTo(msg); scrollToBottom(true); }}
-                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-warning hover:bg-warning/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0 order-first"
-                                            title={t("chatWindow.reply")}>
+                                            className="order-first shrink-0 cursor-pointer self-center rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                                            title={t("chatWindow.reply")} aria-label={t("chatWindow.reply")}>
                                             <CornerUpLeft className="h-3.5 w-3.5" />
                                         </button>
                                     )}
                                     <div className={cn(
-                                        "flex flex-col max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 shadow-sm overflow-hidden cursor-context-menu",
-                                        msg.fromMe ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border border-border/40 rounded-bl-sm"
+                                        "flex max-w-[85%] cursor-context-menu flex-col overflow-hidden rounded-2xl px-3 py-2 text-foreground sm:max-w-[68%]",
+                                        msg.fromMe ? "rounded-br-md bg-bubble-out" : "rounded-bl-md border bg-card"
                                     )} onContextMenu={(e) => handleContextMenu(e, msg)}>
                                         {!msg.fromMe && jid.endsWith("@g.us") && msg.pushName && (
-                                            <span className="text-[10px] font-semibold text-primary block mb-0.5">{msg.pushName}</span>
+                                            <span className="mb-0.5 block text-xs font-semibold text-primary">{msg.pushName}</span>
                                         )}
                                         {msg.quoted && (
                                             <div 
                                                 className={cn(
                                                     "mb-1.5 px-2 py-1 rounded-lg border-l-4 text-xs select-none cursor-pointer text-left bg-muted/40",
-                                                    msg.fromMe 
-                                                        ? "border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground/90 hover:bg-primary-foreground/15" 
+                                                    msg.fromMe
+                                                        ? "border-primary/50 bg-card/60 text-muted-foreground hover:bg-card/80"
                                                         : "border-primary bg-muted text-muted-foreground hover:bg-muted/60"
                                                 )}
                                                 onClick={(e) => {
@@ -497,7 +499,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                                     }
                                                 }}
                                             >
-                                                <span className="font-semibold block text-[10px]">
+                                                <span className="font-semibold block text-xs">
                                                     {msg.quoted.fromMe ? t("chatWindow.you") : (msg.quoted.pushName || msg.quoted.senderJid?.split('@')[0] || t("chatWindow.contact"))}
                                                 </span>
                                                 <span className="line-clamp-2 block break-all text-xs">
@@ -538,7 +540,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                         )}
                                         {/* DOCUMENT */}
                                         {msg.type !== 'TEXT' && msg.type !== 'IMAGE' && msg.type !== 'STICKER' && msg.type !== 'VIDEO' && msg.type !== 'AUDIO' && (
-                                            <div className={cn("flex items-center justify-between gap-2 py-1.5 px-2 rounded-lg mb-1", msg.fromMe ? "bg-card/15" : "bg-muted/50")}>
+                                            <div className={cn("mb-1 flex items-center justify-between gap-2 rounded-lg px-2 py-1.5", msg.fromMe ? "bg-card/60" : "bg-muted/60")}>
                                                 <div className="flex items-center gap-2 truncate min-w-0">
                                                     <FileText className="h-3.5 w-3.5 shrink-0" />
                                                     <span className="text-xs font-medium truncate">{t("chatWindow.typeMessage", { type: translateValue(t, "messageTypes", msg.type) })}</span>
@@ -548,8 +550,8 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                         )}
                                         {/* Text */}
                                         <div className="flex items-end gap-2">
-                                            <span className="flex-1 text-sm break-all whitespace-pre-wrap">{msg.content}</span>
-                                            <span className={cn("text-[9px] shrink-0 leading-none", msg.fromMe ? "text-primary-foreground/60" : "text-muted-foreground")}>
+                                            <span className="flex-1 whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]">{msg.content}</span>
+                                            <span className="shrink-0 translate-y-0.5 text-[11px] leading-none text-muted-foreground" data-numeric>
                                                 {new Date(msg.timestamp).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
@@ -557,7 +559,8 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                                     {/* Reply button: other msg on right */}
                                     {!msg.fromMe && (
                                         <button onClick={() => { setReplyingTo(msg); scrollToBottom(true); }}
-                                            className="self-center p-1.5 text-muted-foreground/40 hover:text-warning hover:bg-warning/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer shrink-0"
+                                            className="shrink-0 cursor-pointer self-center rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                                            aria-label={t("chatWindow.reply")}
                                             title={t("chatWindow.reply")}>
                                             <CornerUpLeft className="h-3.5 w-3.5" />
                                         </button>
@@ -573,23 +576,23 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
             {/* New message badge */}
             {newMsgBadge && (
                 <button onClick={() => { scrollToBottom(true); setNewMsgBadge(false); }}
-                    className="absolute bottom-[90px] right-6 z-20 flex items-center gap-2 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-lg hover:bg-primary/90 transition-all animate-bounce">
+                    className="absolute bottom-[90px] right-6 z-20 flex items-center gap-2 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-colors hover:bg-primary/90">
                     <ArrowDown className="h-4 w-4" /> {t("chatWindow.newMessages")}
                 </button>
             )}
 
             {/* Input */}
-            <div className="shrink-0 px-3 py-2.5 bg-background/80 backdrop-blur-sm border-t">
+            <div className="shrink-0 border-t bg-card px-3 py-3 sm:px-4">
                 <div className="flex items-center gap-2 max-w-3xl mx-auto">
                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full shrink-0 text-muted-foreground hover:text-foreground"><Paperclip className="h-4.5 w-4.5" /></Button>
+                            <Button variant="ghost" size="icon" className="size-10 shrink-0 text-muted-foreground hover:text-foreground" aria-label={t("chatWindow.attach")}><Paperclip className="size-[18px]" aria-hidden="true" /></Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-44 p-1.5" side="top" align="start">
                             <div className="flex flex-col gap-0.5">
                                 <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('image')}><ImageIcon className="h-3.5 w-3.5 text-info" /> {t("chatWindow.image")}</Button>
-                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('video')}><Video className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" /> {t("chatWindow.video")}</Button>
+                                <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('video')}><Video className="h-3.5 w-3.5 text-chart-4" /> {t("chatWindow.video")}</Button>
                                 <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('audio')}><Music className="h-3.5 w-3.5 text-warning" /> {t("chatWindow.audio")}</Button>
                                 <Button variant="ghost" size="sm" className="justify-start gap-2 h-8 text-xs" onClick={() => triggerUpload('document')}><FileText className="h-3.5 w-3.5 text-success" /> {t("chatWindow.document")}</Button>
                             </div>
@@ -599,22 +602,23 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                     <div className="flex-1">
                         {/* Reply preview bar */}
                         {replyingTo && (
-                            <div className="mb-2 flex items-start gap-2 px-2 py-1.5 rounded-lg bg-muted/50 border-l-2 border-warning/60 text-xs animate-in slide-in-from-bottom-1 overflow-hidden">
+                            <div className="mb-2 flex items-start gap-2 overflow-hidden rounded-lg border-l-2 border-primary bg-muted/60 px-2 py-1.5 text-xs animate-in slide-in-from-bottom-1">
                                 <div className="flex-1 min-w-0 overflow-hidden">
-                                    <span className="font-semibold text-warning block text-[10px]">{t("chatWindow.replyingTo", { name: replyingTo.fromMe ? t("chatWindow.replyingToYou") : (replyingTo.pushName || jid.split('@')[0]) })}</span>
+                                    <span className="block text-xs font-semibold text-primary">{t("chatWindow.replyingTo", { name: replyingTo.fromMe ? t("chatWindow.replyingToYou") : (replyingTo.pushName || jid.split('@')[0]) })}</span>
                                     <span className="text-muted-foreground truncate block w-full">{replyingTo.content || `[${replyingTo.type}]`}</span>
                                 </div>
-                                <button onClick={() => setReplyingTo(null)} className="p-0.5 text-muted-foreground hover:text-foreground shrink-0"><X className="h-3 w-3" /></button>
+                                <button onClick={() => setReplyingTo(null)} className="shrink-0 rounded p-0.5 text-muted-foreground hover:text-foreground" aria-label={t("chatWindow.cancelReply")}><X className="size-3.5" aria-hidden="true" /></button>
                             </div>
                         )}
-                        <div className="flex items-end gap-2 p-1 rounded-2xl border border-border/30 bg-background">
+                        <div className="flex items-end gap-2 rounded-xl border border-input/70 bg-background p-1 transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30">
                             <textarea ref={inputRef} value={input} onChange={(e) => { setInput(e.target.value); const el = e.target; el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; }}
                                 onKeyDown={handleKeyDown} placeholder={t("chatWindow.placeholder")} rows={1} style={{ minHeight: "36px", maxHeight: "120px" }}
-                                className="flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none leading-normal" />
+                                aria-label={t("chatWindow.placeholder")}
+                                className="flex-1 resize-none bg-transparent px-2 py-1.5 text-sm leading-normal text-foreground placeholder:text-muted-foreground focus:outline-none" />
                         </div>
                     </div>
 
-                    <Button onClick={handleSend} disabled={!input.trim()} size="icon" className="h-9 w-9 rounded-full shrink-0"><Send className="h-4 w-4" /></Button>
+                    <Button onClick={handleSend} disabled={!input.trim()} size="icon" className="size-10 shrink-0 rounded-full" aria-label={t("chatWindow.send")}><Send className="size-4" aria-hidden="true" /></Button>
                 </div>
             </div>
         </div>

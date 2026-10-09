@@ -15,8 +15,8 @@ export default function SessionExpiredPage() {
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen gap-3 bg-background text-muted-foreground">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <div role="status" className="flex min-h-dvh flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
+            <Loader2 className="size-5 animate-spin" aria-hidden="true" />
             <p className="text-sm">{t("auth.sessionExpired")}</p>
         </div>
     );

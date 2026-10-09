@@ -17,6 +17,12 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        // Soft status chips: tinted background, colored text (AA on card)
+        success: "border-transparent bg-success/12 text-success",
+        warning: "border-transparent bg-warning/12 text-warning",
+        info: "border-transparent bg-info/12 text-info",
+        danger: "border-transparent bg-destructive/12 text-destructive",
+        muted: "border-transparent bg-muted text-muted-foreground",
       },
     },
     defaultVariants: {

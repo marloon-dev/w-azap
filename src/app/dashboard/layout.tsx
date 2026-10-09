@@ -46,13 +46,14 @@ export default async function DashboardLayout({
                         appName={appName}
                         userName={session?.user?.name}
                         userEmail={session?.user?.email}
+                        userRole={session?.user?.role as string | undefined}
                         version={pkg.version}
                     />
 
                     {/* Main Content */}
                     <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden" suppressHydrationWarning={true}>
                         <Navbar appName={appName} />
-                        <main id="main-content" tabIndex={-1} className="styled-scrollbar flex-1 overflow-auto px-4 py-5 outline-none sm:px-6 sm:py-6 lg:px-8">
+                        <main id="main-content" tabIndex={-1} className="styled-scrollbar flex-1 overflow-auto px-4 py-6 outline-none sm:px-6 sm:py-8 lg:px-8">
                             {children}
                         </main>
                     </div>

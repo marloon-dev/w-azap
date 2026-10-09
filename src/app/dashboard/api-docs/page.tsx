@@ -230,7 +230,7 @@ export default function ApiDocsPage() {
 
     return (
         <div>
-            <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto w-full max-w-6xl">
                 {/* Header */}
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
@@ -341,11 +341,11 @@ export default function ApiDocsPage() {
                         <table className="min-w-full divide-y divide-border">
                             <thead className="bg-muted/50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("apiDocs.method")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("apiDocs.endpoint")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("apiDocs.params")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("apiDocs.description")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("apiDocs.category")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">{t("apiDocs.method")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">{t("apiDocs.endpoint")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">{t("apiDocs.params")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">{t("apiDocs.description")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground">{t("apiDocs.category")}</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-card divide-y divide-border">
@@ -396,7 +396,7 @@ export default function ApiDocsPage() {
                         <div className="text-sm text-muted-foreground">{t("apiDocs.postEndpoints")}</div>
                     </div>
                     <div className="bg-card rounded-lg shadow p-4">
-                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{apiEndpoints.filter(e => e.method === "GET").length}</div>
+                        <div className="text-2xl font-bold text-chart-4">{apiEndpoints.filter(e => e.method === "GET").length}</div>
                         <div className="text-sm text-muted-foreground">{t("apiDocs.getEndpoints")}</div>
                     </div>
                 </div>

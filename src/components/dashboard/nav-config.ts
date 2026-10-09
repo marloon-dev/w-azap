@@ -74,13 +74,6 @@ export const navGroups: NavGroup[] = [
         ],
     },
     {
-        label: "nav.groups.developer",
-        items: [
-            { href: "/docs", label: "nav.items.apiDocs", icon: FileText },
-            { href: "/swagger", label: "nav.items.swagger", icon: Code, external: true },
-        ],
-    },
-    {
         label: "nav.groups.administration",
         items: [
             { href: "/dashboard/media", label: "nav.items.media", icon: HardDrive },
@@ -92,6 +85,15 @@ export const navGroups: NavGroup[] = [
         ],
     },
 ];
+
+/** Reference links for people integrating with the API: shown in the account menu, not the main navigation. */
+export const developerLinks: NavItem[] = [
+    { href: "/docs", label: "nav.items.apiDocs", icon: FileText },
+    { href: "/swagger", label: "nav.items.swagger", icon: Code, external: true },
+];
+
+/** Groups that start folded in the sidebar unless the current page lives inside them. */
+export const foldedByDefault = new Set<string>(["nav.groups.administration"]);
 
 const allHrefs = navGroups.flatMap((group) => group.items.map((item) => item.href));
 

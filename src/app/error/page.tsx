@@ -1,150 +1,55 @@
 'use client';
 
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { AlertCircle, ShieldAlert, Lock, Hourglass, HelpCircle, ArrowLeft, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { StatusPage } from '@/components/status-page';
+import { useTranslation } from '@/components/i18n-provider';
+import type { TranslationKey } from '@/lib/i18n/types';
 
-interface ErrorConfig {
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  description: string;
-  colorTheme: 'amber' | 'rose' | 'destructive' | 'indigo' | 'primary';
-}
-
-const ERROR_CONFIGS: Record<string, ErrorConfig> = {
-  '400': {
-    icon: <AlertCircle className="size-12 animate-pulse" />,
-    title: '400',
-    subtitle: 'Permintaan Tidak Valid',
-    description: 'Server tidak dapat memproses permintaan Anda karena format yang tidak valid.',
-    colorTheme: 'amber',
-  },
-  '401': {
-    icon: <Lock className="size-12 animate-pulse" />,
-    title: '401',
-    subtitle: 'Akses Ditolak',
-    description: 'Anda harus masuk (login) terlebih dahulu untuk mengakses halaman ini.',
-    colorTheme: 'rose',
-  },
-  '403': {
-    icon: <ShieldAlert className="size-12 animate-pulse" />,
-    title: '403',
-    subtitle: 'Akses Terlarang',
-    description: 'Anda tidak memiliki izin yang cukup untuk mengakses halaman atau sumber daya ini.',
-    colorTheme: 'destructive',
-  },
-  '429': {
-    icon: <Hourglass className="size-12 animate-pulse" />,
-    title: '429',
-    subtitle: 'Terlalu Banyak Permintaan',
-    description: 'Batas permintaan terlampaui. Harap tunggu beberapa saat sebelum mencoba lagi.',
-    colorTheme: 'indigo',
-  },
-  '500': {
-    icon: <AlertCircle className="size-12 animate-pulse" />,
-    title: '500',
-    subtitle: 'Kesalahan Server',
-    description: 'Terjadi kesalahan tak terduga pada server saat memproses permintaan Anda.',
-    colorTheme: 'destructive',
-  },
-};
+const KNOWN_CODES = ['400', '401', '403', '429', '500'] as const;
 
 function ErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
   const code = searchParams.get('code') || '500';
   const customMessage = searchParams.get('message');
+  const known = (KNOWN_CODES as readonly string[]).includes(code);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const config = ERROR_CONFIGS[code] || {
-    icon: <HelpCircle className="size-12 animate-pulse" />,
-    title: code,
-    subtitle: 'Terjadi Kesalahan',
-    description: customMessage || 'Terjadi kesalahan atau kendala tak terduga pada aplikasi.',
-    colorTheme: 'primary',
-  };
-
-  const COLOR_THEMES = {
-    amber: { text: 'text-warning', bg: 'bg-warning', fg: 'text-warning-foreground', bgSoft: 'bg-warning/10', border: 'border-warning/20', borderDark: 'border-warning/60', hoverBg: 'hover:bg-warning/10', hoverText: 'hover:text-warning', from: 'from-warning/10', ring: 'ring-warning/5', shadow: 'shadow-warning/20', btnShadow: 'shadow-warning/20' },
-    rose: { text: 'text-destructive', bg: 'bg-destructive', fg: 'text-destructive-foreground', bgSoft: 'bg-destructive/10', border: 'border-destructive/20', borderDark: 'border-destructive/60', hoverBg: 'hover:bg-destructive/10', hoverText: 'hover:text-destructive', from: 'from-destructive/10', ring: 'ring-destructive/5', shadow: 'shadow-destructive/20', btnShadow: 'shadow-destructive/20' },
-    destructive: { text: 'text-destructive', bg: 'bg-destructive', fg: 'text-destructive-foreground', bgSoft: 'bg-destructive/10', border: 'border-destructive/20', borderDark: 'border-destructive', hoverBg: 'hover:bg-destructive/10', hoverText: 'hover:text-destructive', from: 'from-destructive/10', ring: 'ring-destructive/5', shadow: 'shadow-destructive/5', btnShadow: 'shadow-destructive/20' },
-    indigo: { text: 'text-info', bg: 'bg-info', fg: 'text-info-foreground', bgSoft: 'bg-info/10', border: 'border-info/20', borderDark: 'border-info/60', hoverBg: 'hover:bg-info/10', hoverText: 'hover:text-info', from: 'from-info/10', ring: 'ring-info/5', shadow: 'shadow-info/20', btnShadow: 'shadow-info/20' },
-    primary: { text: 'text-primary', bg: 'bg-primary', fg: 'text-primary-foreground', bgSoft: 'bg-primary/10', border: 'border-primary/20', borderDark: 'border-primary', hoverBg: 'hover:bg-primary/10', hoverText: 'hover:text-primary', from: 'from-primary/10', ring: 'ring-primary/5', shadow: 'shadow-primary/5', btnShadow: 'shadow-primary/20' },
-  };
-  
-  const colorMap = COLOR_THEMES[config.colorTheme as keyof typeof COLOR_THEMES] || COLOR_THEMES['primary'];
-
-  if (!mounted) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-4 min-h-[80vh]" suppressHydrationWarning>
-        <div className={`w-10 h-10 rounded-full border-4 ${colorMap.border} border-t-transparent animate-spin`} suppressHydrationWarning />
-      </div>
-    );
-  }
+  const title = known ? t(`errorPages.c${code}Title` as TranslationKey) : t('errorPages.unknownTitle');
+  const description = customMessage || (known ? t(`errorPages.c${code}Desc` as TranslationKey) : t('errorPages.unknownDesc'));
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-[80vh] w-full" suppressHydrationWarning>
-      <div className={`w-full max-w-lg bg-background/50 dark:bg-background/20 backdrop-blur-3xl border ${colorMap.border} shadow-2xl ${colorMap.shadow} rounded-3xl p-8 sm:p-12 flex flex-col items-center relative overflow-hidden`} suppressHydrationWarning>
-        {/* Glow Effect */}
-        <div className={`absolute inset-0 bg-gradient-to-b ${colorMap.from} to-transparent pointer-events-none`} suppressHydrationWarning />
-        
-        {/* Decorative Icon */}
-        <div className={`relative w-24 h-24 ${colorMap.bgSoft} ${colorMap.text} rounded-full flex items-center justify-center mb-8 ring-8 ${colorMap.ring}`} suppressHydrationWarning>
-          {config.icon}
-        </div>
-
-        {/* Text Content */}
-        <div className="relative text-center mb-10 w-full" suppressHydrationWarning>
-          <h1 className={`text-6xl font-black tracking-tight ${colorMap.text} font-mono mb-3 drop-shadow-sm`} suppressHydrationWarning>
-            {config.title}
-          </h1>
-          <h2 className="text-xl font-bold text-foreground mb-4" suppressHydrationWarning>
-            {config.subtitle}
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto" suppressHydrationWarning>
-            {customMessage || config.description}
-          </p>
-        </div>
-
-        {/* Actions */}
-        <div className="relative w-full flex flex-col sm:flex-row gap-4" suppressHydrationWarning>
-          <Button
-            onClick={() => router.back()}
-            variant="outline"
-            className={`w-full flex-1 flex items-center justify-center gap-2 h-12 ${colorMap.border} ${colorMap.hoverBg} ${colorMap.text} ${colorMap.hoverText} rounded-xl transition-all shadow-sm`}
-          >
-            <ArrowLeft className="size-4" />
-            <span>Kembali</span>
+    <StatusPage
+      code={code}
+      tone={code === '500' ? 'danger' : 'neutral'}
+      title={title}
+      description={description}
+      actions={
+        <>
+          {code === '401' ? (
+            <Button asChild size="lg">
+              <Link href="/auth/login">{t('common.signIn')}</Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg">
+              <Link href="/dashboard">{t('errorPages.home')}</Link>
+            </Button>
+          )}
+          <Button variant="outline" size="lg" onClick={() => router.back()}>
+            {t('errorPages.back')}
           </Button>
-          <Button
-            asChild
-            className={`w-full flex-1 flex items-center justify-center gap-2 h-12 ${colorMap.bg} hover:opacity-90 ${colorMap.fg} shadow-lg ${colorMap.btnShadow} rounded-xl transition-all`}
-          >
-            <Link href="/dashboard">
-              <Home className="size-4" />
-              <span>Beranda</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }
 
 export default function GenericErrorPage() {
   return (
-    <Suspense fallback={
-      <div className="flex-1 flex items-center justify-center p-4 min-h-[80vh]" suppressHydrationWarning>
-        <div className="w-10 h-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin" suppressHydrationWarning />
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-dvh bg-background" />}>
       <ErrorContent />
     </Suspense>
   );

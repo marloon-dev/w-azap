@@ -66,9 +66,9 @@ export function ChatLayoutClient({ sessionId, initialJid }: ChatLayoutClientProp
 
     return (
         // Outer: flex row, full height, overflow hidden — containment chain root
-        <div className="flex h-full bg-background rounded-xl border border-border/40 shadow-sm overflow-hidden min-h-0">
+        <div className="flex h-full min-h-0 overflow-hidden bg-card">
             {/* Chat List Panel */}
-            <div className={`w-full md:w-80 lg:w-[340px] border-r border-border/30 overflow-hidden shrink-0 flex flex-col
+            <div className={`w-full md:w-80 lg:w-[360px] border-r border-border overflow-hidden shrink-0 flex flex-col
                 ${selectedChat ? "hidden md:flex" : "flex"}`}
             >
                 {/* Inner flex-col: header fixed + virtuoso fills rest */}
@@ -91,14 +91,10 @@ export function ChatLayoutClient({ sessionId, initialJid }: ChatLayoutClientProp
                         onBack={handleBack}
                     />
                 ) : (
-                    <div className="flex-1 flex items-center justify-center min-w-0 min-h-0">
-                        <div className="text-center p-6">
-                            <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
-                                <MessageCircle className="h-8 w-8 text-muted-foreground/40" />
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                                {t("chat.selectChat")}
-                            </p>
+                    <div className="flex min-h-0 min-w-0 flex-1 items-center justify-center bg-background">
+                        <div className="max-w-xs p-6 text-center">
+                            <MessageCircle className="mx-auto mb-3 size-8 text-muted-foreground/60" strokeWidth={1.5} aria-hidden="true" />
+                            <p className="text-sm text-muted-foreground">{t("chat.selectChat")}</p>
                         </div>
                     </div>
                 )}

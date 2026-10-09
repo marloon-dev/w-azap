@@ -68,7 +68,7 @@ export default function SystemMonitorPage() {
 
     if (loading && !data) {
         return (
-            <div className="mx-auto w-full max-w-7xl space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
                 <div>
                     <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("systemMonitor.title")} <Badge className="ml-2 align-middle" variant="outline">{t("systemMonitor.live")}</Badge></h1>
                     <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("systemMonitor.subtitle")}</p>
@@ -104,7 +104,7 @@ export default function SystemMonitorPage() {
     const processMemPercent = (data.process.rss / data.memory.total) * 100;
 
     return (
-        <div className="mx-auto w-full max-w-7xl space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground flex items-center gap-2">
@@ -145,7 +145,7 @@ export default function SystemMonitorPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{memPercent.toFixed(1)}%</div>
-                        <Progress value={memPercent} className="h-2 mt-3" indicatorClassName={memPercent > 85 ? "bg-destructive" : memPercent > 60 ? "bg-warning" : "bg-purple-500"} />
+                        <Progress value={memPercent} className="h-2 mt-3" indicatorClassName={memPercent > 85 ? "bg-destructive" : memPercent > 60 ? "bg-warning" : "bg-chart-4"} />
                         <p className="text-xs text-muted-foreground mt-2">
                             {formatBytes(data.memory.used)} / {formatBytes(data.memory.total)}
                         </p>

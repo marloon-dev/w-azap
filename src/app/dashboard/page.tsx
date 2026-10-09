@@ -1,18 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-    Plus,
-    Wifi,
-    WifiOff,
-    Bot,
-    Send,
-    QrCode,
-    ArrowRight,
-    Activity,
-    Zap,
-} from "lucide-react";
+import { ChevronRight, MessageSquare, Plus, QrCode, Settings2 } from "lucide-react";
 
 import { auth } from "@/lib/auth";
 import { getAccessibleSessions } from "@/lib/api-auth";
@@ -21,8 +10,24 @@ import { getTranslations } from "@/lib/i18n/server";
 import { translateValue } from "@/lib/i18n/translate";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { SignalBars } from "@/components/dashboard/signal-bars";
+import { cn } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
+
+/** Counts that must not break the page when a table is missing or the query fails. */
+async function safeCount(query: () => Promise<number>) {
+    try {
+        return await query();
+    } catch {
+        return 0;
+    }
+}
+
+/** Start of the "last 24 hours" window (request time; this page is always rendered dynamically). */
+function last24Hours() {
+    return new Date(Date.now() - 24 * 60 * 60 * 1000);
+}
 
 export default async function DashboardPage() {
     const { t } = await getTranslations();
@@ -35,170 +40,161 @@ export default async function DashboardPage() {
 
     const totalSessions = sessions.length;
     const connectedSessions = sessions.filter(s => s.status === 'CONNECTED').length;
-    const disconnectedSessions = totalSessions - connectedSessions; // Anything not connected is disconnected
+    const disconnectedSessions = totalSessions - connectedSessions;
 
-    // Fetch auto-reply count for accessible sessions
-    let autoReplyCount = 0;
-    try {
-        // AutoReply.sessionId references Session.id (CUID), not the public session slug
-        const sessionIds = sessions.map(s => s.id);
-        if (sessionIds.length > 0) {
-            autoReplyCount = await prisma.autoReply.count({
-                where: { sessionId: { in: sessionIds } }
-            });
-        }
-    } catch {
-        // If auto-reply table doesn't exist yet, just show 0
-    }
+    // Related tables reference Session.id (CUID), not the public session slug
+    const sessionIds = sessions.map(s => s.id);
+    const scope = { sessionId: { in: sessionIds } };
+    const since = last24Hours();
+    const [autoReplyCount, webhookCount, messages24h, scheduledPending] = sessionIds.length === 0
+        ? [0, 0, 0, 0]
+        : await Promise.all([
+            safeCount(() => prisma.autoReply.count({ where: scope })),
+            safeCount(() => prisma.webhook.count({ where: scope })),
+            safeCount(() => prisma.message.count({ where: { ...scope, timestamp: { gte: since } } })),
+            safeCount(() => prisma.scheduledMessage.count({ where: { ...scope, status: "PENDING" } })),
+        ]);
 
-    const stats = [
-        {
-            title: t("home.totalSessions"),
-            value: totalSessions,
-            icon: QrCode,
-            description: t("home.totalSessionsDesc"),
-            color: "text-info",
-            bg: "bg-info/10",
-        },
-        {
-            title: t("home.connected"),
-            value: connectedSessions,
-            icon: Wifi,
-            description: t("home.connectedDesc"),
-            color: "text-success",
-            bg: "bg-success/10",
-        },
-        {
-            title: t("home.disconnected"),
-            value: disconnectedSessions,
-            icon: WifiOff,
-            description: t("home.disconnectedDesc"),
-            color: "text-destructive",
-            bg: "bg-destructive/10",
-        },
-        {
-            title: t("home.autoReplyRules"),
-            value: autoReplyCount,
-            icon: Zap,
-            description: t("home.autoReplyRulesDesc"),
-            color: "text-warning",
-            bg: "bg-warning/10",
-        },
+    const summary = [
+        { label: t("home.connected"), value: connectedSessions, hint: t("home.ofTotal", { total: totalSessions }) },
+        { label: t("home.messages24h"), value: messages24h },
+        { label: t("home.autoReplyRules"), value: autoReplyCount },
+        { label: t("home.scheduledPending"), value: scheduledPending },
     ];
 
-    const quickActions = [
-        { href: "/dashboard/sessions", label: t("home.newSession"), icon: Plus, description: t("home.newSessionDesc") },
-        { href: "/dashboard/chat", label: t("home.sendMessage"), icon: Send, description: t("home.sendMessageDesc") },
-        { href: "/dashboard/bot-settings", label: t("home.botSettings"), icon: Bot, description: t("home.botSettingsDesc") },
-        { href: "/dashboard/system-monitor", label: t("home.systemMonitor"), icon: Activity, description: t("home.systemMonitorDesc") },
-    ];
+    // Ordered by what blocks the user most; only what applies to their setup
+    const steps = [
+        totalSessions === 0 && { href: "/dashboard/sessions", title: t("home.stepConnect"), description: t("home.stepConnectDesc") },
+        disconnectedSessions > 0 && totalSessions > 0 && { href: "/dashboard/sessions", title: t("home.stepReconnect"), description: t("home.stepReconnectDesc") },
+        totalSessions > 0 && autoReplyCount === 0 && { href: "/dashboard/autoreply", title: t("home.stepAutoReply"), description: t("home.stepAutoReplyDesc") },
+        totalSessions > 0 && webhookCount === 0 && { href: "/dashboard/webhooks", title: t("home.stepWebhook"), description: t("home.stepWebhookDesc") },
+    ].filter(Boolean) as { href: string; title: string; description: string }[];
 
     return (
-        <div className="mx-auto w-full max-w-7xl space-y-8">
+        <div className="mx-auto w-full max-w-6xl space-y-8">
             <PageHeader
                 title={t("home.title")}
                 description={t("home.subtitle")}
                 actions={
-                    <Button asChild size="sm" className="gap-2">
+                    <Button asChild>
                         <Link href="/dashboard/sessions">
-                            <Plus className="size-4" aria-hidden="true" /> {t("home.addSession")}
+                            <Plus aria-hidden="true" /> {t("home.addSession")}
                         </Link>
                     </Button>
                 }
             />
 
-            {/* Stats */}
-            <section aria-label={t("home.sessions")} className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-                {stats.map((stat) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={stat.title} className="gap-0 py-0">
-                            <CardContent className="flex items-start justify-between gap-3 p-4 sm:p-5">
-                                <div className="min-w-0 space-y-1">
-                                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                                    <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">{stat.value}</p>
-                                    <p className="text-xs text-muted-foreground">{stat.description}</p>
-                                </div>
-                                <span className={`${stat.bg} flex size-10 shrink-0 items-center justify-center rounded-lg`} aria-hidden="true">
-                                    <Icon className={`size-5 ${stat.color}`} />
-                                </span>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
-            </section>
-
-            {/* Quick actions */}
-            <section aria-labelledby="quick-actions-title">
-                <h2 id="quick-actions-title" className="mb-3 text-base font-semibold text-foreground">{t("home.quickActions")}</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {quickActions.map((action) => {
-                        const Icon = action.icon;
-                        return (
-                            <Link
-                                key={action.href}
-                                href={action.href}
-                                className="group flex items-center gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-primary/40 hover:bg-accent/50"
-                            >
-                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground" aria-hidden="true">
-                                    <Icon className="size-5" />
-                                </span>
-                                <span className="min-w-0">
-                                    <span className="block text-sm font-medium text-foreground">{action.label}</span>
-                                    <span className="block text-xs text-muted-foreground">{action.description}</span>
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </section>
-
-            {/* Sessions */}
-            <section aria-labelledby="sessions-title">
-                <div className="mb-3 flex items-center justify-between gap-2">
-                    <h2 id="sessions-title" className="text-base font-semibold text-foreground">{t("home.sessions")}</h2>
-                    <Link href="/dashboard/sessions" className="flex items-center gap-1 rounded-md text-sm font-medium text-primary transition-colors hover:text-primary/80">
-                        {t("home.viewAll")} <ArrowRight className="size-4" aria-hidden="true" />
-                    </Link>
+            {/* Sessions: the state of every line comes first */}
+            <section aria-labelledby="sessions-title" className="overflow-hidden rounded-xl border bg-card">
+                <div className="flex items-center justify-between gap-2 border-b px-5 py-3.5">
+                    <h2 id="sessions-title" className="text-sm font-semibold text-foreground">
+                        {t("home.sessions")} <span className="font-normal text-muted-foreground" data-numeric>{totalSessions}</span>
+                    </h2>
+                    {totalSessions > 0 && (
+                        <Link href="/dashboard/sessions" className="rounded-md text-sm font-medium text-primary hover:underline hover:underline-offset-4">
+                            {t("home.viewAll")}
+                        </Link>
+                    )}
                 </div>
 
                 {sessions.length === 0 ? (
-                    <Card className="border-dashed py-0 shadow-none">
-                        <EmptyState
-                            icon={QrCode}
-                            title={t("home.noSessions")}
-                            description={t("home.noSessionsDesc")}
-                            action={
-                                <Button asChild size="sm" className="gap-2">
-                                    <Link href="/dashboard/sessions">
-                                        <Plus className="size-4" aria-hidden="true" /> {t("home.createSession")}
-                                    </Link>
-                                </Button>
-                            }
-                        />
-                    </Card>
+                    <EmptyState
+                        icon={QrCode}
+                        title={t("home.noSessions")}
+                        description={t("home.noSessionsDesc")}
+                        action={
+                            <Button asChild>
+                                <Link href="/dashboard/sessions">
+                                    <Plus aria-hidden="true" /> {t("home.createSession")}
+                                </Link>
+                            </Button>
+                        }
+                    />
                 ) : (
-                    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <ul className="divide-y">
                         {sessions.map(s => {
                             const isConnected = s.status === 'CONNECTED';
                             return (
-                                <li key={s.id}>
-                                    <Link
-                                        href={`/dashboard/sessions/${s.sessionId}`}
-                                        className="flex h-full items-start justify-between gap-3 rounded-xl border bg-card p-4 shadow-xs transition-colors hover:border-primary/40 hover:bg-accent/50"
-                                    >
-                                        <span className="min-w-0 flex-1">
-                                            <span className="block truncate text-sm font-semibold text-foreground">{s.name}</span>
-                                            <span className="mt-1 block truncate font-mono text-xs text-muted-foreground">{s.sessionId}</span>
-                                        </span>
-                                        <span className={`flex shrink-0 items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium ${isConnected ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                                            <span className={`size-1.5 rounded-full ${isConnected ? 'bg-success' : 'bg-destructive'}`} aria-hidden="true" />
-                                            {translateValue(t, "status", s.status)}
-                                        </span>
-                                    </Link>
+                                <li key={s.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-5">
+                                    <div className="flex min-w-0 flex-1 items-center gap-4">
+                                        <SignalBars status={s.status} className="h-5" />
+                                        <div className="min-w-0">
+                                            <p className="truncate text-lg font-semibold leading-tight tracking-tight text-foreground">{s.name}</p>
+                                            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                                                <span className={cn("font-medium", isConnected ? "text-success" : s.status === "SCAN_QR" ? "text-warning" : "text-muted-foreground")}>
+                                                    {translateValue(t, "status", s.status)}
+                                                </span>
+                                                <span className="mx-2 text-border" aria-hidden="true">|</span>
+                                                <span data-numeric>{t("home.sessionId", { id: s.sessionId })}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex shrink-0 items-center gap-2 pl-9 sm:pl-0">
+                                        {isConnected ? (
+                                            <Button asChild variant="outline" size="sm">
+                                                <Link href="/dashboard/chat">
+                                                    <MessageSquare aria-hidden="true" /> {t("home.openChats")}
+                                                </Link>
+                                            </Button>
+                                        ) : (
+                                            <Button asChild size="sm">
+                                                <Link href={`/dashboard/sessions/${s.sessionId}`}>
+                                                    <QrCode aria-hidden="true" /> {t("home.reconnect")}
+                                                </Link>
+                                            </Button>
+                                        )}
+                                        <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                                            <Link href={`/dashboard/sessions/${s.sessionId}`}>
+                                                <Settings2 aria-hidden="true" /> {t("home.manage")}
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 </li>
                             );
                         })}
+                    </ul>
+                )}
+            </section>
+
+            {/* One strip of figures instead of a grid of identical cards */}
+            <section aria-label={t("home.summary")} className="grid grid-cols-2 rounded-xl border bg-card lg:grid-cols-4">
+                {summary.map((item, index) => (
+                    <div
+                        key={item.label}
+                        className={cn(
+                            "px-5 py-4",
+                            index % 2 === 1 && "border-l",
+                            index >= 2 && "border-t lg:border-t-0",
+                            index === 2 && "lg:border-l",
+                        )}
+                    >
+                        <p className="text-sm text-muted-foreground">{item.label}</p>
+                        <p className="mt-1 flex items-baseline gap-2">
+                            <span className="text-3xl font-semibold tracking-tight text-foreground" data-numeric>{item.value}</span>
+                            {item.hint && <span className="text-sm text-muted-foreground" data-numeric>{item.hint}</span>}
+                        </p>
+                    </div>
+                ))}
+            </section>
+
+            {/* Next steps: only what this setup is missing */}
+            <section aria-labelledby="next-steps-title">
+                <h2 id="next-steps-title" className="mb-3 text-sm font-semibold text-foreground">{t("home.nextSteps")}</h2>
+                {steps.length === 0 ? (
+                    <p className="rounded-xl border border-dashed px-5 py-4 text-sm text-muted-foreground">{t("home.allSet")}</p>
+                ) : (
+                    <ul className="divide-y rounded-xl border bg-card">
+                        {steps.slice(0, 3).map((step) => (
+                            <li key={step.title}>
+                                <Link href={step.href} className="group flex items-center gap-4 px-5 py-3.5 transition-colors first:rounded-t-xl last:rounded-b-xl hover:bg-muted/40">
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-sm font-medium text-foreground">{step.title}</span>
+                                        <span className="block text-sm text-muted-foreground">{step.description}</span>
+                                    </span>
+                                    <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 )}
             </section>

@@ -208,7 +208,7 @@ export default function SessionDetailPage() {
     if (!session) return <div className="p-8">{t("sessionDetail.notFound")}</div>;
 
     return (
-        <div className="mx-auto w-full max-w-5xl space-y-6">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             <div className="flex flex-col gap-2">
                 <Button variant="ghost" size="sm" asChild className="-ml-2 self-start text-muted-foreground">
                     <Link href="/dashboard/sessions">
@@ -281,7 +281,7 @@ export default function SessionDetailPage() {
 
                                 <div className="mt-6 pt-6 border-t w-full">
                                     <div className="flex flex-col items-center gap-3">
-                                        <div className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t("sessionDetail.orLinkPhone")}</div>
+                                        <div className="text-xs text-muted-foreground font-semibold">{t("sessionDetail.orLinkPhone")}</div>
                                         <div className="flex flex-col w-full max-w-sm gap-2 mt-1">
                                             <div className="flex gap-2">
                                                 <Input
@@ -294,11 +294,11 @@ export default function SessionDetailPage() {
                                                     {t("sessionDetail.link")}
                                                 </Button>
                                             </div>
-                                            <p className="text-[10px] text-muted-foreground text-center">{t("sessionDetail.phoneHint")}</p>
+                                            <p className="text-xs text-muted-foreground text-center">{t("sessionDetail.phoneHint")}</p>
                                         </div>
                                         {pairingCode && (
                                             <div className="mt-4 p-4 bg-muted rounded-lg w-full max-w-[320px] text-center border border-border relative group/code">
-                                                <div className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-2 font-semibold">{t("sessionDetail.yourPairingCode")}</div>
+                                                <div className="text-xs text-muted-foreground tracking-[0.2em] mb-2 font-semibold">{t("sessionDetail.yourPairingCode")}</div>
                                                 <div
                                                     className="text-3xl font-mono font-bold text-foreground tracking-[0.3em] flex justify-center cursor-pointer hover:text-primary transition-colors py-2"
                                                     onClick={() => copyToClipboard(pairingCode)}
@@ -319,7 +319,7 @@ export default function SessionDetailPage() {
                                                 >
                                                     <Copy className="h-3.5 w-3.5" />
                                                 </Button>
-                                                <div className="text-[9px] text-muted-foreground mt-2 italic">{t("sessionDetail.enterCodeOnPhone")}</div>
+                                                <div className="text-xs text-muted-foreground mt-2 italic">{t("sessionDetail.enterCodeOnPhone")}</div>
                                             </div>
                                         )}
                                     </div>

@@ -212,8 +212,8 @@ export default function EmailForwardPage() {
 
     return (
         <SessionGuard>
-            <div className="mx-auto w-full max-w-4xl space-y-6">
-                <PageHeader icon={Mail} title={t("emailForward.title")} description={t("emailForward.subtitle")} />
+            <div className="mx-auto w-full max-w-6xl space-y-6">
+                <PageHeader title={t("emailForward.title")} description={t("emailForward.subtitle")} />
 
                 {forbidden ? (
                     <Card className="border-warning/30 bg-warning/10">

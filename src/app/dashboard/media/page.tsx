@@ -75,7 +75,7 @@ function formatFileSize(bytes: number): string {
 function getTypeBg(type: string) {
     switch (type) {
         case "image": return "bg-info/10";
-        case "video": return "bg-purple-500/10";
+        case "video": return "bg-chart-4/10";
         case "audio": return "bg-warning/10";
         default: return "bg-success/10";
     }
@@ -84,7 +84,7 @@ function getTypeBg(type: string) {
 function getTypeIcon(type: string) {
     switch (type) {
         case "image": return <ImageIcon className="h-5 w-5 text-info" />;
-        case "video": return <Video className="h-5 w-5 text-purple-600 dark:text-purple-400" />;
+        case "video": return <Video className="h-5 w-5 text-chart-4" />;
         case "audio": return <Music className="h-5 w-5 text-warning" />;
         default: return <FileText className="h-5 w-5 text-success" />;
     }
@@ -295,7 +295,7 @@ export default function MediaPage() {
         collapsed.has(id) ? <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />;
 
     return (
-        <div className="space-y-4 max-w-6xl mx-auto">
+        <div className="mx-auto w-full max-w-6xl space-y-6">
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -313,14 +313,14 @@ export default function MediaPage() {
                     { icon: <HardDrive className="h-4 w-4 text-primary" />, bg: "bg-primary/10", value: formatFileSize(totalSize), label: t("media.totalSize") },
                     { icon: <Files className="h-4 w-4 text-info" />, bg: "bg-info/10", value: totalCount, label: t("media.totalFiles") },
                     { icon: <ImageIcon className="h-4 w-4 text-info" />, bg: "bg-info/10", value: stats.image, label: t("media.images") },
-                    { icon: <Video className="h-4 w-4 text-purple-600 dark:text-purple-400" />, bg: "bg-purple-500/10", value: stats.video + stats.audio + stats.document, label: t("media.other") },
+                    { icon: <Video className="h-4 w-4 text-chart-4" />, bg: "bg-chart-4/10", value: stats.video + stats.audio + stats.document, label: t("media.other") },
                 ].map((s) => (
                     <Card key={s.label} className="border-border/40">
                         <CardContent className="p-3 flex items-center gap-3">
                             <div className={`h-9 w-9 rounded-lg ${s.bg} flex items-center justify-center`}>{s.icon}</div>
                             <div>
                                 <p className="text-lg font-bold text-foreground">{s.value}</p>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.label}</p>
+                                <p className="text-xs text-muted-foreground">{s.label}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -390,7 +390,7 @@ export default function MediaPage() {
                                         </div>
                                         <div>
                                             <h2 className="text-sm font-bold text-foreground leading-tight text-left">{userGroup.ownerName}</h2>
-                                            <p className="text-[10px] text-muted-foreground text-left">{t("media.userAccount")}</p>
+                                            <p className="text-xs text-muted-foreground text-left">{t("media.userAccount")}</p>
                                         </div>
                                     </button>
                                     <div className="flex items-center gap-3 text-xs text-muted-foreground bg-muted/30 px-3 py-1 rounded-full">
@@ -420,7 +420,7 @@ export default function MediaPage() {
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-semibold text-foreground truncate">{sessionGroup.sessionName}</p>
-                                                                <p className="text-[10px] text-muted-foreground truncate">{sessionGroup.sessionId}</p>
+                                                                <p className="text-xs text-muted-foreground truncate">{sessionGroup.sessionId}</p>
                                                             </div>
                                                         </button>
                                                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -446,7 +446,7 @@ export default function MediaPage() {
                                                                                 <ChevronIcon id={senderKey} />
                                                                                 <Contact className="h-3.5 w-3.5 text-muted-foreground/70 flex-shrink-0" />
                                                                                 <span className="text-xs font-medium text-foreground truncate">{sender.senderDisplay}</span>
-                                                                                <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-1">
+                                                                                <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-1">
                                                                                     {sender.files.length} • {formatFileSize(sender.totalSize)}
                                                                                 </span>
                                                                             </button>
@@ -469,7 +469,7 @@ export default function MediaPage() {
                                                                                                     ) : (
                                                                                                         <div className="flex flex-col items-center gap-1">
                                                                                                             {getTypeIcon(file.type)}
-                                                                                                            <span className="text-[9px] text-muted-foreground uppercase font-medium">{file.ext}</span>
+                                                                                                            <span className="text-xs text-muted-foreground font-medium">{file.ext}</span>
                                                                                                         </div>
                                                                                                     )}
                                                                                                     <div className={`absolute top-1 left-1 transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
@@ -487,9 +487,9 @@ export default function MediaPage() {
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <div className="p-1.5 px-2">
-                                                                                                    <p className="text-[10px] font-medium text-foreground truncate" title={file.name}>{file.name}</p>
+                                                                                                    <p className="text-xs font-medium text-foreground truncate" title={file.name}>{file.name}</p>
                                                                                                     <div className="flex items-center justify-between mt-1">
-                                                                                                        <span className="text-[9px] text-muted-foreground font-medium">{formatFileSize(file.size)}</span>
+                                                                                                        <span className="text-xs text-muted-foreground font-medium">{formatFileSize(file.size)}</span>
                                                                                                         <span className="text-[8px] text-muted-foreground">{new Date(file.createdAt).toLocaleDateString(locale, { month: "short", day: "numeric" })}</span>
                                                                                                     </div>
                                                                                                 </div>

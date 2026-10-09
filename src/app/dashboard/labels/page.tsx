@@ -338,7 +338,7 @@ export default function LabelsPage() {
 
     return (
         <SessionGuard>
-            <div className="mx-auto w-full max-w-5xl space-y-6">
+            <div className="mx-auto w-full max-w-6xl space-y-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">{t("labels.title")}</h1>
@@ -491,7 +491,7 @@ export default function LabelsPage() {
                                                         className="flex items-center justify-between p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                                                     >
                                                         <div className="flex items-center gap-2 min-w-0">
-                                                            <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">
+                                                            <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
                                                                 {(cl.contactName || cl.chatJid).charAt(0).toUpperCase()}
                                                             </div>
                                                             <div className="min-w-0">
@@ -599,7 +599,7 @@ export default function LabelsPage() {
                                             <p className="text-sm font-medium truncate">{c.name || c.notify || t("ui.unknown")}</p>
                                             <p className="text-[11px] text-muted-foreground font-mono truncate">{c.jid}</p>
                                         </div>
-                                        <Badge variant="outline" className="text-[10px] shrink-0">{t("labels.assign")}</Badge>
+                                        <Badge variant="outline" className="text-xs shrink-0">{t("labels.assign")}</Badge>
                                     </button>
                                 ))
                             ) : contactSearch.trim() ? (
