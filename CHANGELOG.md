@@ -8,6 +8,23 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+## [v2.3.0] - 2026-10-10
+
+### Adicionado
+- **Atualização automática no macOS**: o instalador cria um terceiro serviço do launchd que confere, no login e a cada hora, se saiu uma release nova. Quando sai, baixa o `instalar-macos.sh` da release, confere o SHA-256 com o `SHA256SUMS-instalador.txt` e atualiza sozinho, com uma notificação do macOS. Só avança de versão (nunca volta para uma mais antiga) e respeita uma trava contra instalação manual e automática ao mesmo tempo.
+- **Comandos** `w-azap auto-atualizacao ligar|desligar` e `w-azap log atualizacao`; o `w-azap status` mostra se a atualização automática está ligada.
+
+### Alterado
+- **Atualização sem tirar o painel do ar**: cada versão é montada em `~/.w-azap/versoes/<tag>-<data>` enquanto a atual continua funcionando, e `~/.w-azap/app` virou um link para a versão em uso. O painel fica fora do ar só enquanto o servidor reinicia (cerca de 4 segundos nos testes). Se a versão nova não responder em 2 minutos, o link volta para a anterior e a mesma versão só é tentada de novo 6 horas depois.
+- **Dados em `~/.w-azap/dados/`**: o `.env`, `data/` (mídias e fotos de perfil) e `uploads/` saíram de `app/` e valem para todas as versões. Instalações até a v2.2.0 são migradas sozinhas na primeira atualização.
+- **MySQL**: numa atualização, só reinicia quando a versão ou a configuração dele mudam.
+- **`w-azap reconstruir`**: o build é feito numa cópia da versão em uso, que continua no ar até a troca; se o build falhar, nada muda.
+
+### Corrigido
+- **Build com as pastas de dados como links**: o Tailwind não varre mais `data/` e `uploads/`, que guardam mídias, não código.
+
+> Quem instalou a v2.0.0, v2.1.0 ou v2.2.0 precisa rodar `w-azap atualizar` uma vez para ganhar a atualização automática.
+
 ## [v2.2.0] - 2026-10-09
 
 ### Adicionado
