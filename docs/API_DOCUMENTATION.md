@@ -2,7 +2,7 @@
 
 > Arquivo gerado automaticamente a partir de `src/lib/swagger.ts`: não edite à mão. Para atualizar, rode `npx tsx scripts/generate-swagger.ts && node scripts/generate-docs.js`.
 
-**Versão 2.0.0** · **84 rotas** · URL base: `http://localhost:3000/api`
+**Versão 2.0.0** · **86 rotas** · URL base: `http://localhost:3000/api`
 
 API REST do gateway de WhatsApp W-AZAP para automação completa: sessões, mensagens, grupos, contatos, etiquetas, agendamentos, respostas automáticas e webhooks. Para explorar de forma interativa, use o Swagger UI em `/swagger` (exige login no painel).
 
@@ -1476,6 +1476,205 @@ curl -X POST "http://localhost:3000/api/sessions/abc123/bot-config" \
   -H "X-API-Key: sua-chave" \
   -H "Content-Type: application/json" \
   -d '{"enabled":true,"botMode":"BLACKLIST","botBlockedJids":["5511987654321@s.whatsapp.net"],"autoReplyMode":"SPECIFIC","autoReplyAllowedJids":["5511987654321@s.whatsapp.net"],"botName":"My Assistant","enableSticker":true}'
+```
+
+---
+
+### \[GET\] /sessions/{id}/email-forward
+
+**Obter o encaminhamento por e-mail**
+
+Configuração do encaminhamento em tempo real das conversas privadas por e-mail. Só o dono da sessão (ou SUPERADMIN). A senha do SMTP nunca é devolvida: vem mascarada quando existe.
+
+#### Parâmetros
+
+| Nome | Local | Obrigatório | Tipo | Descrição |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | caminho | ✅ Sim | string | — |
+
+#### Respostas
+
+| Código | Descrição |
+| :--- | :--- |
+| `200` | Configuração obtida (valores padrão quando ainda não configurado) |
+| `403` | Apenas o dono da sessão pode configurar o encaminhamento |
+
+**Exemplo de resposta (`200`):**
+
+```json
+{
+  "status": true,
+  "message": "Configuração de encaminhamento carregada",
+  "data": {
+    "enabled": true,
+    "recipients": "voce@exemplo.com",
+    "includeOutgoing": false,
+    "attachMedia": true,
+    "contextMessages": 5,
+    "smtpHost": "smtp.gmail.com",
+    "smtpPort": 587,
+    "smtpSecure": false,
+    "smtpUser": "voce@gmail.com",
+    "smtpPass": "••••••••",
+    "fromAddress": null,
+    "sentCount": 42,
+    "lastSentAt": "2026-10-09T14:31:00.000Z",
+    "lastError": null,
+    "lastErrorAt": null,
+    "configured": true
+  }
+}
+```
+
+#### Exemplo em cURL
+
+```bash
+curl -X GET "http://localhost:3000/api/sessions/abc123/email-forward" \
+  -H "X-API-Key: sua-chave"
+```
+
+---
+
+### \[POST\] /sessions/{id}/email-forward
+
+**Salvar o encaminhamento por e-mail**
+
+Exige login no navegador (não aceita chave de API). Cada nova mensagem de conversa privada vira um e-mail com os dados do contato e as últimas mensagens; grupos não são encaminhados. Limite de 300 e-mails por hora por sessão. Envie `smtpPass` mascarado ou omita para manter a senha salva; string vazia remove.
+
+#### Parâmetros
+
+| Nome | Local | Obrigatório | Tipo | Descrição |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | caminho | ✅ Sim | string | — |
+
+#### Cabeçalhos
+
+```
+X-API-Key: sua-chave
+Content-Type: application/json
+```
+
+#### Corpo da requisição (`application/json`)
+
+| Campo | Tipo | Obrigatório | Descrição |
+| :--- | :--- | :--- | :--- |
+| `enabled` | boolean | Não | Liga ou desliga o encaminhamento |
+| `recipients` | string | Não | Até 5 e-mails separados por vírgula |
+| `includeOutgoing` | boolean | Não | Também encaminha as mensagens enviadas por este número |
+| `attachMedia` | boolean | Não | Anexa mídias de até 10 MB |
+| `contextMessages` | integer | Não | Mensagens anteriores da conversa em cada e-mail |
+| `smtpHost` | string | Não | — |
+| `smtpPort` | integer | Não | — |
+| `smtpSecure` | boolean | Não | true = SSL/TLS direto (465); false = STARTTLS (obrigatório) |
+| `smtpUser` | string, nullable | Não | — |
+| `smtpPass` | string, nullable | Não | Somente escrita. Omita ou envie a máscara para manter; vazio remove |
+| `fromAddress` | string, nullable | Não | Remetente; se vazio, usa smtpUser |
+
+**Exemplo:**
+
+```json
+{
+  "enabled": true,
+  "recipients": "voce@exemplo.com, equipe@exemplo.com",
+  "includeOutgoing": false,
+  "attachMedia": true,
+  "contextMessages": 5,
+  "smtpHost": "smtp.gmail.com",
+  "smtpPort": 587,
+  "smtpSecure": false,
+  "smtpUser": "voce@gmail.com",
+  "smtpPass": "senha-de-app",
+  "fromAddress": null
+}
+```
+
+#### Respostas
+
+| Código | Descrição |
+| :--- | :--- |
+| `200` | Encaminhamento salvo |
+| `400` | Dados inválidos ou configuração incompleta para ativar |
+| `403` | Apenas o dono da sessão pode configurar o encaminhamento |
+
+#### Exemplo em cURL
+
+```bash
+curl -X POST "http://localhost:3000/api/sessions/abc123/email-forward" \
+  -H "X-API-Key: sua-chave" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled":true,"recipients":"voce@exemplo.com, equipe@exemplo.com","includeOutgoing":false,"attachMedia":true,"contextMessages":5,"smtpHost":"smtp.gmail.com","smtpPort":587,"smtpSecure":false,"smtpUser":"voce@gmail.com","smtpPass":"senha-de-app","fromAddress":null}'
+```
+
+---
+
+### \[POST\] /sessions/{id}/email-forward/test
+
+**Enviar e-mail de teste**
+
+Envia um e-mail de teste com as configurações do corpo (não precisam estar salvas). Sem `smtpPass`, usa a senha salva. Exige login no navegador.
+
+#### Parâmetros
+
+| Nome | Local | Obrigatório | Tipo | Descrição |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | caminho | ✅ Sim | string | — |
+
+#### Cabeçalhos
+
+```
+X-API-Key: sua-chave
+Content-Type: application/json
+```
+
+#### Corpo da requisição (`application/json`)
+
+| Campo | Tipo | Obrigatório | Descrição |
+| :--- | :--- | :--- | :--- |
+| `enabled` | boolean | Não | Liga ou desliga o encaminhamento |
+| `recipients` | string | Não | Até 5 e-mails separados por vírgula |
+| `includeOutgoing` | boolean | Não | Também encaminha as mensagens enviadas por este número |
+| `attachMedia` | boolean | Não | Anexa mídias de até 10 MB |
+| `contextMessages` | integer | Não | Mensagens anteriores da conversa em cada e-mail |
+| `smtpHost` | string | Não | — |
+| `smtpPort` | integer | Não | — |
+| `smtpSecure` | boolean | Não | true = SSL/TLS direto (465); false = STARTTLS (obrigatório) |
+| `smtpUser` | string, nullable | Não | — |
+| `smtpPass` | string, nullable | Não | Somente escrita. Omita ou envie a máscara para manter; vazio remove |
+| `fromAddress` | string, nullable | Não | Remetente; se vazio, usa smtpUser |
+
+**Exemplo:**
+
+```json
+{
+  "enabled": true,
+  "recipients": "string",
+  "includeOutgoing": true,
+  "attachMedia": true,
+  "contextMessages": 0,
+  "smtpHost": "string",
+  "smtpPort": 587,
+  "smtpSecure": true,
+  "smtpUser": "string",
+  "smtpPass": "string",
+  "fromAddress": "string"
+}
+```
+
+#### Respostas
+
+| Código | Descrição |
+| :--- | :--- |
+| `200` | E-mail de teste enviado |
+| `400` | Dados inválidos |
+| `502` | O servidor SMTP recusou ou não respondeu. `code`: auth, connection, tls, recipient, private_host ou unknown |
+
+#### Exemplo em cURL
+
+```bash
+curl -X POST "http://localhost:3000/api/sessions/abc123/email-forward/test" \
+  -H "X-API-Key: sua-chave" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled":true,"recipients":"string","includeOutgoing":true,"attachMedia":true,"contextMessages":0,"smtpHost":"string","smtpPort":587,"smtpSecure":true,"smtpUser":"string","smtpPass":"string","fromAddress":"string"}'
 ```
 
 ---
@@ -6938,6 +7137,40 @@ curl -X GET "http://localhost:3000/api/contacts/vendas-01?page=value&limit=value
 ---
 
 ## 📦 Schemas (modelos de dados)
+
+### EmailForwardInput
+
+| Campo | Tipo | Obrigatório | Descrição |
+| :--- | :--- | :--- | :--- |
+| `enabled` | boolean | Não | Liga ou desliga o encaminhamento |
+| `recipients` | string | Não | Até 5 e-mails separados por vírgula |
+| `includeOutgoing` | boolean | Não | Também encaminha as mensagens enviadas por este número |
+| `attachMedia` | boolean | Não | Anexa mídias de até 10 MB |
+| `contextMessages` | integer | Não | Mensagens anteriores da conversa em cada e-mail |
+| `smtpHost` | string | Não | — |
+| `smtpPort` | integer | Não | — |
+| `smtpSecure` | boolean | Não | true = SSL/TLS direto (465); false = STARTTLS (obrigatório) |
+| `smtpUser` | string, nullable | Não | — |
+| `smtpPass` | string, nullable | Não | Somente escrita. Omita ou envie a máscara para manter; vazio remove |
+| `fromAddress` | string, nullable | Não | Remetente; se vazio, usa smtpUser |
+
+**Exemplo:**
+
+```json
+{
+  "enabled": true,
+  "recipients": "string",
+  "includeOutgoing": true,
+  "attachMedia": true,
+  "contextMessages": 0,
+  "smtpHost": "string",
+  "smtpPort": 587,
+  "smtpSecure": true,
+  "smtpUser": "string",
+  "smtpPass": "string",
+  "fromAddress": "string"
+}
+```
 
 ### Error
 

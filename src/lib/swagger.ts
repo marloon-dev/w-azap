@@ -59,6 +59,22 @@ Rotas administrativas (usuários, geração de chave) só aceitam o cookie de lo
                     }
                 },
                 schemas: {
+                    EmailForwardInput: {
+                        type: "object",
+                        properties: {
+                            enabled: { type: "boolean", description: "Liga ou desliga o encaminhamento" },
+                            recipients: { type: "string", description: "Até 5 e-mails separados por vírgula" },
+                            includeOutgoing: { type: "boolean", description: "Também encaminha as mensagens enviadas por este número" },
+                            attachMedia: { type: "boolean", description: "Anexa mídias de até 10 MB" },
+                            contextMessages: { type: "integer", minimum: 0, maximum: 20, description: "Mensagens anteriores da conversa em cada e-mail" },
+                            smtpHost: { type: "string" },
+                            smtpPort: { type: "integer", example: 587 },
+                            smtpSecure: { type: "boolean", description: "true = SSL/TLS direto (465); false = STARTTLS (obrigatório)" },
+                            smtpUser: { type: "string", nullable: true },
+                            smtpPass: { type: "string", nullable: true, description: "Somente escrita. Omita ou envie a máscara para manter; vazio remove" },
+                            fromAddress: { type: "string", nullable: true, description: "Remetente; se vazio, usa smtpUser" }
+                        }
+                    },
                     // Common Schemas
                     Error: {
                         type: "object",
@@ -628,6 +644,76 @@ Rotas administrativas (usuários, geração de chave) só aceitam o cookie de lo
                         }
                     }
                 },
+                "/sessions/{id}/email-forward": {
+                    get: {
+                        tags: ["Sessões"],
+                        summary: "Obter o encaminhamento por e-mail",
+                        description: "Configuração do encaminhamento em tempo real das conversas privadas por e-mail. Só o dono da sessão (ou SUPERADMIN). A senha do SMTP nunca é devolvida: vem mascarada quando existe.",
+                        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+                        responses: {
+                            200: {
+                                description: "Configuração obtida (valores padrão quando ainda não configurado)",
+                                content: {
+                                    "application/json": {
+                                        example: {
+                                            status: true,
+                                            message: "Configuração de encaminhamento carregada",
+                                            data: {
+                                                enabled: true, recipients: "voce@exemplo.com", includeOutgoing: false, attachMedia: true, contextMessages: 5,
+                                                smtpHost: "smtp.gmail.com", smtpPort: 587, smtpSecure: false, smtpUser: "voce@gmail.com", smtpPass: "••••••••", fromAddress: null,
+                                                sentCount: 42, lastSentAt: "2026-10-09T14:31:00.000Z", lastError: null, lastErrorAt: null, configured: true
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            403: { description: "Apenas o dono da sessão pode configurar o encaminhamento" }
+                        }
+                    },
+                    post: {
+                        tags: ["Sessões"],
+                        summary: "Salvar o encaminhamento por e-mail",
+                        description: "Exige login no navegador (não aceita chave de API). Cada nova mensagem de conversa privada vira um e-mail com os dados do contato e as últimas mensagens; grupos não são encaminhados. Limite de 300 e-mails por hora por sessão. Envie `smtpPass` mascarado ou omita para manter a senha salva; string vazia remove.",
+                        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+                        requestBody: {
+                            content: {
+                                "application/json": {
+                                    schema: { $ref: "#/components/schemas/EmailForwardInput" },
+                                    example: {
+                                        enabled: true, recipients: "voce@exemplo.com, equipe@exemplo.com", includeOutgoing: false, attachMedia: true, contextMessages: 5,
+                                        smtpHost: "smtp.gmail.com", smtpPort: 587, smtpSecure: false, smtpUser: "voce@gmail.com", smtpPass: "senha-de-app", fromAddress: null
+                                    }
+                                }
+                            }
+                        },
+                        responses: {
+                            200: { description: "Encaminhamento salvo" },
+                            400: { description: "Dados inválidos ou configuração incompleta para ativar" },
+                            403: { description: "Apenas o dono da sessão pode configurar o encaminhamento" }
+                        }
+                    }
+                },
+
+                "/sessions/{id}/email-forward/test": {
+                    post: {
+                        tags: ["Sessões"],
+                        summary: "Enviar e-mail de teste",
+                        description: "Envia um e-mail de teste com as configurações do corpo (não precisam estar salvas). Sem `smtpPass`, usa a senha salva. Exige login no navegador.",
+                        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+                        requestBody: {
+                            content: { "application/json": { schema: { $ref: "#/components/schemas/EmailForwardInput" } } }
+                        },
+                        responses: {
+                            200: { description: "E-mail de teste enviado" },
+                            400: { description: "Dados inválidos" },
+                            502: {
+                                description: "O servidor SMTP recusou ou não respondeu. `code`: auth, connection, tls, recipient, private_host ou unknown",
+                                content: { "application/json": { example: { status: false, message: "Invalid login: 535-5.7.8 Username and Password not accepted", code: "auth" } } }
+                            }
+                        }
+                    }
+                },
+
                 "/sessions/{id}": {
                     get: {
                         tags: ["Sessões"],
