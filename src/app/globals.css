@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Mídias e fotos de perfil, não código. No instalador são links para fora do projeto, que o Turbopack recusa */
+@source not "../../data";
+@source not "../../uploads";
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
