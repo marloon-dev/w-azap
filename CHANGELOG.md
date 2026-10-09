@@ -8,6 +8,8 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+## [v2.2.0] - 2026-10-09
+
 ### Adicionado
 - **Fotos de perfil** no chat (lista de conversas e cabeçalho) e na página de contatos, inclusive de grupos e contatos com LID. A foto é buscada no WhatsApp só quando aparece na tela (no máximo 2 consultas por vez, para não sobrecarregar a conta) e fica guardada em `data/avatars/` por alguns dias. Contatos sem foto, ou com foto privada, mostram as iniciais e só são consultados de novo depois de 12 horas. Rota `GET /api/avatar/{sessionId}/{jid}`.
 
