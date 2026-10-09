@@ -2,10 +2,10 @@
 
 import { SidebarNav } from "./sidebar-nav";
 import { useSidebar } from "./sidebar-context";
-import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslation } from "@/components/i18n-provider";
+import { cn } from "@/lib/utils";
 
 interface SidebarShellProps {
     appName: string;
@@ -17,81 +17,57 @@ interface SidebarShellProps {
 export function SidebarShell({ appName, userName, userEmail, version }: SidebarShellProps) {
     const { isCollapsed } = useSidebar();
     const { t } = useTranslation();
+    const initial = userName?.charAt(0)?.toUpperCase() || "U";
 
     return (
         <aside
-            className={`
-                bg-background/80 backdrop-blur-xl border-r border-border/40
-                hidden md:flex flex-col h-full sticky left-0 top-0 z-20
-                shadow-[1px_0_12px_-4px_rgba(0,0,0,0.08)]
-                transition-all duration-300 ease-in-out
-                ${isCollapsed ? "w-[72px]" : "w-[260px]"}
-            `}
+            className={cn(
+                "sticky top-0 left-0 z-20 hidden h-full flex-col border-r bg-sidebar transition-[width] duration-200 ease-out md:flex",
+                isCollapsed ? "w-[72px]" : "w-64",
+            )}
         >
-            {/* Logo / Brand */}
-            <div className={`border-b border-border/30 transition-all duration-300 ${isCollapsed ? "px-3 py-4" : "px-5 py-5"}`}>
-                {isCollapsed ? (
-                    <div className="flex justify-center">
-                        <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                            {appName.charAt(0)}
-                        </div>
+            {/* Brand */}
+            <div className={cn("flex h-16 shrink-0 items-center border-b", isCollapsed ? "justify-center px-3" : "gap-3 px-4")}>
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground" aria-hidden="true">
+                    {appName.charAt(0)}
+                </div>
+                {!isCollapsed && (
+                    <div className="min-w-0">
+                        <p className="truncate text-base font-semibold leading-tight text-foreground">{appName}</p>
+                        <p className="truncate text-xs text-muted-foreground">{t("common.whatsappGateway")}</p>
                     </div>
-                ) : (
-                    <>
-                        <h1 className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">
-                            {appName}
-                        </h1>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 font-medium">{t("common.whatsappGateway")}</p>
-                    </>
                 )}
             </div>
 
-            {/* Navigation */}
             <SidebarNav />
 
-            {/* User Footer */}
-            <div 
-                suppressHydrationWarning={true}
-                className={`border-t border-border/30 bg-background/40 transition-all duration-300 ${isCollapsed ? "p-2" : "p-4"}`}
-            >
-                {isCollapsed ? (
-                    <div suppressHydrationWarning={true} className="flex flex-col items-center gap-2">
-                        <div suppressHydrationWarning={true} className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-xs font-bold text-primary">
-                            {userName?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
-                        <button
-                            onClick={() => signOut({ callbackUrl: "/auth/login" })}
-                            title={t("common.signOut")}
-                            className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        >
-                            <LogOut size={16} />
-                        </button>
+            {/* Account */}
+            <div className={cn("shrink-0 border-t", isCollapsed ? "p-2" : "p-3")}>
+                <div className={cn("flex items-center", isCollapsed ? "flex-col gap-2" : "gap-3")}>
+                    <div
+                        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+                        title={isCollapsed ? `${userName || t("common.user")} · ${userEmail ?? ""}` : undefined}
+                        aria-hidden="true"
+                    >
+                        {initial}
                     </div>
-                ) : (
-                    <>
-                        <div suppressHydrationWarning={true} className="flex items-center gap-2.5 mb-3">
-                            <div 
-                                suppressHydrationWarning={true}
-                                className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-xs font-bold text-primary border border-primary/10"
-                            >
-                                {userName?.charAt(0)?.toUpperCase() || "U"}
-                            </div>
-                            <div suppressHydrationWarning={true} className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-foreground truncate">{userName || t("common.user")}</p>
-                                <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
-                            </div>
+                    {!isCollapsed && (
+                        <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-foreground">{userName || t("common.user")}</p>
+                            <p className="truncate text-xs text-muted-foreground">{userEmail}</p>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full flex items-center justify-center gap-2 text-xs h-8 rounded-lg border-border/40 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-colors"
-                            onClick={() => signOut({ callbackUrl: "/auth/login" })}
-                        >
-                            <LogOut size={14} /> {t("common.signOut")}
-                        </Button>
-                        <p className="text-[9px] text-muted-foreground/50 text-center mt-2 font-mono">v{version}</p>
-                    </>
-                )}
+                    )}
+                    <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                        aria-label={t("common.signOut")}
+                        title={t("common.signOut")}
+                        className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    >
+                        <LogOut size={16} aria-hidden="true" />
+                    </button>
+                </div>
+                {!isCollapsed && <p className="mt-2 text-center font-mono text-[11px] text-muted-foreground">v{version}</p>}
             </div>
         </aside>
     );

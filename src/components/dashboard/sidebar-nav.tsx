@@ -4,207 +4,81 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronDown, PanelLeftClose, PanelLeft } from "lucide-react";
-import {
-    LayoutDashboard,
-    MessageSquare,
-    Users,
-    Settings,
-    QrCode,
-    ImageIcon,
-    Webhook,
-    CalendarClock,
-    Bot,
-    Bell,
-    FileText,
-    Code,
-    Send,
-    UserCheck,
-    Megaphone,
-    HardDrive,
-    Activity,
-    UserCircle,
-    Tag,
-    MessageCircleReply,
-    Contact,
-    UserPlus
-} from "lucide-react";
+import { ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { navGroups, isNavActive, visibleItems, type NavItem } from "./nav-config";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/components/i18n-provider";
-import type { TranslationKey } from "@/lib/i18n/types";
-
-interface NavGroup {
-    label: TranslationKey;
-    items: NavItem[];
-}
-
-interface NavItem {
-    href: string;
-    label: TranslationKey;
-    icon: React.ElementType;
-    external?: boolean;
-    superadminOnly?: boolean;
-    allowedRoles?: string[];
-}
-
-const navGroups: NavGroup[] = [
-    {
-        label: "nav.groups.main",
-        items: [
-            { href: "/dashboard", label: "nav.items.dashboard", icon: LayoutDashboard },
-            { href: "/dashboard/sessions", label: "nav.items.sessions", icon: QrCode },
-        ],
-    },
-    {
-        label: "nav.groups.messaging",
-        items: [
-            { href: "/dashboard/chat", label: "nav.items.chat", icon: MessageSquare },
-            { href: "/dashboard/broadcast", label: "nav.items.broadcast", icon: Megaphone },
-            { href: "/dashboard/sticker", label: "nav.items.sticker", icon: ImageIcon },
-        ],
-    },
-    {
-        label: "nav.groups.contacts",
-        items: [
-            { href: "/dashboard/contacts", label: "nav.items.contacts", icon: UserCheck },
-            { href: "/dashboard/groups", label: "nav.items.groups", icon: Users },
-            { href: "/dashboard/labels", label: "nav.items.labels", icon: Tag },
-        ],
-    },
-    {
-        label: "nav.groups.automation",
-        items: [
-            { href: "/dashboard/bot-settings", label: "nav.items.botSettings", icon: Bot },
-            { href: "/dashboard/autoreply", label: "nav.items.autoReply", icon: MessageCircleReply },
-            { href: "/dashboard/profile", label: "nav.items.botProfile", icon: UserCircle },
-            { href: "/dashboard/scheduler", label: "nav.items.scheduler", icon: CalendarClock },
-            { href: "/dashboard/webhooks", label: "nav.items.webhooks", icon: Webhook },
-        ],
-    },
-    {
-        label: "nav.groups.developer",
-        items: [
-            { href: "/docs", label: "nav.items.apiDocs", icon: FileText },
-            { href: "/swagger", label: "nav.items.swagger", icon: Code, external: true },
-        ],
-    },
-    {
-        label: "nav.groups.administration",
-        items: [
-            { href: "/dashboard/media", label: "nav.items.media", icon: HardDrive },
-            { href: "/dashboard/sessions/access", label: "nav.items.sessionAccess", icon: UserPlus },
-            { href: "/dashboard/users", label: "nav.items.users", icon: Users, superadminOnly: true },
-            { href: "/dashboard/settings", label: "nav.items.settings", icon: Settings },
-            { href: "/dashboard/system-monitor", label: "nav.items.systemMonitor", icon: Activity, superadminOnly: true },
-            { href: "/dashboard/notifications", label: "nav.items.notifications", icon: Bell, superadminOnly: true },
-        ],
-    },
-];
+import { cn } from "@/lib/utils";
 
 export function SidebarNav() {
     const pathname = usePathname();
     const { data: session } = useSession();
     const { isCollapsed, toggleCollapse } = useSidebar();
     const { t } = useTranslation();
-    // @ts-ignore
-    const userRole = session?.user?.role;
+    const userRole = session?.user?.role as string | undefined;
 
-    // Track collapsed groups — all expanded by default
+    // All groups expanded by default
     const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
-
-    const toggleGroup = (label: string) => {
-        setCollapsedGroups(prev => ({ ...prev, [label]: !prev[label] }));
-    };
-
-    const isActive = (href: string) => {
-        if (href === "/dashboard") return pathname === "/dashboard";
-        return pathname.startsWith(href);
-    };
+    const toggleGroup = (label: string) => setCollapsedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
 
     return (
         <TooltipProvider delayDuration={0}>
-            <nav className="flex-1 px-2 py-2 overflow-y-auto overflow-x-hidden space-y-0.5 styled-scrollbar">
+            <nav aria-label={t("common.mainNavigation")} className="styled-scrollbar flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-3 py-3">
                 {navGroups.map((group) => {
-                    const visibleItems = group.items.filter((item) => {
-                        if (item.superadminOnly && userRole !== "SUPERADMIN") return false;
-                        if (item.allowedRoles && (!userRole || !item.allowedRoles.includes(userRole))) return false;
-                        return true;
-                    });
-                    if (visibleItems.length === 0) return null;
-
-                    const isGroupCollapsed = collapsedGroups[group.label] ?? false;
-
-                    // "Main" group doesn't show a collapsible header
-                    if (group.label === "nav.groups.main") {
-                        return (
-                            <div key={group.label} className="mb-1">
-                                {visibleItems.map((item) => (
-                                    <NavLink
-                                        key={item.href}
-                                        item={item}
-                                        active={isActive(item.href)}
-                                        isCollapsed={isCollapsed}
-                                    />
-                                ))}
-                            </div>
-                        );
-                    }
+                    const items = visibleItems(group, userRole);
+                    if (items.length === 0) return null;
+                    const isMain = group.label === "nav.groups.main";
+                    const isGroupCollapsed = !isCollapsed && (collapsedGroups[group.label] ?? false);
+                    const listId = `nav-group-${group.label.split(".").pop()}`;
 
                     return (
-                        <div key={group.label} className="mb-1">
-                            {/* Group header — hidden when sidebar collapsed */}
-                            {!isCollapsed && (
+                        <div key={group.label}>
+                            {!isMain && !isCollapsed && (
                                 <button
+                                    type="button"
                                     onClick={() => toggleGroup(group.label)}
-                                    className="flex items-center justify-between w-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground/80 transition-colors group"
+                                    aria-expanded={!isGroupCollapsed}
+                                    aria-controls={listId}
+                                    className="mb-1 flex w-full items-center justify-between rounded-md px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
                                 >
                                     {t(group.label)}
                                     <ChevronDown
-                                        size={12}
-                                        className={`transition-transform duration-200 ${isGroupCollapsed ? "-rotate-90" : ""}`}
+                                        size={14}
+                                        aria-hidden="true"
+                                        className={cn("transition-transform duration-200", isGroupCollapsed && "-rotate-90")}
                                     />
                                 </button>
                             )}
+                            {!isMain && isCollapsed && <div className="mx-2 mb-2 border-t" aria-hidden="true" />}
 
-                            {/* Collapsed sidebar: show a thin divider between groups */}
-                            {isCollapsed && (
-                                <div className="mx-3 my-2 border-t border-border/30" />
-                            )}
-
-                            {(!isGroupCollapsed || isCollapsed) && (
-                                <div className="space-y-0.5">
-                                    {visibleItems.map((item) => (
-                                        <NavLink
-                                            key={item.href}
-                                            item={item}
-                                            active={isActive(item.href)}
-                                            isCollapsed={isCollapsed}
-                                        />
+                            {!isGroupCollapsed && (
+                                <ul id={listId} className="space-y-0.5">
+                                    {items.map((item) => (
+                                        <li key={item.href}>
+                                            <NavLink item={item} active={isNavActive(pathname, item.href)} isCollapsed={isCollapsed} />
+                                        </li>
                                     ))}
-                                </div>
+                                </ul>
                             )}
                         </div>
                     );
                 })}
             </nav>
 
-            {/* Collapse Toggle Button */}
-            <div className="px-2 py-2 border-t border-border/30">
+            <div className="border-t px-3 py-2">
                 <button
+                    type="button"
                     onClick={toggleCollapse}
-                    className="flex items-center justify-center w-full gap-2 px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+                    aria-label={isCollapsed ? t("common.expand") : t("common.collapse")}
+                    title={isCollapsed ? t("common.expand") : undefined}
+                    className="flex h-9 w-full items-center justify-center gap-2 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                     {isCollapsed ? (
-                        <PanelLeft size={18} />
+                        <PanelLeftOpen size={18} aria-hidden="true" />
                     ) : (
                         <>
-                            <PanelLeftClose size={16} />
+                            <PanelLeftClose size={16} aria-hidden="true" />
                             <span>{t("common.collapse")}</span>
                         </>
                     )}
@@ -217,44 +91,42 @@ export function SidebarNav() {
 function NavLink({ item, active, isCollapsed }: { item: NavItem; active: boolean; isCollapsed: boolean }) {
     const Icon = item.icon;
     const { t } = useTranslation();
+    const label = t(item.label);
 
-    const linkContent = (
+    const link = (
         <Link
             href={item.href}
             target={item.external ? "_blank" : undefined}
-            className={`
-                flex items-center rounded-lg text-sm font-medium
-                transition-all duration-200 group relative
-                ${isCollapsed ? "justify-center px-2 py-2.5 mx-1" : "gap-3 px-3 py-2"}
-                ${active
-                    ? "text-primary bg-primary/10 shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                }
-            `}
+            rel={item.external ? "noopener noreferrer" : undefined}
+            aria-current={active ? "page" : undefined}
+            aria-label={isCollapsed ? label : undefined}
+            className={cn(
+                "group relative flex min-h-9 items-center rounded-md text-sm font-medium transition-colors",
+                isCollapsed ? "justify-center px-2 py-2" : "gap-3 px-2.5 py-2",
+                active
+                    ? "bg-primary/10 text-primary"
+                    : "text-sidebar-foreground hover:bg-accent hover:text-foreground",
+            )}
         >
             {active && !isCollapsed && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-primary rounded-r-full" />
+                <span className="absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" aria-hidden="true" />
             )}
             <Icon
-                size={isCollapsed ? 20 : 17}
-                className={`flex-shrink-0 transition-colors duration-200 ${active ? "text-primary" : "text-muted-foreground/70 group-hover:text-foreground"}`}
+                size={isCollapsed ? 20 : 18}
+                aria-hidden="true"
+                className={cn("shrink-0", active ? "text-primary" : "text-muted-foreground group-hover:text-foreground")}
             />
-            {!isCollapsed && <span className="truncate">{t(item.label)}</span>}
+            {!isCollapsed && <span className="truncate">{label}</span>}
         </Link>
     );
 
-    if (isCollapsed) {
-        return (
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    {linkContent}
-                </TooltipTrigger>
-                <TooltipContent side="right" sideOffset={8}>
-                    <p className="text-xs font-medium">{t(item.label)}</p>
-                </TooltipContent>
-            </Tooltip>
-        );
-    }
-
-    return linkContent;
+    if (!isCollapsed) return link;
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>{link}</TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+                {label}
+            </TooltipContent>
+        </Tooltip>
+    );
 }
