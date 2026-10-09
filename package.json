@@ -1,6 +1,6 @@
 {
   "name": "w-azap",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Gateway e painel de WhatsApp com várias sessões, API REST, webhooks e automação (Next.js + Baileys).",
   "author": "marloon-dev",
   "contributors": [
