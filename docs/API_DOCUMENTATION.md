@@ -2,7 +2,7 @@
 
 > Arquivo gerado automaticamente a partir de `src/lib/swagger.ts`: não edite à mão. Para atualizar, rode `npx tsx scripts/generate-swagger.ts && node scripts/generate-docs.js`.
 
-**Versão 2.1.0** · **87 rotas** · URL base: `http://localhost:3000/api`
+**Versão 2.2.0** · **87 rotas** · URL base: `http://localhost:3000/api`
 
 API REST do gateway de WhatsApp W-AZAP para automação completa: sessões, mensagens, grupos, contatos, etiquetas, agendamentos, respostas automáticas e webhooks. Para explorar de forma interativa, use o Swagger UI em `/swagger` (exige login no painel).
 

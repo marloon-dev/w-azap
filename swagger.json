@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Documentação da API do W-AZAP",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "description": "\n# Gateway de WhatsApp: referência completa da API\n\nAPI REST do W-AZAP para automação completa do WhatsApp: sessões, mensagens, grupos, contatos, etiquetas, agendamentos, respostas automáticas e webhooks.\n\n## 🔐 Autenticação\nTodos os endpoints exigem uma destas formas:\n1. **Chave de API** no cabeçalho `X-API-Key: sua-chave`, gerada em **Painel › Webhooks e API** e exibida uma única vez.\n2. **Cookie de login** `authjs.session-token` (ou `__Secure-authjs.session-token` em HTTPS), enviado automaticamente pelo navegador.\n\nRotas administrativas (usuários, geração de chave) só aceitam o cookie de login.\n\n## 📋 Parâmetros comuns\n- **sessionId**: identificador da sessão (ex.: \"vendas-01\"; 3 a 50 letras, números, `-` ou `_`)\n- **jid**: formato de JID do WhatsApp (codifique o `@` como `%40` na URL):\n  - Contato: `5511987654321@s.whatsapp.net`\n  - Grupo: `120363123456789@g.us`\n\n## 📊 Limites\n- Requisições: `RATE_LIMIT_PER_MINUTE` por minuto por chave (padrão: 60). Acima disso, `429` com `Retry-After`.\n- Corpo da requisição: até `MAX_UPLOAD_SIZE_MB` (padrão: 50 MB). Acima disso, `413`.\n- Verificação de números: no máximo 50 por requisição.\n- Transmissão: intervalo base configurável (padrão: 2 s) com acréscimo aleatório de até 50%.\n- Histórico de mensagens: no máximo 100 por consulta.\n- URLs de mídia e de webhook precisam ser públicas (bloqueio de SSRF).\n                "
   },
   "servers": [
