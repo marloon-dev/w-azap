@@ -8,6 +8,10 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Adicionado
+- **Instalador para macOS** (`scripts/instalador/instalar-macos.sh`): instala o W-AZAP com um comando (`curl … | bash`) ou com dois cliques (`Instalar W-AZAP.command`), sem Homebrew, Docker ou senha de administrador. Baixa o Node.js 22 e o MySQL 8.4 portáteis (com SHA-256 conferido), gera o `.env` com chaves aleatórias, cria o banco e um usuário próprio, faz o build e registra dois serviços no `launchd` que iniciam no login. Rodar de novo atualiza e mantém a configuração e os dados. Inclui o comando `w-azap` (status, abrir, parar, iniciar, log, atualizar, desinstalar) e o app **W-AZAP** em `~/Applications`.
+- **Workflow `instalador-macos.yml`**: anexa a cada release publicada o `instalar-macos.sh`, o `W-AZAP-instalador-macos.zip` e os checksums.
+
 ## [v2.0.0] - 2026-10-09
 
 Primeira versão do **W-AZAP**, fork do WA-AKG v1.6.4. A versão principal mudou porque há mudanças incompatíveis: as variáveis `NEXT_PUBLIC_SWAGGER_*` não são mais usadas, o servidor escuta só em `127.0.0.1` por padrão, as rotas de usuários deixaram de aceitar chave de API e o cadastro público vem desativado.
