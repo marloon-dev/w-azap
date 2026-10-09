@@ -1,0 +1,50 @@
+name: Instalador macOS
+
+# Anexa o instalador para macOS a cada release publicada.
+# Também pode ser rodado à mão para uma release que já existe.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag da release (ex.: v2.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    name: Anexar instalador à release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Conferir a sintaxe do script
+        run: bash -n scripts/instalador/instalar-macos.sh
+
+      - name: Montar os arquivos
+        run: |
+          mkdir -p dist/pacote
+          # Fixa a versão da release no instalador
+          sed "s/__W_AZAP_VERSAO__/$TAG/" scripts/instalador/instalar-macos.sh > dist/instalar-macos.sh
+          grep -q "^VERSAO_FIXA=\"$TAG\"$" dist/instalar-macos.sh
+          cp dist/instalar-macos.sh "dist/pacote/Instalar W-AZAP.command"
+          cp scripts/instalador/LEIA-ME.txt dist/pacote/LEIA-ME.txt
+          chmod +x dist/instalar-macos.sh "dist/pacote/Instalar W-AZAP.command"
+          (cd dist/pacote && zip -X -r ../W-AZAP-instalador-macos.zip .)
+          (cd dist && sha256sum instalar-macos.sh W-AZAP-instalador-macos.zip > SHA256SUMS-instalador.txt)
+          cat dist/SHA256SUMS-instalador.txt
+
+      - name: Anexar à release
+        run: |
+          gh release upload "$TAG" \
+            dist/instalar-macos.sh \
+            dist/W-AZAP-instalador-macos.zip \
+            dist/SHA256SUMS-instalador.txt \
+            --clobber
