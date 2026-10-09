@@ -5,6 +5,7 @@ import { ChatList } from "./chat-list";
 import { ChatWindow } from "./chat-window";
 import { MessageCircle } from "lucide-react";
 import { useTranslation } from "@/components/i18n-provider";
+import { jidFromUrlSegment, urlSegmentFromJid } from "@/lib/chat-jid";
 
 interface ChatLayoutClientProps {
     sessionId: string;
@@ -27,8 +28,7 @@ export function ChatLayoutClient({ sessionId, initialJid }: ChatLayoutClientProp
         if (typeof window === "undefined") return;
         const base = "/dashboard/chat";
         if (selectedChat) {
-            const number = selectedChat.jid.split("@")[0];
-            const newPath = `${base}/${number}`;
+            const newPath = `${base}/${urlSegmentFromJid(selectedChat.jid)}`;
             if (window.location.pathname !== newPath) {
                 window.history.replaceState(null, "", newPath);
             }
@@ -44,10 +44,7 @@ export function ChatLayoutClient({ sessionId, initialJid }: ChatLayoutClientProp
         const handlePopState = () => {
             const path = window.location.pathname;
             if (path.startsWith("/dashboard/chat/")) {
-                const rawJid = path.replace("/dashboard/chat/", "");
-                let clean = rawJid.replace(/\D/g, "");
-                if (clean.startsWith("0")) clean = "62" + clean.substring(1);
-                setSelectedChat({ jid: `${clean}@s.whatsapp.net` });
+                setSelectedChat({ jid: jidFromUrlSegment(path.replace("/dashboard/chat/", "")) });
             } else {
                 setSelectedChat(null);
             }

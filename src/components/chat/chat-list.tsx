@@ -16,6 +16,7 @@ import { useSocket } from "./socket-context";
 import { toast } from "sonner";
 import { useTranslation } from "@/components/i18n-provider";
 import { translateValue, type Translator } from "@/lib/i18n/translate";
+import { jidFromPhoneNumber } from "@/lib/chat-jid";
 
 interface ChatContact {
     jid: string;
@@ -400,9 +401,7 @@ export function ChatList({ sessionId, onSelectChat, selectedJid }: ChatListProps
 
     const handleStartNewChat = () => {
         if (!newChatNumber) return;
-        let clean = newChatNumber.replace(/\D/g, '');
-        if (clean.startsWith('0')) clean = '62' + clean.substring(1);
-        onSelectChat(`${clean}@s.whatsapp.net`);
+        onSelectChat(jidFromPhoneNumber(newChatNumber));
         setIsNewChatOpen(false);
         setNewChatNumber("");
     };
