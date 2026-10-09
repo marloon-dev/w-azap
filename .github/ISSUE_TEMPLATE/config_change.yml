@@ -1,0 +1,44 @@
+name: ⚙️ Mudança de configuração / infraestrutura
+description: Proponha uma mudança em configuração, variáveis de ambiente, Docker ou deploy
+title: "[Config]: "
+labels: ["configuration", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Mudança de configuração.** Explique bem o impacto: mudanças aqui podem exigir migração em instalações existentes.
+
+  - type: dropdown
+    id: config_type
+    attributes:
+      label: Área
+      options:
+        - WhatsApp (Baileys / pareamento)
+        - Banco de dados (MySQL / Prisma)
+        - Docker / deploy
+        - Autenticação (NextAuth)
+        - Variáveis de ambiente
+        - Segurança
+        - Outra
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: O que precisa mudar e por quê
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto
+      description: Que efeito isso tem no sistema? É uma mudança incompatível?
+      placeholder: "Trocar o provedor do banco exige migrar os dados..."
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Passos de migração
+      description: Se for preciso migrar, descreva o passo a passo.
