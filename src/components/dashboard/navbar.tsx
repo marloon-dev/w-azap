@@ -13,6 +13,8 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { io, Socket } from "socket.io-client";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/i18n-provider";
 import { dateFnsLocale } from "@/lib/i18n/date-fns";
 
@@ -141,96 +143,104 @@ export function Navbar({ appName }: NavbarProps) {
         setIsOpen(false);
     };
 
+    const bellLabel = unreadCount > 0
+        ? `${t("notifications.title")}: ${t("notifications.unread", { count: unreadCount })}`
+        : t("notifications.title");
+
     return (
-        <header className="bg-background/40 backdrop-blur-2xl border-b border-border/50 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 w-full shadow-sm">
-            <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b bg-background/85 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-background/70 sm:px-6">
+            <div className="flex items-center">
                 <MobileNav appName={appName} />
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                <span className="hidden sm:inline"><RealtimeClock /></span>
+            <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+                <span className="hidden lg:inline"><RealtimeClock /></span>
                 <SessionSelector />
-                <div className="h-6 w-px bg-border/50 hidden sm:block" />
+                <div className="mx-1 hidden h-6 w-px bg-border sm:block" aria-hidden="true" />
 
                 <LanguageSwitcher />
+                <ThemeToggle />
 
                 <Popover open={isOpen} onOpenChange={setIsOpen}>
                     <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative hover:bg-muted/50 rounded-full h-10 w-10">
-                            <Bell className={`h-5 w-5 transition-colors ${unreadCount > 0 ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`} />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label={bellLabel}
+                            title={bellLabel}
+                            className="relative size-10 rounded-full text-muted-foreground hover:text-foreground"
+                        >
+                            <Bell className={cn("size-5", unreadCount > 0 && "text-primary")} aria-hidden="true" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-1.5 right-2.5 h-2.5 w-2.5 bg-red-500 rounded-full animate-pulse border-2 border-background" />
+                                <span className="absolute top-1.5 right-1.5 flex min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold leading-4 text-destructive-foreground ring-2 ring-background" aria-hidden="true">
+                                    {unreadCount > 9 ? "9+" : unreadCount}
+                                </span>
                             )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0 rounded-2xl border border-border/50 shadow-2xl glass-panel" align="end">
-                        <div className="p-4 border-b border-border/50 flex justify-between items-center bg-background/50">
+                    <PopoverContent className="w-[min(22rem,calc(100vw-1.5rem))] p-0" align="end">
+                        <div className="flex items-start justify-between gap-2 border-b p-4">
                             <div>
-                                <h4 className="font-semibold leading-none text-foreground">{t("notifications.title")}</h4>
-                                <p className="text-xs text-muted-foreground mt-1">
+                                <h2 className="text-sm font-semibold leading-none text-foreground">{t("notifications.title")}</h2>
+                                <p className="mt-1.5 text-xs text-muted-foreground">
                                     {unreadCount > 0 ? t("notifications.unread", { count: unreadCount }) : t("notifications.none")}
                                 </p>
                             </div>
                             <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="sm" className="h-auto py-1 px-2 text-xs" onClick={() => { router.push("/dashboard/inbox"); setIsOpen(false); }}>
+                                <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={() => { router.push("/dashboard/inbox"); setIsOpen(false); }}>
                                     {t("notifications.seeAll")}
                                 </Button>
                                 {unreadCount > 0 && (
-                                    <Button variant="ghost" size="sm" onClick={() => markAsRead()} className="h-auto py-1 px-2 text-xs">
+                                    <Button variant="ghost" size="sm" onClick={() => markAsRead()} className="h-8 px-2 text-xs">
                                         {t("notifications.markAllRead")}
                                     </Button>
                                 )}
                             </div>
                         </div>
-                        <div className="max-h-[300px] overflow-y-auto">
+                        <div className="styled-scrollbar max-h-[min(22rem,60vh)] overflow-y-auto">
                             {notifications.length === 0 ? (
-                                <div className="min-h-[150px] flex flex-col items-center justify-center text-center p-4">
-                                    <div className="bg-slate-100 p-3 rounded-full mb-3">
-                                        <Inbox className="h-6 w-6 text-slate-400" />
+                                <div className="flex min-h-[150px] flex-col items-center justify-center p-4 text-center">
+                                    <div className="mb-3 rounded-full bg-muted p-3">
+                                        <Inbox className="size-6 text-muted-foreground" aria-hidden="true" />
                                     </div>
                                     <p className="text-sm font-medium">{t("notifications.emptyTitle")}</p>
-                                    <p className="text-xs text-muted-foreground max-w-[180px]">{t("notifications.emptyDescription")}</p>
+                                    <p className="max-w-[200px] text-xs text-muted-foreground">{t("notifications.emptyDescription")}</p>
                                 </div>
                             ) : (
-                                <div className="divide-y">
+                                <ul className="divide-y">
                                     {notifications.map(n => (
-                                        <div
-                                            key={n.id}
-                                            className={`p-4 hover:bg-slate-50 transition-colors ${!n.read ? 'bg-blue-50/50' : ''}`}
-                                        >
-                                            <div className="flex justify-between items-start gap-3">
-                                                <div
-                                                    className="flex-1 space-y-1 cursor-pointer"
-                                                    onClick={() => handleNotificationClick(n)}
-                                                >
-                                                    <p className={`text-sm font-medium leading-none ${!n.read ? 'text-blue-700' : 'text-slate-900'}`}>
+                                        <li key={n.id} className={cn("flex items-start gap-2 p-3 transition-colors hover:bg-muted/50", !n.read && "bg-primary/5")}>
+                                            <button
+                                                type="button"
+                                                className="min-w-0 flex-1 space-y-1 rounded-md p-1 text-left"
+                                                onClick={() => handleNotificationClick(n)}
+                                            >
+                                                <span className="flex items-center gap-2">
+                                                    {!n.read && <span className="size-2 shrink-0 rounded-full bg-primary" aria-hidden="true" />}
+                                                    <span className={cn("text-sm leading-snug", n.read ? "font-medium text-foreground" : "font-semibold text-foreground")}>
                                                         {n.title}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground whitespace-normal break-words">
-                                                        {n.message}
-                                                    </p>
-                                                    <p className="text-[10px] text-slate-400">
-                                                        {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: dateFnsLocale(locale) })}
-                                                    </p>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    {!n.read && <span className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0" />}
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            deleteNotification(n.id);
-                                                        }}
-                                                    >
-                                                        <Trash2 className="h-4 w-4 text-red-500" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                    </span>
+                                                </span>
+                                                <span className="block whitespace-normal break-words text-xs text-muted-foreground">{n.message}</span>
+                                                <span className="block text-xs text-muted-foreground">
+                                                    {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: dateFnsLocale(locale) })}
+                                                </span>
+                                            </button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="size-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                                                aria-label={t("ui.delete")}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteNotification(n.id);
+                                                }}
+                                            >
+                                                <Trash2 className="size-4" aria-hidden="true" />
+                                            </Button>
+                                        </li>
                                     ))}
-                                </div>
+                                </ul>
                             )}
                         </div>
                     </PopoverContent>

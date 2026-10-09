@@ -6,9 +6,10 @@ import { SidebarShell } from "@/components/dashboard/sidebar-shell";
 import { UpdateChecker } from "@/components/dashboard/update-checker";
 import { RegistrationWarning } from "@/components/dashboard/registration-warning";
 import { prisma } from "@/lib/prisma";
-import { Toaster } from "sonner";
+import { ThemedToaster } from "@/components/themed-toaster";
 import pkg from "../../../package.json";
 import { redirect } from "next/navigation";
+import { getTranslations } from "@/lib/i18n/server";
 
 
 export default async function DashboardLayout({
@@ -23,6 +24,7 @@ export default async function DashboardLayout({
     const systemConfig = await prisma.systemConfig.findUnique({ where: { id: "default" } });
     const appName = systemConfig?.appName || "W-AZAP";
     const registrationEnabled = systemConfig?.enableRegistration ?? false;
+    const { t } = await getTranslations();
 
     return (
         <SessionProvider>
@@ -32,13 +34,13 @@ export default async function DashboardLayout({
                     role={session?.user?.role as string}
                     registrationEnabled={registrationEnabled}
                 />
-                <div className="flex h-screen bg-background relative overflow-hidden" suppressHydrationWarning={true}>
-                    {/* Subtle ambient background */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0" suppressHydrationWarning={true}>
-                        <div className="absolute -top-[20%] -left-[10%] w-[35rem] h-[35rem] bg-primary/[0.03] rounded-full blur-[100px]" />
-                        <div className="absolute -bottom-[20%] -right-[10%] w-[25rem] h-[25rem] bg-blue-500/[0.03] rounded-full blur-[80px]" />
-                    </div>
-
+                <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+                >
+                    {t("common.skipToContent")}
+                </a>
+                <div className="relative flex h-dvh overflow-hidden bg-background" suppressHydrationWarning={true}>
                     {/* Sidebar */}
                     <SidebarShell
                         appName={appName}
@@ -48,13 +50,13 @@ export default async function DashboardLayout({
                     />
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col overflow-hidden min-w-0 relative z-10" suppressHydrationWarning={true}>
+                    <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden" suppressHydrationWarning={true}>
                         <Navbar appName={appName} />
-                        <main className="flex-1 overflow-auto p-3 sm:p-4 lg:p-6 styled-scrollbar">
+                        <main id="main-content" tabIndex={-1} className="styled-scrollbar flex-1 overflow-auto px-4 py-5 outline-none sm:px-6 sm:py-6 lg:px-8">
                             {children}
                         </main>
                     </div>
-                    <Toaster />
+                    <ThemedToaster />
                 </div>
             </SidebarProvider>
         </SessionProvider>
