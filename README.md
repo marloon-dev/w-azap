@@ -119,6 +119,33 @@ O W-AZAP funciona com o **n8n**: dá para montar fluxos complexos de automação
 
 ---
 
+## 🍎 Instalador para macOS
+
+O jeito mais simples de rodar o W-AZAP num Mac (macOS 15 Sequoia ou mais novo, Apple Silicon ou Intel). Você não precisa de Homebrew, Docker nem senha de administrador. O instalador baixa o Node.js e o MySQL portáteis e confere o SHA-256 deles. Depois gera o `.env` com chaves aleatórias, faz o build e deixa o W-AZAP iniciando sozinho no login.
+
+Abra o **Terminal** e cole:
+
+```bash
+curl -fsSL https://github.com/marloon-dev/w-azap/releases/latest/download/instalar-macos.sh | bash
+```
+
+Se preferir dois cliques, baixe o `W-AZAP-instalador-macos.zip` da [última release](https://github.com/marloon-dev/w-azap/releases/latest) e abra `Instalar W-AZAP.command`. O arquivo não é assinado pela Apple. Na primeira vez, vá em **Ajustes do Sistema → Privacidade e Segurança → Abrir Mesmo Assim**.
+
+Quando terminar, o painel abre em `http://localhost:3000` (ou na próxima porta livre), e a primeira conta cadastrada vira administrador. Para o dia a dia, use o comando `w-azap` ou o app **W-AZAP** em `~/Applications`:
+
+| Comando | O que faz |
+| --- | --- |
+| `w-azap status` | Mostra se o MySQL e o servidor estão no ar |
+| `w-azap abrir` | Inicia (se preciso) e abre o painel no navegador |
+| `w-azap parar` / `w-azap iniciar` | Para ou inicia os serviços |
+| `w-azap log` | Acompanha o log do servidor |
+| `w-azap atualizar` | Instala a release mais recente e mantém dados e configuração |
+| `w-azap desinstalar` | Remove o W-AZAP (pergunta se apaga também os dados) |
+
+Tudo fica em `~/.w-azap`: o código e o `.env` em `app/`, o banco em `mysql/data/` e os logs em `logs/`. O MySQL do instalador usa a porta `3307` e escuta só em `127.0.0.1`. Faça backup do `.env`, porque a `DATA_ENCRYPTION_KEY` protege as sessões do WhatsApp.
+
+---
+
 ## 🚀 Instalação rápida
 
 ### 1. Pré-requisitos
