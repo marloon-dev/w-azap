@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         const config = await prisma.systemConfig.upsert({
             where: { id: "default" },
             update: { appName, logoUrl, faviconUrl, timezone, enableRegistration: enableRegistration ?? false },
-            create: { id: "default", appName, logoUrl: logoUrl || "", faviconUrl: faviconUrl || "/favicon.ico", timezone: timezone || "Asia/Jakarta", enableRegistration: enableRegistration ?? false }
+            create: { id: "default", appName, logoUrl: logoUrl || "", faviconUrl: faviconUrl || "/favicon.ico", timezone: timezone || "America/Sao_Paulo", enableRegistration: enableRegistration ?? false }
         });
 
         return NextResponse.json({ status: true, message: "System settings updated", data: config });

@@ -110,7 +110,7 @@ Além disso, há limites fixos, sem variável:
 
 | Variável | Tipo | Padrão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `TZ` | string | `Asia/Jakarta` | Fuso horário do processo Node.js (ex.: `America/Sao_Paulo`, `UTC`). O fuso usado pelo **agendador** é o definido em **Painel › Configurações**. |
+| `TZ` | string | `America/Sao_Paulo` | Fuso horário do processo Node.js (ex.: `America/Sao_Paulo`, `UTC`). O fuso usado pelo **agendador** é o definido em **Painel › Configurações**. |
 | `LOCALE` | string | `id-ID` | ⚠️ **Reservada.** O idioma da interface é escolhido por usuário no seletor do canto superior direito (14 idiomas) ou detectado pelo navegador. |
 | `MEDIA_STORAGE_PATH` | string | `uploads` | ⚠️ **Reservada.** A mídia baixada é sempre gravada em `data/media/`, na raiz do projeto (no Docker, fica no volume `app_data`). |
 | `NEXT_PUBLIC_GA_ID` | string | — | ⚠️ **Reservada**, sem efeito atualmente. |

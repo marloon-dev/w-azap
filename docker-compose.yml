@@ -41,7 +41,7 @@ services:
       - BIND_HOST=0.0.0.0
       - DATA_ENCRYPTION_KEY=${DATA_ENCRYPTION_KEY}
       - NEXT_PUBLIC_SWAGGER_ENABLED=${NEXT_PUBLIC_SWAGGER_ENABLED:-true}
-      - TZ=${TZ:-Asia/Jakarta}
+      - TZ=${TZ:-America/Sao_Paulo}
       - LOCALE=${LOCALE:-id-ID}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
