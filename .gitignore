@@ -44,6 +44,8 @@ next-env.d.ts
 # media files (downloaded by app)
 /data/media/*
 !/data/media/.gitkeep
+# profile pictures cached from WhatsApp
+/data/avatars/
 /public/media/*
 server.log
 /logs/

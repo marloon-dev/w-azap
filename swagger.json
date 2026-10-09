@@ -4272,6 +4272,62 @@
         }
       }
     },
+    "/avatar/{sessionId}/{jid}": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Foto de perfil (imagem)",
+        "description": "Devolve a miniatura da foto de perfil de um contato ou grupo como imagem, pronta para usar em <img>. A foto é buscada no WhatsApp só quando pedida e guardada no servidor por alguns dias (é descartada quando o contato troca de foto). 404 quando não há foto ou ela é privada.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "JID codificado para URL (@s.whatsapp.net, @lid ou @g.us)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Imagem da foto de perfil",
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "JID inválido"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "description": "Sem foto de perfil (ou foto privada)"
+          },
+          "503": {
+            "description": "Não foi possível consultar o WhatsApp agora; tente de novo em instantes"
+          }
+        }
+      }
+    },
     "/chat/{sessionId}/check": {
       "post": {
         "tags": [

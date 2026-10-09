@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Virtuoso } from "react-virtuoso";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ContactAvatar } from "@/components/contact-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -218,12 +218,7 @@ function ChatRow({
                 onContextMenu={(e) => { e.preventDefault(); setCtxMenu({ x: e.clientX, y: e.clientY, jid: chat.jid, name: displayName }); }}
             >
                 {isSelected && <span className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-primary" aria-hidden="true" />}
-                <Avatar className="size-11 shrink-0">
-                    <AvatarImage src={chat.profilePic || ""} alt="" />
-                    <AvatarFallback className="bg-secondary text-xs font-semibold text-secondary-foreground">
-                        {displayName.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
+                <ContactAvatar sessionId={sessionId} jid={chat.jid} name={displayName} className="size-11" />
 
                 <div className="flex-1 min-w-0 overflow-hidden">
                     <div className="flex justify-between items-baseline gap-2 overflow-hidden">

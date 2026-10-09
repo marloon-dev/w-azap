@@ -2,7 +2,7 @@
 
 > Arquivo gerado automaticamente a partir de `src/lib/swagger.ts`: não edite à mão. Para atualizar, rode `npx tsx scripts/generate-swagger.ts && node scripts/generate-docs.js`.
 
-**Versão 2.1.0** · **86 rotas** · URL base: `http://localhost:3000/api`
+**Versão 2.1.0** · **87 rotas** · URL base: `http://localhost:3000/api`
 
 API REST do gateway de WhatsApp W-AZAP para automação completa: sessões, mensagens, grupos, contatos, etiquetas, agendamentos, respostas automáticas e webhooks. Para explorar de forma interativa, use o Swagger UI em `/swagger` (exige login no painel).
 
@@ -4014,6 +4014,39 @@ Obtém a URL da foto de perfil de um contato ou grupo
 
 ```bash
 curl -X POST "http://localhost:3000/api/chat/vendas-01/5511987654321%40s.whatsapp.net/profile-picture" \
+  -H "X-API-Key: sua-chave"
+```
+
+---
+
+### \[GET\] /avatar/{sessionId}/{jid}
+
+**Foto de perfil (imagem)**
+
+Devolve a miniatura da foto de perfil de um contato ou grupo como imagem, pronta para usar em <img>. A foto é buscada no WhatsApp só quando pedida e guardada no servidor por alguns dias (é descartada quando o contato troca de foto). 404 quando não há foto ou ela é privada.
+
+#### Parâmetros
+
+| Nome | Local | Obrigatório | Tipo | Descrição |
+| :--- | :--- | :--- | :--- | :--- |
+| `sessionId` | caminho | ✅ Sim | string | — |
+| `jid` | caminho | ✅ Sim | string | JID codificado para URL (@s.whatsapp.net, @lid ou @g.us) |
+
+#### Respostas
+
+| Código | Descrição |
+| :--- | :--- |
+| `200` | Imagem da foto de perfil |
+| `400` | JID inválido |
+| `401` | Não autenticado: chave de API ausente ou inválida |
+| `403` | Proibido: acesso negado |
+| `404` | Sem foto de perfil (ou foto privada) |
+| `503` | Não foi possível consultar o WhatsApp agora; tente de novo em instantes |
+
+#### Exemplo em cURL
+
+```bash
+curl -X GET "http://localhost:3000/api/avatar/vendas-01/5511987654321%40s.whatsapp.net" \
   -H "X-API-Key: sua-chave"
 ```
 

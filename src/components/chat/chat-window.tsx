@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ContactAvatar } from "@/components/contact-avatar";
 import { Button } from "@/components/ui/button";
 import { Send, Paperclip, ArrowLeft, FileText, Image as ImageIcon, Music, Video, Download, ArrowDown, CornerUpLeft, Copy, Trash2, Info, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -419,11 +419,7 @@ export function ChatWindow({ sessionId, jid, name, onBack }: ChatWindowProps) {
                         <ArrowLeft className="size-4" aria-hidden="true" />
                     </Button>
                 )}
-                <Avatar className="size-10 shrink-0">
-                    <AvatarFallback className="bg-secondary text-xs font-semibold text-secondary-foreground">
-                        {displayName.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
+                <ContactAvatar sessionId={sessionId} jid={jid} name={displayName} />
                 <div className="flex-1 min-w-0">
                     <h2 className="truncate text-[15px] font-semibold tracking-tight text-foreground">{displayName}</h2>
                     {jid.endsWith("@s.whatsapp.net") && (

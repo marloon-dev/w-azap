@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { WASocket } from "@whiskeysockets/baileys";
 import { logger } from "@/lib/logger";
+import { invalidateAvatar, profilePicFromUpdate } from "@/lib/avatar-files";
 
 /**
  * Sync contacts from WhatsApp to database.
@@ -36,7 +37,11 @@ export function bindContactSync(sock: WASocket, sessionId: string) {
         for (const update of updates) {
             try {
                 if (!update.id) continue;
-                
+
+                // A new or removed picture: drop the stored copy so the next view fetches it again
+                const profilePic = profilePicFromUpdate(update.imgUrl);
+                if (update.imgUrl !== undefined) await invalidateAvatar(sessionId, update.id);
+
                 await prisma.contact.upsert({
                     where: { sessionId_jid: { sessionId: dbSessionId, jid: update.id } },
                     create: {
@@ -44,12 +49,12 @@ export function bindContactSync(sock: WASocket, sessionId: string) {
                         jid: update.id,
                         name: update.name || update.notify,
                         notify: update.notify,
-                        profilePic: update.imgUrl
+                        profilePic: profilePic ?? null
                     },
                     update: {
                         name: update.name || undefined,
                         notify: update.notify || undefined,
-                        profilePic: update.imgUrl || undefined
+                        profilePic
                     }
                 });
             } catch (e) {

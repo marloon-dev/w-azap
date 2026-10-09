@@ -5,6 +5,7 @@ import { initScheduler } from "@/lib/cron";
 import { logger } from "@/lib/logger";
 import { randomBytes } from "crypto";
 import { encryptLegacyAuthState } from "./auth/usePrismaAuthState";
+import { clearSessionAvatars } from "@/lib/avatar-files";
 
 export class WhatsAppManager {
     private static instance: WhatsAppManager;
@@ -116,6 +117,7 @@ export class WhatsAppManager {
             this.sessions.delete(sessionId);
         }
         await prisma.session.delete({ where: { sessionId } });
+        await clearSessionAvatars(sessionId).catch(() => { });
     }
 
     async stopSession(sessionId: string) {

@@ -8,6 +8,9 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Adicionado
+- **Fotos de perfil** no chat (lista de conversas e cabeçalho) e na página de contatos, inclusive de grupos e contatos com LID. A foto é buscada no WhatsApp só quando aparece na tela (no máximo 2 consultas por vez, para não sobrecarregar a conta) e fica guardada em `data/avatars/` por alguns dias. Contatos sem foto, ou com foto privada, mostram as iniciais e só são consultados de novo depois de 12 horas. Rota `GET /api/avatar/{sessionId}/{jid}`.
+
 ### Alterado
 - **Nova identidade visual ("central de linhas")**: cada sessão é tratada como uma linha com sinal. Nova marca (três barras de sinal), fonte Instrument Sans, paleta verde com neutros levemente esverdeados nos dois temas e um verde vivo usado só para status ao vivo. Bordas no lugar de sombras, contraste WCAG AA conferido em todos os pares de cor.
 - **Menu lateral**: a sessão ativa saiu da barra superior e fica no topo do menu, com o status visível. A conta virou um menu (papel, documentação da API, Swagger, versão e sair), os links de desenvolvedor saíram da lista principal e o grupo Administração começa recolhido, a não ser que a página atual esteja nele. O botão de recolher foi para a barra superior.
@@ -20,6 +23,7 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 - **Relógio da barra superior**: mostra hora e cidade do fuso das Configurações (padrão `America/Sao_Paulo`).
 
 ### Corrigido
+- **Foto de perfil gravada como "changed"**: o WhatsApp avisa apenas que a foto mudou, e esse aviso era salvo no lugar do link. Agora o campo `profilePic` só guarda links de verdade, e a foto em cache é descartada quando o contato troca de foto.
 - **Páginas de erro em indonésio**: a página 404, a de erro inesperado e a de `/error?code=` estavam em indonésio. Agora seguem o idioma escolhido (14 idiomas), dizem o que aconteceu e o que fazer.
 - **Fuso horário padrão**: o padrão era `Asia/Jakarta` (herdado do projeto original) no relógio, no agendador, nas configurações, no `docker-compose.yml` e no `.env.example`. Agora é `America/Sao_Paulo`.
 - **Mensagens recorrentes no fuso errado**: o agendador calculava a próxima data das mensagens recorrentes sempre em `Asia/Jakarta`. Agora usa o fuso das Configurações.
