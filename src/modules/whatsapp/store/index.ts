@@ -5,6 +5,7 @@ import { onMessageReceived, onMessageSent, dispatchWebhook, downloadAndSaveMedia
 import { handleBotCommand, setSessionStartTime } from "../bot/command-handler";
 import { resolveToPhoneJid, isLidJid, normalizeJid } from "@/lib/jid-utils";
 import { forwardMessageByEmail } from "@/lib/email-forward";
+import { handleAgendaMessage } from "@/lib/agenda/assistant";
 
 import { Server } from "socket.io";
 import { logger } from "@/lib/logger";
@@ -80,6 +81,11 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
                 // sent by this number may also arrive as 'append'. History sync is never forwarded.
                 if (savedMessage && (type === 'notify' || (type === 'append' && savedMessage.fromMe))) {
                     forwardMessageByEmail(savedMessage);
+                }
+
+                // Smart scheduling assistant: answers new private messages; a reply typed by a person pauses it in that chat
+                if (savedMessage && (type === 'notify' || (type === 'append' && msg.key.fromMe))) {
+                    handleAgendaMessage(sock, dbSessionId, msg, type).catch(e => logger.error("Agenda", "Assistant error", e));
                 }
             } catch (error) {
                 logger.error("Store", "Error saving message", error);
