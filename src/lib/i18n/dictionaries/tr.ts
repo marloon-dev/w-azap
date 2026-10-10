@@ -42,6 +42,7 @@ const tr: Dictionary = {
             automation: "Otomasyon",
             developer: "Geliştirici",
             administration: "Yönetim",
+            agenda: "Randevu",
         },
         items: {
             dashboard: "Panel",
@@ -66,6 +67,11 @@ const tr: Dictionary = {
             systemMonitor: "Sistem İzleyici",
             notifications: "Bildirimler",
             emailForward: "E-posta Yönlendirme",
+            agenda: "Randevular",
+            agendaProfessionals: "Uzmanlar",
+            agendaServices: "Hizmetler",
+            agendaBlocks: "İzinler ve engeller",
+            agendaAssistant: "Asistan",
         },
     },
     notifications: {

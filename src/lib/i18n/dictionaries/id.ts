@@ -42,6 +42,7 @@ const id: Dictionary = {
             automation: "Otomasi",
             developer: "Pengembang",
             administration: "Administrasi",
+            agenda: "Janji Temu",
         },
         items: {
             dashboard: "Dasbor",
@@ -66,6 +67,11 @@ const id: Dictionary = {
             systemMonitor: "Monitor Sistem",
             notifications: "Notifikasi",
             emailForward: "Teruskan ke Email",
+            agenda: "Jadwal",
+            agendaProfessionals: "Profesional",
+            agendaServices: "Layanan",
+            agendaBlocks: "Libur & blokir",
+            agendaAssistant: "Asisten",
         },
     },
     notifications: {

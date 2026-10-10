@@ -1,4 +1,6 @@
 // Dashboard (internal pages) strings. Merged into the root dictionary, so keys are e.g. "home.title".
+import agenda from "./agenda/en";
+
 const dashboard = {
     status: {
         CONNECTED: "Connected",
@@ -1013,6 +1015,7 @@ const dashboard = {
             unknown: "The e-mail could not be sent.",
         },
     },
+    agenda,
 };
 
 export default dashboard;
