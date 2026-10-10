@@ -8,6 +8,25 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Adicionado
+- **Agenda inteligente pelo WhatsApp** (novo grupo **Agenda** no menu):
+  - **Agendamentos**: visão por dia e semana, separada por profissional, com status (agendado, confirmado, concluído, não compareceu, cancelado), novo agendamento e remarcação pelo painel (escolhendo entre os horários livres) e cancelamento com aviso opcional ao cliente. A tela se atualiza sozinha a cada 30 segundos.
+  - **Profissionais**: serviços que cada um faz, horário semanal com vários intervalos por dia (para o almoço) e WhatsApp para avisos.
+  - **Serviços**: duração, preço (ou "sob consulta"), descrição e quem faz.
+  - **Folgas e bloqueios**: do estabelecimento inteiro (feriado) ou de um profissional, por dias inteiros ou por horário. Avisa quando já existem agendamentos no período.
+  - **Assistente**: liga o atendimento automático e define as regras (intervalo entre horários, antecedência mínima, até quantos dias à frente, prazo para cancelar ou remarcar), quando responder (todas as conversas ou só depois de uma palavra-chave), lembretes e avisos, e a IA. Tem um **simulador** para conversar com o assistente como cliente.
+- **Assistente no WhatsApp**: o cliente agenda, vê os próprios agendamentos, remarca e cancela pela conversa. Os horários oferecidos respeitam o expediente, as pausas, as folgas e o que já está ocupado. Duas pessoas pedindo o mesmo horário ao mesmo tempo nunca são agendadas juntas, porque a reserva trava o profissional no banco.
+  - **Com IA**: entende mensagens livres ("tem horário sexta à tarde com a Ana?") usando qualquer API compatível com OpenAI (OmniRoute, OpenAI, OpenRouter, Claude…). A IA só consulta e reserva pelas mesmas funções do sistema, então não consegue inventar um horário. Se a IA falhar, a conversa cai no menu e o erro aparece no painel.
+  - **Sem IA**: menu numerado (serviço → profissional ou "sem preferência" → dia → horário → confirmação). Também aceita o nome do serviço, uma data como "25/10" e um horário como "14:30".
+  - **Lembrete** horas antes do horário, com resposta 1 (confirmar), 2 (cancelar) ou 3 (remarcar).
+  - **Aviso ao profissional** no WhatsApp a cada agendamento, cancelamento ou remarcação.
+  - **Pausa quando a equipe responde**: se alguém responder a conversa pelo celular ou pelo painel, o assistente fica em silêncio nela pelo tempo configurado. O cliente também pode pedir para falar com uma pessoa.
+  - Não responde em grupos e não atrapalha as respostas automáticas nem os comandos do bot.
+- **API** `/api/sessions/{id}/agenda/*`: configuração, teste da IA, simulador, serviços, profissionais, bloqueios, agendamentos e horários livres. Só o dono da sessão altera a configuração e a chave da IA, que fica guardada criptografada (AES-256-GCM) e nunca volta para o navegador.
+
+### Alterado
+- **Respostas automáticas**: a regra de correspondência (palavra-chave, contexto) virou uma função compartilhada, usada também pelo assistente da agenda.
+
 ## [v2.3.0] - 2026-10-10
 
 ### Adicionado

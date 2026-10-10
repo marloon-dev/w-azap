@@ -59,6 +59,7 @@ graph LR
 - **🤖 Resposta automática inteligente**: correspondência por palavra-chave ou expressão regular, com **contexto** (grupo/privado/todos) e **anexos de mídia**.
 - **🛡️ Controle de acesso granular**: **whitelist** e **blacklist** para comandos do bot e respostas automáticas.
 - **🔗 Webhooks**: eventos em tempo real (mensagens, conexão, status, grupos) assinados com HMAC-SHA256.
+- **🗓️ Agenda inteligente**: o WhatsApp atende e agenda sozinho para salões, barbearias, estéticas e qualquer negócio com horário marcado. No painel você cadastra serviços (duração e preço), profissionais (serviços e horário de trabalho com pausas) e folgas. O cliente agenda, remarca e cancela pela conversa, e um horário ocupado nunca é oferecido de novo, nem com dois clientes pedindo ao mesmo tempo. Também tem lembrete com confirmação, aviso ao profissional, pausa automática quando alguém da equipe responde e simulador de conversa no painel. Com IA (OmniRoute, OpenAI, OpenRouter, Claude ou qualquer API compatível com OpenAI), o assistente entende texto livre; sem IA, ou se ela falhar, atende por menu numerado.
 - **📧 Encaminhar por e-mail**: cada nova mensagem das conversas privadas chega no seu e-mail em tempo real, com todos os dados do contato, as últimas mensagens e a mídia anexada (SMTP próprio, como Gmail ou Outlook).
 - **📇 Contatos completos**: LID, nomes verificados, fotos de perfil, bloqueio e etiquetas.
 - **🎨 Ferramentas criativas**: criador de figurinhas com remoção de fundo (integração com `remove.bg`).
