@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AssistantSimulator } from "@/components/agenda/simulator";
+import { PausedChats } from "@/components/agenda/paused-chats";
 import { agendaRequest } from "@/components/agenda/api";
 import type { AgendaSettings } from "@/components/agenda/types";
 
@@ -32,6 +33,7 @@ const MIN_ADVANCE = [0, 15, 30, 60, 120, 180, 360, 720, 1440];
 const MAX_ADVANCE = [7, 14, 30, 60, 90, 180];
 const CANCEL_MIN = [0, 1, 2, 3, 6, 12, 24, 48];
 const PAUSE_HOURS = [0, 1, 2, 4, 8, 12, 24, 48];
+const PER_CUSTOMER = [0, 1, 2, 3, 5, 10];
 const REMINDER_HOURS = [1, 2, 3, 6, 12, 24, 48];
 
 const AI_PRESETS = {
@@ -42,11 +44,19 @@ const AI_PRESETS = {
 } as const;
 type Preset = keyof typeof AI_PRESETS | "custom";
 
+function originOf(url: string | null | undefined) {
+    try {
+        return url ? new URL(url).origin : null;
+    } catch {
+        return null;
+    }
+}
+
 const presetFor = (baseUrl: string): Preset =>
     (Object.keys(AI_PRESETS) as (keyof typeof AI_PRESETS)[]).find((key) => AI_PRESETS[key].baseUrl === baseUrl.replace(/\/+$/, "")) ?? "custom";
 
 const FORM_KEYS = [
-    "enabled", "businessName", "businessInfo", "timezone", "slotStep", "minAdvanceMinutes", "maxAdvanceDays", "cancelMinHours",
+    "enabled", "businessName", "businessInfo", "timezone", "slotStep", "minAdvanceMinutes", "maxAdvanceDays", "cancelMinHours", "maxActivePerCustomer",
     "triggerMode", "triggerKeyword", "humanPauseHours", "reminderEnabled", "reminderHours", "notifyProfessional",
     "aiEnabled", "aiBaseUrl", "aiApiKey", "aiModel", "aiInstructions",
 ] as const satisfies readonly (keyof Form)[];
@@ -109,10 +119,16 @@ export default function AgendaAssistantPage() {
     const canEdit = saved?.canEdit ?? false;
     const update = <K extends keyof Form>(key: K, value: Form[K]) => setForm((prev) => (prev ? { ...prev, [key]: value } : prev));
 
+    /** The saved key only works with the address it was saved for (the server enforces it): another server needs the key again */
+    const withBaseUrl = (prev: Form, aiBaseUrl: string): Form => {
+        const keepsSavedKey = !!saved?.aiApiKey && prev.aiApiKey === saved.aiApiKey;
+        return { ...prev, aiBaseUrl, aiApiKey: keepsSavedKey && originOf(aiBaseUrl) !== originOf(saved?.aiBaseUrl) ? "" : prev.aiApiKey };
+    };
+
     const choosePreset = (value: Preset) => {
         setPreset(value);
         setTestResult(null);
-        if (value !== "custom") setForm((prev) => (prev ? { ...prev, aiBaseUrl: AI_PRESETS[value].baseUrl, aiModel: AI_PRESETS[value].model } : prev));
+        if (value !== "custom") setForm((prev) => (prev ? { ...withBaseUrl(prev, AI_PRESETS[value].baseUrl), aiModel: AI_PRESETS[value].model } : prev));
     };
 
     const save = async () => {
@@ -245,6 +261,17 @@ export default function AgendaAssistantPage() {
                                     />
                                     <p className="text-xs text-muted-foreground">{t("agenda.assistant.rules.cancelMinHint")}</p>
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="ag-per-customer">{t("agenda.assistant.rules.perCustomer")}</Label>
+                                    <NumberSelect
+                                        id="ag-per-customer"
+                                        value={form.maxActivePerCustomer}
+                                        options={PER_CUSTOMER}
+                                        onChange={(n) => update("maxActivePerCustomer", n)}
+                                        label={(n) => (n === 0 ? t("agenda.assistant.rules.noLimit") : t("agenda.assistant.rules.perCustomerOption", { n }))}
+                                    />
+                                    <p className="text-xs text-muted-foreground">{t("agenda.assistant.rules.perCustomerHint")}</p>
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -329,7 +356,7 @@ export default function AgendaAssistantPage() {
                                     </div>
                                     <div className="space-y-2 sm:col-span-2">
                                         <Label htmlFor="ag-url">{t("agenda.assistant.ai.baseUrl")}</Label>
-                                        <Input id="ag-url" value={form.aiBaseUrl} onChange={(e) => { update("aiBaseUrl", e.target.value); setPreset(presetFor(e.target.value)); }} placeholder="http://localhost:20128/v1" maxLength={500} />
+                                        <Input id="ag-url" value={form.aiBaseUrl} onChange={(e) => { const url = e.target.value; setForm((prev) => (prev ? withBaseUrl(prev, url) : prev)); setPreset(presetFor(url)); }} placeholder="http://localhost:20128/v1" maxLength={500} />
                                         <p className="text-xs text-muted-foreground">{preset === "omniroute" ? t("agenda.assistant.ai.omnirouteHint") : t("agenda.assistant.ai.baseUrlHint")}</p>
                                     </div>
                                     <div className="space-y-2 sm:col-span-2">
@@ -363,8 +390,9 @@ export default function AgendaAssistantPage() {
                         </Card>
                     </fieldset>
 
-                    <div className="lg:sticky lg:top-6">
+                    <div className="space-y-6">
                         <AssistantSimulator sessionId={sessionId} dirty={dirty} />
+                        <PausedChats sessionId={sessionId} />
                     </div>
                 </div>
             )}
