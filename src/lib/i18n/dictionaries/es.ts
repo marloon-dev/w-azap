@@ -42,6 +42,7 @@ const es: Dictionary = {
             automation: "Automatización",
             developer: "Desarrollador",
             administration: "Administración",
+            agenda: "Agenda",
         },
         items: {
             dashboard: "Panel",
@@ -66,6 +67,11 @@ const es: Dictionary = {
             systemMonitor: "Monitor del Sistema",
             notifications: "Notificaciones",
             emailForward: "Reenvío por e-mail",
+            agenda: "Citas",
+            agendaProfessionals: "Profesionales",
+            agendaServices: "Servicios",
+            agendaBlocks: "Días libres y bloqueos",
+            agendaAssistant: "Asistente",
         },
     },
     notifications: {

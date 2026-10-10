@@ -42,6 +42,7 @@ const hi: Dictionary = {
             automation: "ऑटोमेशन",
             developer: "डेवलपर",
             administration: "प्रशासन",
+            agenda: "अपॉइंटमेंट",
         },
         items: {
             dashboard: "डैशबोर्ड",
@@ -66,6 +67,11 @@ const hi: Dictionary = {
             systemMonitor: "सिस्टम मॉनिटर",
             notifications: "सूचनाएँ",
             emailForward: "ईमेल फ़ॉरवर्डिंग",
+            agenda: "बुकिंग",
+            agendaProfessionals: "प्रोफेशनल्स",
+            agendaServices: "सेवाएँ",
+            agendaBlocks: "छुट्टियाँ और ब्लॉक",
+            agendaAssistant: "असिस्टेंट",
         },
     },
     notifications: {

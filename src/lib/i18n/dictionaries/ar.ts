@@ -42,6 +42,7 @@ const ar: Dictionary = {
             automation: "الأتمتة",
             developer: "المطورون",
             administration: "الإدارة",
+            agenda: "المواعيد",
         },
         items: {
             dashboard: "لوحة التحكم",
@@ -66,6 +67,11 @@ const ar: Dictionary = {
             systemMonitor: "مراقبة النظام",
             notifications: "الإشعارات",
             emailForward: "إعادة التوجيه إلى البريد",
+            agenda: "الحجوزات",
+            agendaProfessionals: "المختصون",
+            agendaServices: "الخدمات",
+            agendaBlocks: "الإجازات والحظر",
+            agendaAssistant: "المساعد",
         },
     },
     notifications: {

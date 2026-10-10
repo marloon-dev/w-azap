@@ -42,6 +42,7 @@ const ja: Dictionary = {
             automation: "自動化",
             developer: "開発者",
             administration: "管理",
+            agenda: "予約",
         },
         items: {
             dashboard: "ダッシュボード",
@@ -66,6 +67,11 @@ const ja: Dictionary = {
             systemMonitor: "システムモニター",
             notifications: "通知",
             emailForward: "メール転送",
+            agenda: "予約一覧",
+            agendaProfessionals: "スタッフ",
+            agendaServices: "サービス",
+            agendaBlocks: "休日・ブロック",
+            agendaAssistant: "アシスタント",
         },
     },
     notifications: {

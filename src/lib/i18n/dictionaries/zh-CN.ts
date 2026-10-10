@@ -42,6 +42,7 @@ const zhCN: Dictionary = {
             automation: "自动化",
             developer: "开发者",
             administration: "管理",
+            agenda: "预约",
         },
         items: {
             dashboard: "控制台",
@@ -66,6 +67,11 @@ const zhCN: Dictionary = {
             systemMonitor: "系统监控",
             notifications: "通知",
             emailForward: "邮件转发",
+            agenda: "预约列表",
+            agendaProfessionals: "服务人员",
+            agendaServices: "服务项目",
+            agendaBlocks: "休假与屏蔽",
+            agendaAssistant: "助手",
         },
     },
     notifications: {

@@ -1,4 +1,5 @@
 import type { DashboardDictionary } from "../../types";
+import agenda from "./agenda/pt-BR";
 
 const dashboard: DashboardDictionary = {
     status: {
@@ -1014,6 +1015,7 @@ const dashboard: DashboardDictionary = {
             unknown: "Não foi possível enviar o e-mail.",
         },
     },
+    agenda,
 };
 
 export default dashboard;
