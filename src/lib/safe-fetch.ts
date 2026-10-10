@@ -111,18 +111,20 @@ export function isHttpUrl(raw: unknown): raw is string {
 interface SafeFetchOptions extends Omit<RequestInit, "redirect" | "signal"> {
     timeoutMs?: number;
     allowPrivate?: boolean;
+    /** false: a 3xx is returned as is. Use it whenever the request carries credentials, which a redirect would hand to another host. */
+    followRedirects?: boolean;
 }
 
 /** fetch() that validates every hop. The returned Response is the final, non-redirect response. */
 export async function safeFetch(raw: string, options: SafeFetchOptions = {}): Promise<Response> {
-    const { timeoutMs = 15000, allowPrivate = false, ...init } = options;
+    const { timeoutMs = 15000, allowPrivate = false, followRedirects = true, ...init } = options;
     const signal = AbortSignal.timeout(timeoutMs);
     let current = raw;
 
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
         const url = await assertPublicHttpUrl(current, { allowPrivate });
         const res = await fetch(url, { ...init, redirect: "manual", signal });
-        if (res.status >= 300 && res.status < 400 && res.headers.get("location")) {
+        if (followRedirects && res.status >= 300 && res.status < 400 && res.headers.get("location")) {
             current = new URL(res.headers.get("location")!, url).toString();
             // Redirects become GET without body, like browsers do for 301/302/303
             if (res.status !== 307 && res.status !== 308) {

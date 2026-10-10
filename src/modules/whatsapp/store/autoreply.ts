@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger";
 import { resolveMediaPayload } from "@/lib/media-payload";
 
 // Helper for permission check (Deduplicate from command-handler if possible, but keep simple here)
-function canAutoReply(config: any, fromMe: boolean, senderJid: string): boolean {
+export function canAutoReply(config: any, fromMe: boolean, senderJid: string): boolean {
     if (!config || !config.enabled) return false;
 
     // Auto Reply Specific Mode
@@ -50,6 +50,31 @@ function canAutoReply(config: any, fromMe: boolean, senderJid: string): boolean 
     }
 
     return false;
+}
+
+/** Keyword match plus trigger context (GROUP, PRIVATE or ALL). Also used so the agenda assistant doesn't answer twice. */
+export function ruleMatches(rule: { keyword: string; matchType: string; triggerType?: string | null }, text: string, isGroup: boolean): boolean {
+    const triggerType = rule.triggerType || 'ALL';
+    if (triggerType === 'GROUP' && !isGroup) return false;
+    if (triggerType === 'PRIVATE' && isGroup) return false;
+
+    const keyword = rule.keyword.toLowerCase();
+    const incoming = text.toLowerCase();
+    switch (rule.matchType) {
+        case 'EXACT':
+            return incoming === keyword;
+        case 'CONTAINS':
+            return incoming.includes(keyword);
+        case 'REGEX':
+            try {
+                return new RegExp(rule.keyword, 'i').test(text); // Use original case for regex
+            } catch {
+                logger.error("AutoReply", "Invalid regex in auto-reply", rule.keyword);
+                return false;
+            }
+        default:
+            return false;
+    }
 }
 
 export async function bindAutoReply(sock: WASocket, sessionId: string) {
@@ -118,35 +143,7 @@ export async function bindAutoReply(sock: WASocket, sessionId: string) {
                 });
 
                 for (const rule of rules) {
-                    let match = false;
-                    const keyword = rule.keyword.toLowerCase();
-                    const incoming = text.toLowerCase();
-
-                    switch (rule.matchType) {
-                        case 'EXACT':
-                            match = incoming === keyword;
-                            break;
-                        case 'CONTAINS':
-                            match = incoming.includes(keyword);
-                            break;
-                        case 'REGEX':
-                            try {
-                                const regex = new RegExp(rule.keyword, 'i');
-                                match = regex.test(text); // Use original case for regex
-                            } catch (e) {
-                                logger.error("AutoReply", "Invalid regex in auto-reply", rule.keyword);
-                            }
-                            break;
-                    }
-
-                    if (match) {
-                        // Check trigger context (GROUP, PRIVATE, or ALL)
-                        const isGroup = remoteJid.endsWith('@g.us');
-                        const triggerType = (rule as any).triggerType || 'ALL'; // Default to ALL if undefined
-
-                        if (triggerType === 'GROUP' && !isGroup) continue;
-                        if (triggerType === 'PRIVATE' && isGroup) continue;
-
+                    if (ruleMatches(rule, text, remoteJid.endsWith('@g.us'))) {
                         logger.info("AutoReply", `Match: ${rule.keyword} -> ${remoteJid}`);
 
                         if (rule.isMedia && rule.mediaUrl) {

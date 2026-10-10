@@ -75,6 +75,12 @@ model Session {
   botConfig   BotConfig?
   emailForward EmailForward?
   sessionAccesses SessionAccess[]
+  agendaConfig  AgendaConfig?
+  agendaServices AgendaService[]
+  agendaProfessionals AgendaProfessional[]
+  agendaBlocks  AgendaBlock[]
+  agendaAppointments AgendaAppointment[]
+  agendaConversations AgendaConversation[]
 }
 
 model Contact {
@@ -420,4 +426,179 @@ model BroadcastRecipient {
   broadcastLog    BroadcastLog @relation(fields: [broadcastLogId], references: [id], onDelete: Cascade)
 
   @@index([broadcastLogId])
+}
+
+// ── Smart scheduling (agenda): one business per WhatsApp session ──
+
+enum AppointmentStatus {
+  BOOKED     // Made by the customer or the panel
+  CONFIRMED  // Customer answered the reminder
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum AppointmentSource {
+  WHATSAPP
+  PANEL
+}
+
+model AgendaConfig {
+  id                 String   @id @default(cuid())
+  sessionId          String   @unique
+  enabled            Boolean  @default(false)
+  businessName       String   @default("")
+  businessInfo       String?  @db.Text // Address, payment methods, policies: shown to the customer and to the AI
+  timezone           String   @default("America/Sao_Paulo")
+
+  // Booking rules
+  slotStep           Int      @default(15)  // Minutes between possible start times
+  minAdvanceMinutes  Int      @default(60)  // Earliest booking, counted from now
+  maxAdvanceDays     Int      @default(30)  // How far ahead customers can book
+  cancelMinHours     Int      @default(2)   // Customers can't cancel/reschedule closer than this
+  maxActivePerCustomer Int    @default(3)   // Upcoming bookings one customer may hold on WhatsApp (0 = no limit)
+
+  // When the assistant answers: ALL private chats, or only after the keyword
+  triggerMode        String   @default("ALL") // ALL, KEYWORD
+  triggerKeyword     String   @default("agendar")
+  humanPauseHours    Int      @default(12)  // Assistant stays quiet in a chat after a person replies there
+
+  // Reminders and notifications
+  reminderEnabled    Boolean  @default(true)
+  reminderHours      Int      @default(24)
+  notifyProfessional Boolean  @default(true)
+
+  // AI (any OpenAI-compatible chat completions API: OmniRoute, OpenAI, OpenRouter...)
+  aiEnabled          Boolean  @default(false)
+  aiBaseUrl          String?
+  aiApiKey           Json?    // EncryptedBlob, never returned by the API
+  aiModel            String?
+  aiInstructions     String?  @db.Text
+  aiLastError        String?  @db.Text
+  aiLastErrorAt      DateTime?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  session            Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model AgendaService {
+  id              String   @id @default(cuid())
+  sessionId       String
+  name            String
+  description     String?  @db.Text
+  durationMinutes Int
+  priceCents      Int?
+  active          Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  professionals   AgendaProfessionalService[]
+  appointments    AgendaAppointment[]
+
+  @@index([sessionId])
+}
+
+model AgendaProfessional {
+  id           String   @id @default(cuid())
+  sessionId    String
+  name         String
+  phone        String?  // WhatsApp number that receives booking notices
+  active       Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  session      Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  services     AgendaProfessionalService[]
+  hours        AgendaWorkingHour[]
+  blocks       AgendaBlock[]
+  appointments AgendaAppointment[]
+
+  @@index([sessionId])
+}
+
+model AgendaProfessionalService {
+  professionalId String
+  serviceId      String
+
+  professional   AgendaProfessional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  service        AgendaService      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([professionalId, serviceId])
+  @@index([serviceId])
+}
+
+// Weekly working hours; several rows per weekday allow a lunch break
+model AgendaWorkingHour {
+  id             String   @id @default(cuid())
+  professionalId String
+  weekday        Int      // 0 = Sunday … 6 = Saturday
+  startMinute    Int      // Minutes after midnight, business timezone
+  endMinute      Int
+
+  professional   AgendaProfessional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId, weekday])
+}
+
+// Days off, holidays, breaks. professionalId null = the whole business is closed
+model AgendaBlock {
+  id             String    @id @default(cuid())
+  sessionId      String
+  professionalId String?
+  startsAt       DateTime
+  endsAt         DateTime
+  reason         String?
+  createdAt      DateTime  @default(now())
+
+  session        Session             @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  professional   AgendaProfessional? @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, startsAt])
+}
+
+model AgendaAppointment {
+  id             String            @id @default(cuid())
+  sessionId      String
+  professionalId String
+  serviceId      String
+  customerJid    String            // Phone JID (…@s.whatsapp.net) when known
+  customerName   String?
+  startsAt       DateTime
+  endsAt         DateTime
+  status         AppointmentStatus @default(BOOKED)
+  source         AppointmentSource @default(WHATSAPP)
+  notes          String?           @db.Text
+  priceCents     Int?              // Price at booking time
+  reminderSentAt DateTime?
+  cancelledAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  session        Session            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  professional   AgendaProfessional @relation(fields: [professionalId], references: [id], onDelete: Restrict)
+  service        AgendaService      @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, startsAt])
+  @@index([professionalId, startsAt])
+  @@index([sessionId, customerJid])
+}
+
+// Per-chat state of the WhatsApp assistant (menu step, AI history, human takeover)
+model AgendaConversation {
+  id          String    @id @default(cuid())
+  sessionId   String
+  jid         String
+  state       Json?     // Menu flow position and choices
+  history     Json?     // Recent AI messages
+  pausedUntil DateTime? // A person answered: the assistant stays quiet until then
+  updatedAt   DateTime  @updatedAt
+
+  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, jid])
 }

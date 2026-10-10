@@ -42,6 +42,7 @@ const ptBR: Dictionary = {
             automation: "Automação",
             developer: "Desenvolvedor",
             administration: "Administração",
+            agenda: "Agenda",
         },
         items: {
             dashboard: "Painel",
@@ -66,6 +67,11 @@ const ptBR: Dictionary = {
             systemMonitor: "Monitor do Sistema",
             notifications: "Notificações",
             emailForward: "Encaminhar por e-mail",
+            agenda: "Agendamentos",
+            agendaProfessionals: "Profissionais",
+            agendaServices: "Serviços",
+            agendaBlocks: "Folgas e bloqueios",
+            agendaAssistant: "Assistente",
         },
     },
     notifications: {

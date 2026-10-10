@@ -42,6 +42,7 @@ const ru: Dictionary = {
             automation: "Автоматизация",
             developer: "Разработчикам",
             administration: "Администрирование",
+            agenda: "Запись",
         },
         items: {
             dashboard: "Панель",
@@ -66,6 +67,11 @@ const ru: Dictionary = {
             systemMonitor: "Мониторинг системы",
             notifications: "Уведомления",
             emailForward: "Пересылка на e-mail",
+            agenda: "Записи",
+            agendaProfessionals: "Мастера",
+            agendaServices: "Услуги",
+            agendaBlocks: "Выходные и блокировки",
+            agendaAssistant: "Ассистент",
         },
     },
     notifications: {

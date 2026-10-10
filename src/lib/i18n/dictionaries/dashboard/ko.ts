@@ -1,4 +1,5 @@
 import type { DashboardDictionary } from "../../types";
+import agenda from "./agenda/en";
 
 const dashboard: DashboardDictionary = {
     status: {
@@ -1014,6 +1015,7 @@ const dashboard: DashboardDictionary = {
             unknown: "이메일을 보내지 못했습니다.",
         },
     },
+    agenda,
 };
 
 export default dashboard;
