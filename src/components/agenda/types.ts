@@ -75,6 +75,7 @@ export interface AgendaSettings {
     minAdvanceMinutes: number;
     maxAdvanceDays: number;
     cancelMinHours: number;
+    maxActivePerCustomer: number;
     triggerMode: "ALL" | "KEYWORD";
     triggerKeyword: string;
     humanPauseHours: number;
