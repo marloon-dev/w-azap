@@ -13,7 +13,7 @@ export type AppointmentFull = AgendaAppointment & {
     professional: Pick<AgendaProfessional, "id" | "name" | "phone">;
 };
 
-export type BookingErrorCode = "SLOT_TAKEN" | "NOT_FOUND" | "TOO_LATE" | "NOT_ALLOWED" | "INVALID";
+export type BookingErrorCode = "SLOT_TAKEN" | "NOT_FOUND" | "TOO_LATE" | "NOT_ALLOWED" | "LIMIT" | "INVALID";
 
 export class BookingError extends Error {
     constructor(public code: BookingErrorCode, message: string) {
@@ -96,10 +96,8 @@ export async function bookAppointment(input: BookInput): Promise<AppointmentFull
     const now = input.now ?? new Date();
     const service = await prisma.agendaService.findFirst({ where: { id: input.serviceId, sessionId: input.dbSessionId } });
     if (!service || (input.enforceRules && !service.active)) throw new BookingError("NOT_FOUND", "Serviço não encontrado");
-    if (input.professionalId) {
-        const professional = await prisma.agendaProfessional.findFirst({ where: { id: input.professionalId, sessionId: input.dbSessionId } });
-        if (!professional) throw new BookingError("NOT_FOUND", "Profissional não encontrado");
-    }
+    if (input.professionalId) await assertProfessionalOf(input.dbSessionId, input.professionalId);
+    if (input.enforceRules) await assertBelowCustomerLimit(input.dbSessionId, input.rules, input.customerJid, now);
 
     const candidates = await candidatesFor(input.dbSessionId, input.rules, { ...input, now });
     for (const professionalId of candidates) {
@@ -137,6 +135,26 @@ export async function bookAppointment(input: BookInput): Promise<AppointmentFull
         }
     }
     throw new BookingError("SLOT_TAKEN", "Esse horário não está mais disponível");
+}
+
+async function assertProfessionalOf(dbSessionId: string, professionalId: string) {
+    const professional = await prisma.agendaProfessional.findFirst({ where: { id: professionalId, sessionId: dbSessionId }, select: { id: true } });
+    if (!professional) throw new BookingError("NOT_FOUND", "Profissional não encontrado");
+}
+
+/** How many upcoming bookings a customer still holds (BOOKED or CONFIRMED). */
+export function countActiveForCustomer(dbSessionId: string, customerJid: string, now = new Date()) {
+    return prisma.agendaAppointment.count({
+        where: { sessionId: dbSessionId, customerJid, status: { in: ["BOOKED", "CONFIRMED"] }, startsAt: { gt: now } },
+    });
+}
+
+/** Customers can't fill the agenda: past the limit they must cancel one first (the panel has no limit). */
+async function assertBelowCustomerLimit(dbSessionId: string, rules: AgendaRules, customerJid: string, now: Date) {
+    if (!rules.maxActivePerCustomer) return;
+    if ((await countActiveForCustomer(dbSessionId, customerJid, now)) >= rules.maxActivePerCustomer) {
+        throw new BookingError("LIMIT", `Você já tem ${rules.maxActivePerCustomer} agendamento(s) ativo(s); cancele ou aguarde um deles antes de marcar outro`);
+    }
 }
 
 async function loadOwned(dbSessionId: string, appointmentId: string, customerJid?: string) {
@@ -205,6 +223,7 @@ export async function rescheduleAppointment(input: {
     else if (appointment.status === "CANCELLED") throw new BookingError("NOT_ALLOWED", "Esse agendamento foi cancelado");
 
     const enforceRules = input.by === "customer";
+    if (input.professionalId) await assertProfessionalOf(input.dbSessionId, input.professionalId);
     const professionalId = input.professionalId || appointment.professionalId;
     const candidates = input.professionalId || input.by === "panel"
         ? [professionalId]

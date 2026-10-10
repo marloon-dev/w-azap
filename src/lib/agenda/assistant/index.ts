@@ -5,11 +5,12 @@ import { logger } from "@/lib/logger";
 import { isLidJid, normalizeJid, resolveToPhoneJid } from "@/lib/jid-utils";
 import { canAutoReply, ruleMatches } from "@/modules/whatsapp/store/autoreply";
 import { aiReady, getAgendaConfig } from "../config";
-import { normalizeText } from "../format";
+import { cleanName, normalizeText } from "../format";
 import { sendText, wasSentByAssistant } from "../notify";
 import { AiError, handleWithAi } from "./ai";
 import { inChatQueue, isActive, loadConversation, saveConversation, type Conversation } from "./conversation";
 import { handleMenu, handleReminderReply } from "./menu";
+import { chatAllowance, takeAiTurn } from "./limits";
 import type { Turn } from "./types";
 
 const PRIVATE_CHAT = /@(s\.whatsapp\.net|lid)$/;
@@ -34,8 +35,12 @@ async function processTurn(turn: Turn) {
         await saveConversation(turn.dbSessionId, turn.customerJid, { state: null }, turn.now);
     }
 
-    // A menu already on screen (fallback or reminder flow) finishes as a menu
-    if (aiReady(turn.config) && !turn.conversation.state) {
+    // A menu already on screen (fallback or reminder flow) finishes as a menu; past the hourly AI budget, too
+    const aiBudget = aiReady(turn.config) && !turn.conversation.state && takeAiTurn(turn.dbSessionId);
+    if (aiReady(turn.config) && !turn.conversation.state && !aiBudget) {
+        logger.warn("Agenda", `AI hourly budget spent for session ${turn.dbSessionId}; answering with the menu`);
+    }
+    if (aiBudget) {
         try {
             await handleWithAi(turn);
             if (turn.config.aiLastError) {
@@ -96,6 +101,13 @@ export async function handleAgendaMessage(sock: WASocket, dbSessionId: string, m
         const conversation = await loadConversation(dbSessionId, customerJid, now);
         if (conversation.pausedUntil) return;
 
+        const allowance = chatAllowance(`${dbSessionId}:${customerJid}`);
+        if (allowance === "drop") return;
+        if (allowance === "warn") {
+            await sendText(sock, remoteJid, "Recebi muitas mensagens seguidas. Aguarde alguns minutos e me chame de novo. 🙂");
+            return;
+        }
+
         const text = messageText(msg);
         if (!text) {
             if (isActive(conversation)) await sendText(sock, remoteJid, "Por enquanto eu só entendo mensagens de texto. 🙂");
@@ -108,7 +120,7 @@ export async function handleAgendaMessage(sock: WASocket, dbSessionId: string, m
             dbSessionId,
             config,
             customerJid,
-            customerName: msg.pushName?.trim() || null,
+            customerName: cleanName(msg.pushName),
             text,
             now,
             conversation,
@@ -139,7 +151,7 @@ export async function simulateAgendaMessage(input: { dbSessionId: string; userId
             dbSessionId: input.dbSessionId,
             config,
             customerJid,
-            customerName: input.userName,
+            customerName: cleanName(input.userName),
             text: input.text.trim().slice(0, 2000),
             now,
             conversation,
