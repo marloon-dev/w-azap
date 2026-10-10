@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { WhatsAppInstance } from "./instance";
 import { Server } from "socket.io";
 import { initScheduler } from "@/lib/cron";
+import { startAgendaReminders } from "@/lib/agenda/reminders";
 import { logger } from "@/lib/logger";
 import { randomBytes } from "crypto";
 import { encryptLegacyAuthState } from "./auth/usePrismaAuthState";
@@ -14,6 +15,7 @@ export class WhatsAppManager {
 
     private constructor() {
         initScheduler();
+        startAgendaReminders();
     }
 
     public static getInstance(): WhatsAppManager {
