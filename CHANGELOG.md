@@ -24,6 +24,20 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
   - Não responde em grupos e não atrapalha as respostas automáticas nem os comandos do bot.
 - **API** `/api/sessions/{id}/agenda/*`: configuração, teste da IA, simulador, serviços, profissionais, bloqueios, agendamentos e horários livres. Só o dono da sessão altera a configuração e a chave da IA, que fica guardada criptografada (AES-256-GCM) e nunca volta para o navegador.
 
+- **Conversas com atendimento humano** (tela Assistente): lista as conversas em que alguém da equipe assumiu, com botão para devolver ao assistente antes do fim da pausa.
+- **Limite de agendamentos por cliente** (padrão: 3 futuros por WhatsApp; o painel não tem limite).
+
+### Segurança
+- A agenda passou por testes de ataque: isolamento entre sessões, permissões da equipe, CSRF, SSRF, vazamento da chave da IA, injeção de prompt e abuso pelo WhatsApp. Correções:
+  - **Remarcar** não aceita mais um profissional de outra sessão.
+  - **Chave da IA**: não é reenviada em redirecionamentos (o `safeFetch` ganhou `followRedirects: false`) e, se o endereço da IA mudar de servidor, a chave precisa ser digitada de novo (a chave salva não vai para um endereço novo).
+  - **Injeção de prompt**: o nome do perfil do WhatsApp entra no prompt só como dado, sem quebras de linha nem caracteres de controle. Uma mensagem pode fazer no máximo 2 alterações na agenda e 12 chamadas de ferramenta.
+  - **Abuso**: limite de agendamentos ativos por cliente, limite de 20 mensagens a cada 5 minutos por conversa (avisa uma vez e depois ignora) e teto de respostas com IA por hora por sessão (`AGENDA_AI_MAX_PER_HOUR`, padrão 300). Depois do teto, o menu atende.
+  - **CSRF**: as rotas da agenda que alteram dados recusam requisições do navegador vindas de outra origem.
+
+### Corrigido
+- **Menu**: digitar "barba" escolhe o serviço Barba, e não fica em dúvida com "Corte + barba" (prioridade para o nome exato e depois para o início do nome).
+
 ### Alterado
 - **Respostas automáticas**: a regra de correspondência (palavra-chave, contexto) virou uma função compartilhada, usada também pelo assistente da agenda.
 
