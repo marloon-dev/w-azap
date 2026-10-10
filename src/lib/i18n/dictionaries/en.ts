@@ -42,6 +42,7 @@ const en = {
             automation: "Automation",
             developer: "Developer",
             administration: "Administration",
+            agenda: "Scheduling",
         },
         items: {
             dashboard: "Dashboard",
@@ -66,6 +67,11 @@ const en = {
             systemMonitor: "System Monitor",
             notifications: "Notifications",
             emailForward: "E-mail Forwarding",
+            agenda: "Agenda",
+            agendaProfessionals: "Professionals",
+            agendaServices: "Services",
+            agendaBlocks: "Days off & blocks",
+            agendaAssistant: "Assistant",
         },
     },
     notifications: {

@@ -3,6 +3,8 @@ import {
     Bell,
     Bot,
     CalendarClock,
+    CalendarDays,
+    CalendarOff,
     Code,
     FileText,
     HardDrive,
@@ -10,6 +12,8 @@ import {
     LayoutDashboard,
     Mail,
     Megaphone,
+    Scissors,
+    Sparkles,
     MessageCircleReply,
     MessageSquare,
     QrCode,
@@ -17,6 +21,7 @@ import {
     Tag,
     UserCheck,
     UserCircle,
+    UserRound,
     UserPlus,
     Users,
     Webhook,
@@ -44,6 +49,16 @@ export const navGroups: NavGroup[] = [
         items: [
             { href: "/dashboard", label: "nav.items.dashboard", icon: LayoutDashboard },
             { href: "/dashboard/sessions", label: "nav.items.sessions", icon: QrCode },
+        ],
+    },
+    {
+        label: "nav.groups.agenda",
+        items: [
+            { href: "/dashboard/agenda", label: "nav.items.agenda", icon: CalendarDays },
+            { href: "/dashboard/agenda/professionals", label: "nav.items.agendaProfessionals", icon: UserRound },
+            { href: "/dashboard/agenda/services", label: "nav.items.agendaServices", icon: Scissors },
+            { href: "/dashboard/agenda/blocks", label: "nav.items.agendaBlocks", icon: CalendarOff },
+            { href: "/dashboard/agenda/assistant", label: "nav.items.agendaAssistant", icon: Sparkles },
         ],
     },
     {

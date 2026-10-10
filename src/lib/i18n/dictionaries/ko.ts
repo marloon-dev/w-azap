@@ -42,6 +42,7 @@ const ko: Dictionary = {
             automation: "자동화",
             developer: "개발자",
             administration: "관리",
+            agenda: "예약",
         },
         items: {
             dashboard: "대시보드",
@@ -66,6 +67,11 @@ const ko: Dictionary = {
             systemMonitor: "시스템 모니터",
             notifications: "알림",
             emailForward: "이메일 전달",
+            agenda: "예약 목록",
+            agendaProfessionals: "담당자",
+            agendaServices: "서비스",
+            agendaBlocks: "휴무 및 차단",
+            agendaAssistant: "어시스턴트",
         },
     },
     notifications: {
