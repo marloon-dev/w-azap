@@ -9,7 +9,7 @@ export const AI_KEY_MASK = "••••••••";
 export const SLOT_STEPS = [5, 10, 15, 20, 30, 60] as const;
 
 /** Rules the availability engine needs (a subset of AgendaConfig, so tests can build one by hand). */
-export type AgendaRules = Pick<AgendaConfig, "timezone" | "slotStep" | "minAdvanceMinutes" | "maxAdvanceDays" | "cancelMinHours">;
+export type AgendaRules = Pick<AgendaConfig, "timezone" | "slotStep" | "minAdvanceMinutes" | "maxAdvanceDays" | "cancelMinHours" | "maxActivePerCustomer">;
 
 const CACHE_TTL_MS = 30_000;
 const cache = new Map<string, { config: AgendaConfig | null; at: number }>();

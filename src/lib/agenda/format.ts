@@ -37,6 +37,15 @@ export function phoneToJid(phone: string): string {
     return `${phone}@s.whatsapp.net`;
 }
 
+/**
+ * Display names come from the customer (WhatsApp profile name) or from the AI: no control characters or
+ * line breaks (they could pose as instructions inside the AI prompt), single spaces, bounded length.
+ */
+export function cleanName(name: string | null | undefined, max = 60): string | null {
+    const cleaned = (name ?? "").replace(/[\p{C}\u2028\u2029]/gu, " ").replace(/\s+/g, " ").trim().slice(0, max).trim();
+    return cleaned || null;
+}
+
 /** Removes accents and lowercases, for matching what customers type. */
 export function normalizeText(text: string): string {
     return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();

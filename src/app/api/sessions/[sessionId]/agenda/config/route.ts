@@ -6,7 +6,7 @@ import { isSessionOwner } from "@/lib/api-auth";
 import { isHttpUrl } from "@/lib/safe-fetch";
 import { AI_KEY_MASK, SLOT_STEPS, encryptAiKey, invalidateAgendaConfig } from "@/lib/agenda/config";
 import { isValidTimezone } from "@/lib/agenda/time";
-import { authorizeAgenda, reject, ok, parseBody, serverError } from "../shared";
+import { authorizeAgenda, originOf, reject, ok, parseBody, serverError } from "../shared";
 
 const configSchema = z.object({
     enabled: z.boolean(),
@@ -17,6 +17,7 @@ const configSchema = z.object({
     minAdvanceMinutes: z.number().int().min(0).max(10080),
     maxAdvanceDays: z.number().int().min(1).max(365),
     cancelMinHours: z.number().int().min(0).max(168),
+    maxActivePerCustomer: z.number().int().min(0).max(50),
     triggerMode: z.enum(["ALL", "KEYWORD"]),
     triggerKeyword: z.string().trim().max(40),
     humanPauseHours: z.number().int().min(0).max(168),
@@ -44,6 +45,7 @@ function present(config: AgendaConfig | null, canEdit: boolean) {
         minAdvanceMinutes: config?.minAdvanceMinutes ?? 60,
         maxAdvanceDays: config?.maxAdvanceDays ?? 30,
         cancelMinHours: config?.cancelMinHours ?? 2,
+        maxActivePerCustomer: config?.maxActivePerCustomer ?? 3,
         triggerMode: config?.triggerMode ?? "ALL",
         triggerKeyword: config?.triggerKeyword ?? "agendar",
         humanPauseHours: config?.humanPauseHours ?? 12,
@@ -90,6 +92,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         }
         if (input.triggerMode === "KEYWORD" && !input.triggerKeyword) return reject(400, "Informe a palavra-chave", { field: "triggerKeyword" });
 
+        // The stored key only goes to the server it was typed for: a new address needs the key again
+        const keepsKey = input.aiApiKey === undefined || input.aiApiKey === AI_KEY_MASK;
+        if (keepsKey && input.aiBaseUrl) {
+            const stored = await prisma.agendaConfig.findUnique({ where: { sessionId: auth.dbSessionId }, select: { aiBaseUrl: true, aiApiKey: true } });
+            if (stored?.aiApiKey && originOf(stored.aiBaseUrl) !== originOf(input.aiBaseUrl)) {
+                return reject(400, "Você trocou o endereço da IA: informe a chave da API de novo", { field: "aiApiKey", code: "KEY_REQUIRED" });
+            }
+        }
+
         // Mask or undefined keeps the stored key; an empty string removes it
         const aiApiKey =
             input.aiApiKey === undefined || input.aiApiKey === AI_KEY_MASK
@@ -107,6 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             minAdvanceMinutes: input.minAdvanceMinutes,
             maxAdvanceDays: input.maxAdvanceDays,
             cancelMinHours: input.cancelMinHours,
+            maxActivePerCustomer: input.maxActivePerCustomer,
             triggerMode: input.triggerMode,
             triggerKeyword: input.triggerKeyword || "agendar",
             humanPauseHours: input.humanPauseHours,

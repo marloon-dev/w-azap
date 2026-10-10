@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { isHttpUrl } from "@/lib/safe-fetch";
 import { AI_KEY_MASK, decryptAiKey } from "@/lib/agenda/config";
 import { AiError, aiAllowsPrivate, testAi } from "@/lib/agenda/assistant/ai";
-import { authorizeAgenda, reject, ok, parseBody, serverError } from "../../shared";
+import { authorizeAgenda, originOf, reject, ok, parseBody, serverError } from "../../shared";
 
 const testSchema = z.object({
     aiBaseUrl: z.string().trim().min(1, "Informe o endereço da IA").max(500),
@@ -25,7 +25,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
         let apiKey = input.aiApiKey?.trim() || null;
         if (apiKey === AI_KEY_MASK) {
-            const config = await prisma.agendaConfig.findUnique({ where: { sessionId: auth.dbSessionId }, select: { sessionId: true, aiApiKey: true } });
+            const config = await prisma.agendaConfig.findUnique({ where: { sessionId: auth.dbSessionId }, select: { sessionId: true, aiApiKey: true, aiBaseUrl: true } });
+            // The saved key is only sent to the address it was saved with
+            if (config?.aiApiKey && originOf(config.aiBaseUrl) !== originOf(input.aiBaseUrl)) {
+                return reject(400, "Você trocou o endereço da IA: informe a chave da API de novo", { field: "aiApiKey", code: "KEY_REQUIRED" });
+            }
             apiKey = config ? decryptAiKey(config) : null;
         }
 
