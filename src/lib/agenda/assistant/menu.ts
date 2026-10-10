@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { findAvailableDays, findSlots } from "../availability";
-import { BookingError, bookAppointment, cancelAppointment, describeAppointment, rescheduleAppointment, upcomingForCustomer } from "../booking";
+import { BookingError, bookAppointment, cancelAppointment, countActiveForCustomer, describeAppointment, rescheduleAppointment, upcomingForCustomer } from "../booking";
 import { formatDuration, formatPrice, normalizeText } from "../format";
 import { addDays, dayOf, parseCustomerDay, parseTimeOfDay, relativeDayLabel, timeOf, todayIn, whenLabel } from "../time";
 import { saveConversation } from "./conversation";
@@ -67,8 +67,15 @@ function pickOption<T extends { label: string }>(text: string, options: T[]): T 
     if (number !== null) return options[number - 1] ?? null;
     const typed = normalizeText(text);
     if (typed.length < 3) return null;
-    const matches = options.filter((o) => normalizeText(o.label).includes(typed) || typed.includes(normalizeText(o.label).split(" — ")[0]));
-    return matches.length === 1 ? matches[0] : null;
+    // "barba" is the service Barba, not "Corte + barba": exact name, then prefix, then anywhere in the text
+    const name = (o: T) => normalizeText(o.label).split(" — ")[0];
+    const tiers = [
+        options.filter((o) => name(o) === typed),
+        options.filter((o) => name(o).startsWith(typed)),
+        options.filter((o) => name(o).includes(typed) || typed.includes(name(o))),
+    ];
+    const tier = tiers.find((list) => list.length > 0);
+    return tier && tier.length === 1 ? tier[0] : null;
 }
 
 const isYes = (text: string) => YES.includes(normalizeText(text)) || pickNumber(text) === 1;
@@ -127,6 +134,12 @@ function serviceLabel(service: { name: string; durationMinutes: number; priceCen
 }
 
 async function showServices(turn: Turn) {
+    const limit = turn.config.maxActivePerCustomer;
+    if (limit && (await countActiveForCustomer(turn.dbSessionId, turn.customerJid, turn.now)) >= limit) {
+        await setState(turn, { step: "main" });
+        await turn.reply(`Você já tem ${limit === 1 ? "um agendamento ativo" : `${limit} agendamentos ativos`}. Para marcar outro, cancele ou remarque um deles.\n\n*2.* Meus agendamentos\n*0.* Voltar ao menu`);
+        return;
+    }
     const services = await bookableServices(turn.dbSessionId);
     if (services.length === 0) {
         await setState(turn, { step: "main" });

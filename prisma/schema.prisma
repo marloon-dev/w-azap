@@ -456,6 +456,7 @@ model AgendaConfig {
   minAdvanceMinutes  Int      @default(60)  // Earliest booking, counted from now
   maxAdvanceDays     Int      @default(30)  // How far ahead customers can book
   cancelMinHours     Int      @default(2)   // Customers can't cancel/reschedule closer than this
+  maxActivePerCustomer Int    @default(3)   // Upcoming bookings one customer may hold on WhatsApp (0 = no limit)
 
   // When the assistant answers: ALL private chats, or only after the keyword
   triggerMode        String   @default("ALL") // ALL, KEYWORD
