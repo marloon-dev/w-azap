@@ -8,6 +8,8 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+## [v2.4.0] - 2026-10-11
+
 ### Adicionado
 - **Agenda inteligente pelo WhatsApp** (novo grupo **Agenda** no menu):
   - **Agendamentos**: visão por dia e semana, separada por profissional, com status (agendado, confirmado, concluído, não compareceu, cancelado), novo agendamento e remarcação pelo painel (escolhendo entre os horários livres) e cancelamento com aviso opcional ao cliente. A tela se atualiza sozinha a cada 30 segundos.
