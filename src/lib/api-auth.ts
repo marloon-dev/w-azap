@@ -7,15 +7,6 @@ import { hashApiKey, isAdmin, canAccessSession, isSessionOwner } from "./session
 
 export { hashApiKey, isAdmin, canAccessSession, isSessionOwner };
 
-// Role hierarchy for permission checks
-const ROLE_HIERARCHY = {
-    SUPERADMIN: 3,
-    OWNER: 2,
-    STAFF: 1
-} as const;
-
-type Role = keyof typeof ROLE_HIERARCHY;
-
 /**
  * Validate API key from request header
  */
@@ -81,12 +72,6 @@ export async function getAuthenticatedUser(request?: NextRequest, options: { all
 /**
  * Check if user has required role level
  */
-export function hasRole(userRole: string, requiredRole: Role): boolean {
-    const userLevel = ROLE_HIERARCHY[userRole as Role] || 0;
-    const requiredLevel = ROLE_HIERARCHY[requiredRole] || 0;
-    return userLevel >= requiredLevel;
-}
-
 // Session listings never include webhook HMAC secrets
 const WEBHOOK_PUBLIC_FIELDS = {
     id: true, name: true, url: true, events: true, isActive: true, sessionId: true, userId: true, createdAt: true, updatedAt: true,

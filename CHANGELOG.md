@@ -8,6 +8,24 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Alterado
+- **Painel bem mais leve**: o relógio, a agenda e o agendador deixaram de usar a `moment-timezone`, que levava a base inteira de fusos horários para o navegador em todas as páginas do painel. Agora usam o `Intl` do próprio JavaScript (`src/lib/tz.ts`). O JavaScript baixado por página do painel caiu cerca de 62% (Painel: de 1.239 KB para 464 KB). Os resultados foram conferidos contra a biblioteca antiga em mais de 1 milhão de comparações (incluindo viradas de horário de verão) e 132 mil nas funções da agenda, sem diferença nos fusos do Brasil.
+- **Agendador**: um `sendAt` impossível (ex.: mês 13) agora é recusado com erro 400, em vez de virar outra data.
+- **Baileys fora do pacote do Next.js** (`serverExternalPackages`): o build fica mais leve e não exige a biblioteca opcional de imagens `jimp`.
+
+### Removido
+- **Dependências sem uso ou duplicadas**: `moment`, `moment-timezone`, `recharts`, `react-syntax-highlighter`, `jimp`, `ts-morph`, `ts-node`, `postinstall-postinstall`, os tipos sem uso e o pacote único `radix-ui` (os componentes usam os pacotes `@radix-ui/*` individuais). O `node_modules` caiu de 1,0 GB para 894 MB.
+- **Página `/dashboard/api-docs`**: repetia o que a `/docs` e a `/swagger` já mostram e não estava no menu.
+- **Código morto**: imports, funções, tipos e variáveis sem uso, 74 chaves de tradução sem uso em cada um dos 14 idiomas, o componente `scroll-area` e os SVGs do modelo inicial do Next.js.
+- **Logs de depuração**: o navegador não mostra mais no console o conteúdo das notificações nem os dados do QR code.
+
+### Segurança
+- **Script com acesso padrão removido**: `scripts/setup-test-user.ts` criava um SUPERADMIN com senha e chave de API fixas (`password123` / `wag_TESTAPIKEY123`), e o `scripts/test_endpoints.sh` usava essa chave. Os dois saíram.
+- **Rota pública sem uso**: o `proxy.ts` deixava passar sem login qualquer caminho começando com `/api/test`, que não existe mais.
+
+### Corrigido
+- **Webhook `connection.update` nunca disparava**: o evento aparecia na tela de webhooks, mas a função que o envia não era chamada. Agora ele dispara quando a sessão conecta, cai, sai ou pede QR code (uma vez por mudança de status).
+
 ## [v2.4.0] - 2026-10-11
 
 ### Adicionado

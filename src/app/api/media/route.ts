@@ -196,7 +196,7 @@ export async function DELETE(request: NextRequest) {
             try {
                 await unlink(filePath);
                 deleted++;
-            } catch (e) {
+            } catch {
                 errors.push(`Failed to delete: ${filename}`);
                 failed++;
             }

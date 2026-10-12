@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import si from "systeminformation";
 import { getAuthenticatedUser } from "@/lib/api-auth";
-import { prisma } from "@/lib/prisma";
 
 // Ensure this route is dynamic
 export const dynamic = "force-dynamic";

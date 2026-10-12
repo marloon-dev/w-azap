@@ -86,7 +86,6 @@ const zhCN: Dictionary = {
         deleteFailed: "删除通知失败",
     },
     session: {
-        label: "会话：",
         select: "选择会话",
         noneFound: "未找到已连接的会话。",
         refresh: "刷新会话",

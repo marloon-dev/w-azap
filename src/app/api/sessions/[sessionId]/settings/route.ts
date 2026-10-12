@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { waManager } from "@/modules/whatsapp/manager";
-import { getAuthenticatedUser, canAccessSession, isAdmin } from "@/lib/api-auth";
+import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
+import { logger } from "@/lib/logger";
 
 // GET: Retrieve session settings
 export async function GET(
@@ -103,7 +104,7 @@ export async function DELETE(
             try {
                 await instance.socket.logout();
             } catch (e) {
-                console.log("Session logout error (might be already disconnected):", e);
+                logger.debug("Session", "Logout failed (session may already be disconnected)", e);
             }
         }
         waManager.deleteSession(sessionId);

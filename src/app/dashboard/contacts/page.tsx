@@ -17,13 +17,9 @@ import {
 import {
     Pagination,
     PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious
-} from "@/components/ui/pagination";
+    PaginationItem} from "@/components/ui/pagination";
 
-import { Search, Loader2, ChevronDown } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { ContactAvatar } from "@/components/contact-avatar";
 import {
     Select,

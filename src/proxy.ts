@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Public routes that don't require authentication
-    const publicRoutes = ["/auth/login", "/auth/register", "/api/auth", "/api/test", "/terms", "/privacy"];
+    const publicRoutes = ["/auth/login", "/auth/register", "/api/auth", "/terms", "/privacy"];
 
     // Check if it's a public route
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Allow known static asset extensions in root path only (e.g. /vercel.svg)
+    // Allow known static asset extensions in root path only (e.g. /favicon.png)
     const staticExtensions = [".svg", ".ico", ".png", ".jpg", ".jpeg", ".webp", ".woff", ".woff2", ".ttf"];
     if (pathname.lastIndexOf("/") === 0 && staticExtensions.some(ext => pathname.endsWith(ext))) {
         return NextResponse.next();
@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
     // API routes: Check for API key or session
     if (pathname.startsWith("/api/")) {
         // Skip auth endpoints
-        if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/test")) {
+        if (pathname.startsWith("/api/auth")) {
             return NextResponse.next();
         }
 

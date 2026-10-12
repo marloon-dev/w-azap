@@ -48,8 +48,3 @@ export function takeAiTurn(dbSessionId: string, now = Date.now()): boolean {
     return true;
 }
 
-/** Tests only */
-export function resetLimits() {
-    chats.clear();
-    aiTurns.clear();
-}

@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Plus, Copy, RefreshCw, Webhook, Key, Eye, EyeOff, Play, History, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { Trash2, Plus, Copy, RefreshCw, Webhook, Key, Eye, EyeOff, Play, History, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
     AlertDialog,
@@ -43,21 +42,6 @@ interface WebhookConfig {
     createdAt: string;
 }
 
-interface WebhookLog {
-    id: string;
-    webhookId: string;
-    event: string;
-    status: string;
-    requestUrl: string;
-    requestHeaders?: any;
-    requestBody?: any;
-    responseStatusCode?: number;
-    responseBody?: string;
-    responseTimeMs?: number;
-    errorMessage?: string;
-    createdAt: string;
-}
-
 const AVAILABLE_EVENTS = [
     { id: "message.received", label: "Message Received", description: "When a new message is received" },
     { id: "message.sent", label: "Message Sent", description: "When a message is sent" },
@@ -77,7 +61,7 @@ import { translateValue } from "@/lib/i18n/translate";
 
 export default function WebhooksPage() {
     const { sessionId, sessions } = useSession();
-    const { t, locale } = useTranslation();
+    const { t } = useTranslation();
     const eventLabel = (id: string) => translateValue(t, "webhooks.eventLabels", id.replace(".", "_"));
     const eventDesc = (id: string) => translateValue(t, "webhooks.eventDescs", id.replace(".", "_"));
     const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
@@ -157,7 +141,7 @@ export default function WebhooksPage() {
                 setShowApiKey(true);
                 toast.success(t("webhooks.apiKeyGenerated"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.apiKeyFailed"));
         }
     };
@@ -241,7 +225,7 @@ export default function WebhooksPage() {
             } else {
                 toast.error(t("webhooks.createFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.errorOccurred"));
         }
     };
@@ -270,7 +254,7 @@ export default function WebhooksPage() {
             } else {
                 toast.error(t("webhooks.updateFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.errorOccurred"));
         }
     };
@@ -285,7 +269,7 @@ export default function WebhooksPage() {
                 body: JSON.stringify({ isActive })
             });
             setWebhooks(webhooks.map(w => w.id === id ? { ...w, isActive } : w));
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.updateFailed"));
         }
     };
@@ -304,7 +288,7 @@ export default function WebhooksPage() {
                 body: JSON.stringify({ events: newEvents })
             });
             setWebhooks(webhooks.map(w => w.id === webhookId ? { ...w, events: newEvents } : w));
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.eventsUpdateFailed"));
         }
     };
@@ -323,7 +307,7 @@ export default function WebhooksPage() {
             await fetch(`/api/webhooks/${targetSessionId}/${deleteId}`, { method: "DELETE" });
             setWebhooks(webhooks.filter(w => w.id !== deleteId));
             toast.success(t("webhooks.deleted"));
-        } catch (error) {
+        } catch {
             toast.error(t("webhooks.deleteFailed"));
         } finally {
             setDeleteId(null);
@@ -333,21 +317,6 @@ export default function WebhooksPage() {
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
         toast.success(t("webhooks.copied"));
-    };
-
-    // Format JSON for display
-    const formatJson = (obj: any): string => {
-        try {
-            return JSON.stringify(obj, null, 2);
-        } catch {
-            return String(obj);
-        }
-    };
-
-    // Format timestamp
-    const formatTime = (ts: string) => {
-        const d = new Date(ts);
-        return d.toLocaleString(locale);
     };
 
     return (

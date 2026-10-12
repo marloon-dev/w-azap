@@ -4,6 +4,7 @@ import { waManager } from "@/modules/whatsapp/manager";
 import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
 import type { AnyMessageContent } from "@whiskeysockets/baileys";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 const broadcastBodySchema = z.object({
     recipients: z.array(z.string()),
@@ -154,7 +155,7 @@ export async function POST(
                     completedAt: new Date().toISOString()
                 });
             }
-            console.log(`Broadcast ${broadcastId} completed: ${sent} sent, ${failed} failed out of ${recipients.length}`);
+            logger.info("Broadcast", `${broadcastId} completed: ${sent} sent, ${failed} failed out of ${recipients.length}`);
         })();
 
         return NextResponse.json({

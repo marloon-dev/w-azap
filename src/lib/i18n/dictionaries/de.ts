@@ -86,7 +86,6 @@ const de: Dictionary = {
         deleteFailed: "Benachrichtigung konnte nicht gelöscht werden",
     },
     session: {
-        label: "Sitzung:",
         select: "Sitzung auswählen",
         noneFound: "Keine verbundenen Sitzungen gefunden.",
         refresh: "Sitzungen aktualisieren",

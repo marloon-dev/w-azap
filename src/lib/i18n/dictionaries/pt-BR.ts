@@ -86,7 +86,6 @@ const ptBR: Dictionary = {
         deleteFailed: "Falha ao excluir a notificação",
     },
     session: {
-        label: "Sessão:",
         select: "Selecionar sessão",
         noneFound: "Nenhuma sessão conectada encontrada.",
         refresh: "Atualizar sessões",

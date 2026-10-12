@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Bell, Send, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react"; // Use client session for Role check UI-side
 import { useTranslation } from "@/components/i18n-provider";
 
 export default function NotificationAdminPage() {
@@ -57,7 +56,7 @@ export default function NotificationAdminPage() {
             } else {
                 toast.error(t("notificationAdmin.sendFailed"));
             }
-        } catch (e) {
+        } catch {
             toast.error(t("notificationAdmin.sendError"));
         } finally {
             setLoading(false);

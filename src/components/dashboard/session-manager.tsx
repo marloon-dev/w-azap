@@ -1,16 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
-import QRCode from 'qrcode';
+import { io } from 'socket.io-client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
 import { Label } from '@/components/ui/label';
-import { Smartphone, Plus, Trash2, Settings, RefreshCw, Power, UserPlus } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Smartphone, Settings, UserPlus } from 'lucide-react';
 import {
     Table,
     TableBody,
@@ -42,7 +40,6 @@ export function SessionManager({ user }: { user: any }) {
     const [newSessionName, setNewSessionName] = useState("");
     const [newSessionId, setNewSessionId] = useState("");
     const [loading, setLoading] = useState(false);
-    const [socket, setSocket] = useState<Socket | null>(null);
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -53,10 +50,6 @@ export function SessionManager({ user }: { user: any }) {
         const socketInstance = io({
             path: "/api/socket/io",
             addTrailingSlash: false,
-        });
-
-        socketInstance.on('connect', () => {
-            console.log('Socket connected');
         });
 
         socketInstance.on('connection.update', (data: { sessionId: string, status: string, qr: string }) => {
@@ -72,8 +65,6 @@ export function SessionManager({ user }: { user: any }) {
                 fetchSessions(); // Refresh purely to get updated state from DB if needed
             }
         });
-
-        setSocket(socketInstance);
 
         return () => {
             socketInstance.disconnect();

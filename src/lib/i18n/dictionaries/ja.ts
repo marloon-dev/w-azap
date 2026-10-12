@@ -86,7 +86,6 @@ const ja: Dictionary = {
         deleteFailed: "通知を削除できませんでした",
     },
     session: {
-        label: "セッション:",
         select: "セッションを選択",
         noneFound: "接続中のセッションがありません。",
         refresh: "セッションを更新",

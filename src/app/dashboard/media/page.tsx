@@ -58,12 +58,6 @@ interface MediaFile {
     url: string;
 }
 
-interface MediaListResponse {
-    files: MediaFile[];
-    totalSize: number;
-    totalCount: number;
-}
-
 function formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 B";
     const k = 1024;

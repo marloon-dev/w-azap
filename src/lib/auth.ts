@@ -14,7 +14,7 @@ class RateLimitedSignin extends CredentialsSignin {
 // Compared against when the e-mail does not exist, so response time does not reveal valid accounts
 const DUMMY_HASH = bcrypt.hashSync("timing-equalizer-not-a-real-password", 10);
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth } = NextAuth({
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,

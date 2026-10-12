@@ -6,8 +6,7 @@ import { ContactAvatar } from "@/components/contact-avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquarePlus, Search, MessageCircle, X, Tag, MoreHorizontal, CornerUpLeft, Trash2, Info, Check } from "lucide-react";
+import { MessageSquarePlus, Search, MessageCircle, X, Tag, Info, Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -116,7 +115,7 @@ function LabelAssignPopover({ sessionId, jid, children }: { sessionId: string; j
                 });
                 toast.success(isAssigned ? t("chat.labelRemoved") : t("chat.labelAssigned"));
             }
-        } catch (e) {
+        } catch {
             toast.error(t("chat.labelUpdateFailed"));
         }
     };

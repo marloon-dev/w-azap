@@ -86,7 +86,6 @@ const en = {
         deleteFailed: "Failed to delete notification",
     },
     session: {
-        label: "Session:",
         select: "Select Session",
         noneFound: "No connected sessions found.",
         refresh: "Refresh Sessions",

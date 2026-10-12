@@ -53,7 +53,7 @@ export const usePrismaAuthState = async (sessionId: string): Promise<{ state: Au
              await prisma.authState.deleteMany({
                 where: { sessionId, key }
             });
-        } catch (error) {
+        } catch {
             // ignore
         }
     }

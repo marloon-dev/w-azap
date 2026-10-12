@@ -86,7 +86,6 @@ const ko: Dictionary = {
         deleteFailed: "알림을 삭제하지 못했습니다",
     },
     session: {
-        label: "세션:",
         select: "세션 선택",
         noneFound: "연결된 세션이 없습니다.",
         refresh: "세션 새로고침",

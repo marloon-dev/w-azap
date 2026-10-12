@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, Play, Square, RotateCcw, LogOut, Power, Trash2, QrCode, Activity, HardDrive, Wifi, MemoryStick, Copy, Check } from "lucide-react";
+import { ArrowLeft, Play, Square, RotateCcw, LogOut, Trash2, Activity, Wifi, MemoryStick, Copy } from "lucide-react";
 import Link from "next/link";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { QRCodeSVG } from "qrcode.react";
 import {
     AlertDialog,
@@ -47,7 +47,6 @@ export default function SessionDetailPage() {
     const [session, setSession] = useState<SessionDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [qrCode, setQrCode] = useState<string | null>(null);
-    const [socket, setSocket] = useState<Socket | null>(null);
     const [uptime, setUptime] = useState(0);
     const [systemMetrics, setSystemMetrics] = useState<any>(null);
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -87,7 +86,7 @@ export default function SessionDetailPage() {
             if (result.status) {
                 setSystemMetrics(result.data);
             }
-        } catch (e) {
+        } catch {
             // silent ignore
         }
     };
@@ -101,12 +100,10 @@ export default function SessionDetailPage() {
         });
 
         socketInstance.on("connect", () => {
-            console.log("Connected to socket");
             socketInstance.emit("join-session", sessionId);
         });
 
         socketInstance.on("connection.update", (data: { status: string, qr: string, pairingCode?: string }) => {
-            console.log("Socket update:", data);
             setSession(prev => prev ? { ...prev, status: data.status } : null);
             setQrCode(data.qr || null);
             if (data.pairingCode) setPairingCode(data.pairingCode);
@@ -116,8 +113,6 @@ export default function SessionDetailPage() {
                 fetchSession();
             }
         });
-
-        setSocket(socketInstance);
 
         // Uptime counter
         const interval = setInterval(() => {
@@ -190,7 +185,7 @@ export default function SessionDetailPage() {
             } else {
                 toast.error(t("sessionDetail.deleteFailed"));
             }
-        } catch (e) {
+        } catch {
             toast.error(t("sessionDetail.deleteError"));
         }
     };

@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Inbox, Trash2, CheckCheck, ChevronLeft, Info, AlertTriangle, CheckCircle, Settings, ExternalLink } from "lucide-react";
+import { Inbox, Trash2, CheckCheck, ChevronLeft, Info, AlertTriangle, CheckCircle, Settings, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -92,7 +92,7 @@ export default function InboxPage() {
                 setNotifications(prev => prev.filter(n => n.id !== id));
                 toast.success(t("inbox.deleted"));
             }
-        } catch (e) {
+        } catch {
             toast.error(t("inbox.deleteFailed"));
         }
     };
