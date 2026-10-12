@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Plain http:// is allowed only so a server on the local network can be used.
+  MainActivity refuses http:// for public addresses and never leaves the configured server.
+  Only system certificate authorities are trusted (no user-installed CAs).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
