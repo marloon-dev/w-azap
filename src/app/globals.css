@@ -221,6 +221,13 @@
   content: none;
 }
 
+/* Touch screens have no hover: controls revealed on hover (download, reply, select…) stay visible */
+@media (hover: none) {
+  [class*="opacity-0"][class*="group-hover"] {
+    opacity: 1;
+  }
+}
+
 /* Smooth color change while the theme switches (added for ~250ms by the theme provider) */
 html.theme-transition,
 html.theme-transition *,
