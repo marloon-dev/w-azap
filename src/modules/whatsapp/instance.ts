@@ -16,6 +16,7 @@ import { bindAutoReply } from "./store/autoreply";
 import { bindPpGuard } from "./store/ppguard";
 import { antispam } from "./antispam";
 import { logger } from "@/lib/logger";
+import { onConnectionUpdate } from "@/lib/webhook";
 
 const MAX_RECONNECT_ATTEMPTS = 3;
 
@@ -33,8 +34,19 @@ export class WhatsAppInstance {
 
     isStopped: boolean = false;
     private reconnectCount: number = 0;
+    /** Last status sent to the connection.update webhooks (QR refreshes do not repeat it) */
+    private announcedStatus: string | null = null;
     /** Called when instance auto-stops or logs out — lets manager remove it from Map */
     onRemovedFromManager: (() => void) | null = null;
+
+    /** Tells the dashboard (Socket.IO) about a connection change, and the webhooks when the status changes */
+    private announce(status: string, qr: string | null, pairingCode?: string) {
+        this.io?.to(this.sessionId).emit("connection.update", pairingCode ? { status, qr, pairingCode } : { status, qr });
+        if (status !== this.announcedStatus) {
+            this.announcedStatus = status;
+            onConnectionUpdate(this.sessionId, status, qr ?? undefined);
+        }
+    }
 
     constructor(sessionId: string, userId: string, io: Server) {
         this.sessionId = sessionId;
@@ -102,7 +114,7 @@ export class WhatsAppInstance {
                 this.qr = qr;
                 this.status = "SCAN_QR";
 
-                this.io?.to(this.sessionId).emit("connection.update", { status: this.status, qr });
+                this.announce(this.status, qr);
 
                 await prisma.session.update({
                     where: { sessionId: this.sessionId },
@@ -119,7 +131,7 @@ export class WhatsAppInstance {
                     this.status = "LOGGED_OUT";
                     this.socket = null;
                     this.config = {};
-                    this.io?.to(this.sessionId).emit("connection.update", { status: "LOGGED_OUT", qr: null });
+                    this.announce("LOGGED_OUT", null);
 
                     logger.info("Instance", `Session ${this.sessionId} logged out. Deleting credentials...`);
                     try {
@@ -132,7 +144,7 @@ export class WhatsAppInstance {
                                 where: { sessionId: this.sessionId }
                             })
                         ]);
-                    } catch (e) { /* ignore */ }
+                    } catch { /* ignore */ }
                     logger.success("Instance", `Session ${this.sessionId} credentials deleted.`);
 
                     // Remove from memory manager
@@ -145,7 +157,7 @@ export class WhatsAppInstance {
                     this.status = "STOPPED";
                     this.socket = null;
                     this.reconnectCount = 0;
-                    this.io?.to(this.sessionId).emit("connection.update", { status: "STOPPED", qr: null });
+                    this.announce("STOPPED", null);
 
                     await prisma.session.update({
                         where: { sessionId: this.sessionId },
@@ -165,7 +177,7 @@ export class WhatsAppInstance {
 
                 if (remaining > 0) {
                     this.status = "DISCONNECTED";
-                    this.io?.to(this.sessionId).emit("connection.update", { status: "DISCONNECTED", qr: null });
+                    this.announce("DISCONNECTED", null);
                     await prisma.session.update({
                         where: { sessionId: this.sessionId },
                         data: { status: "DISCONNECTED", qr: null }
@@ -183,7 +195,7 @@ export class WhatsAppInstance {
                     this.socket = null;
                     this.reconnectCount = 0;
                     this.isStopped = true; // prevent further retries
-                    this.io?.to(this.sessionId).emit("connection.update", { status: "STOPPED", qr: null });
+                    this.announce("STOPPED", null);
 
                     await prisma.session.update({
                         where: { sessionId: this.sessionId },
@@ -206,7 +218,7 @@ export class WhatsAppInstance {
                 this.qr = null;
                 this.startTime = new Date();
 
-                this.io?.to(this.sessionId).emit("connection.update", { status: "CONNECTED", qr: null });
+                this.announce("CONNECTED", null);
 
                 try {
                     await syncGroups(this.socket as WASocket, this.sessionId);
@@ -248,11 +260,7 @@ export class WhatsAppInstance {
             this.pairingCode = code;
             this.status = "SCAN_QR";
 
-            this.io?.to(this.sessionId).emit("connection.update", {
-                status: this.status,
-                qr: this.qr,
-                pairingCode: code
-            });
+            this.announce(this.status, this.qr, code);
 
             return code;
         } catch (error) {

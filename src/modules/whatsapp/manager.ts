@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
 import { randomBytes } from "crypto";
 import { encryptLegacyAuthState } from "./auth/usePrismaAuthState";
 import { clearSessionAvatars } from "@/lib/avatar-files";
+import { onConnectionUpdate } from "@/lib/webhook";
 
 export class WhatsAppManager {
     private static instance: WhatsAppManager;
@@ -128,6 +129,7 @@ export class WhatsAppManager {
             await instance.shutdown();
             instance.status = "STOPPED";
             this.io?.to(sessionId).emit("connection.update", { status: "STOPPED", qr: null });
+            onConnectionUpdate(sessionId, "STOPPED");
             await prisma.session.update({
                 where: { sessionId },
                 data: { status: "STOPPED" }
