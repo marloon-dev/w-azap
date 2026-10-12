@@ -110,6 +110,11 @@ function useDateLabel() {
 
 function handleDownload(url: string, fileName: string, t: Translator) {
     toast.info(t("chatWindow.downloading"));
+    // The Android app cannot save blob: links, so it asks the server for the file as an attachment
+    if (navigator.userAgent.includes("W-AZAP-Android") && url.startsWith("/api/media/")) {
+        window.location.href = `${url}?download=1&name=${encodeURIComponent(fileName)}`;
+        return;
+    }
     fetch(url).then(res => { if (!res.ok) throw new Error(); return res.blob(); }).then(blob => {
         const dlUrl = window.URL.createObjectURL(blob);
         const link = document.createElement('a');

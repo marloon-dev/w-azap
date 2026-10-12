@@ -475,7 +475,7 @@ export default function MediaPage() {
                                                                                                                 <Eye className="h-3 w-3" />
                                                                                                             </button>
                                                                                                         )}
-                                                                                                        <a href={file.url} download={file.name} onClick={(e) => e.stopPropagation()} className="h-6 w-6 rounded bg-black/50 hover:bg-black/70 flex items-center justify-center text-white">
+                                                                                                        <a href={`${file.url}?download=1`} download={file.name} onClick={(e) => e.stopPropagation()} className="h-6 w-6 rounded bg-black/50 hover:bg-black/70 flex items-center justify-center text-white">
                                                                                                             <Download className="h-3 w-3" />
                                                                                                         </a>
                                                                                                     </div>
