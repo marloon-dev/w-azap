@@ -1,50 +1,47 @@
-import moment from "moment-timezone";
+import { addDaysToDay, formatDay, formatTime, isValidDay as isRealDay, isValidTimezone as isKnownTimezone, weekdayOfDay, zonedTimeToDate } from "@/lib/tz";
 
-/** Calendar days travel as "YYYY-MM-DD" strings, always read in the business timezone. */
-export const DAY_FORMAT = "YYYY-MM-DD";
+/* Calendar days travel as "YYYY-MM-DD" strings, always read in the business timezone. */
 
 const WEEKDAYS_SHORT = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 const WEEKDAYS_LONG = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
 
 export function isValidTimezone(tz: string): boolean {
-    return !!moment.tz.zone(tz);
+    return isKnownTimezone(tz);
 }
 
 export function isValidDay(day: string): boolean {
-    return moment(day, DAY_FORMAT, true).isValid();
+    return isRealDay(day);
 }
 
 export function todayIn(tz: string, now: Date = new Date()): string {
-    return moment(now).tz(tz).format(DAY_FORMAT);
+    return formatDay(now, tz);
 }
 
 export function addDays(day: string, amount: number): string {
-    return moment(day, DAY_FORMAT, true).add(amount, "days").format(DAY_FORMAT);
+    return addDaysToDay(day, amount);
 }
 
 /** 0 = Sunday … 6 = Saturday, like Date#getDay and AgendaWorkingHour.weekday */
 export function weekdayOf(day: string): number {
-    return moment(day, DAY_FORMAT, true).day();
+    return weekdayOfDay(day);
 }
 
 /** The instant a wall-clock time happens on a day in the timezone (1440 = midnight of the next day). */
 export function dayMinuteToDate(day: string, minute: number, tz: string): Date {
-    const base = moment.tz(day, DAY_FORMAT, true, tz).startOf("day");
-    if (minute >= 1440) return base.add(1, "day").toDate();
-    return base.hour(Math.floor(minute / 60)).minute(minute % 60).toDate();
+    if (minute >= 1440) return dayBounds(day, tz).end;
+    return zonedTimeToDate(day, minuteToTime(minute), tz);
 }
 
 export function dayBounds(day: string, tz: string): { start: Date; end: Date } {
-    const start = moment.tz(day, DAY_FORMAT, true, tz).startOf("day");
-    return { start: start.toDate(), end: start.clone().add(1, "day").toDate() };
+    return { start: zonedTimeToDate(day, "00:00", tz), end: zonedTimeToDate(addDaysToDay(day, 1), "00:00", tz) };
 }
 
 export function dayOf(date: Date, tz: string): string {
-    return moment(date).tz(tz).format(DAY_FORMAT);
+    return formatDay(date, tz);
 }
 
 export function timeOf(date: Date, tz: string): string {
-    return moment(date).tz(tz).format("HH:mm");
+    return formatTime(date, tz);
 }
 
 /** "14:30" → 870; null when invalid */
@@ -63,8 +60,7 @@ export function minuteToTime(minute: number): string {
 
 /** "sex, 17/10" */
 export function shortDayLabel(day: string): string {
-    const m = moment(day, DAY_FORMAT, true);
-    return `${WEEKDAYS_SHORT[m.day()]}, ${m.format("DD/MM")}`;
+    return `${WEEKDAYS_SHORT[weekdayOfDay(day)]}, ${day.slice(8, 10)}/${day.slice(5, 7)}`;
 }
 
 /** "Hoje (sex, 17/10)", "Amanhã (sáb, 18/10)" or "seg, 20/10" */

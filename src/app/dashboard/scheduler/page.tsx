@@ -10,9 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, Plus, CalendarClock, RefreshCw, Pencil, CheckCircle2, XCircle } from "lucide-react";
+import { Trash2, Plus, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import moment from "moment-timezone";
+import { formatDay, formatLocalDateTime, formatTime } from "@/lib/tz";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,7 +26,6 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -127,7 +126,7 @@ export default function SchedulerPage() {
             } else {
                 setMessages([]);
             }
-        } catch (error) {
+        } catch {
             toast.error(t("scheduler.fetchFailed"));
         } finally {
             setLoading(false);
@@ -148,7 +147,7 @@ export default function SchedulerPage() {
                 if (rule.type === "minutes") setMins(rule.value);
                 if (rule.type === "hours") setHrs(rule.value);
                 if (rule.type === "days") setDays(rule.value);
-            } catch(e) {
+            } catch {
                 setType("cron");
             }
         } else {
@@ -167,10 +166,10 @@ export default function SchedulerPage() {
         setEditMediaUrl(msg.mediaUrl || "");
         setEditMediaType(msg.mediaType || "image");
         
-        const localIso = moment.tz(msg.sendAt, systemTimezone).format('YYYY-MM-DDTHH:mm');
+        const localIso = formatLocalDateTime(new Date(msg.sendAt), systemTimezone);
         setEditSendAt(localIso);
         
-        const localTime = moment.tz(msg.sendAt, systemTimezone).format('HH:mm');
+        const localTime = formatTime(new Date(msg.sendAt), systemTimezone);
         setEditSendTime(localTime);
         
         parseRecurrence(msg.recurrenceRule, msg.cronExpression, setEditIsRecurring, setEditRecurrenceType, setEditRecurringMinutes, setEditRecurringHours, setEditRecurringDays, setEditCustomCron);
@@ -221,10 +220,10 @@ export default function SchedulerPage() {
                     return;
                 }
                 // Construct a valid local date-time string
-                finalSendAt = `${moment().format('YYYY-MM-DD')}T${newSendTime}:00`;
+                finalSendAt = `${formatDay(new Date(), systemTimezone)}T${newSendTime}:00`;
             } else {
                 // For minutes, hours, cron: start from now
-                finalSendAt = moment().tz(systemTimezone).format('YYYY-MM-DDTHH:mm:ss');
+                finalSendAt = formatLocalDateTime(new Date(), systemTimezone, true);
             }
         } else {
             if (!newSendAt) {
@@ -270,7 +269,7 @@ export default function SchedulerPage() {
             } else {
                 toast.error(t("scheduler.scheduleFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("scheduler.errorOccurred"));
         }
     };
@@ -288,9 +287,9 @@ export default function SchedulerPage() {
                     toast.error(t("scheduler.specifyTime"));
                     return;
                 }
-                finalSendAt = `${moment().format('YYYY-MM-DD')}T${editSendTime}:00`;
+                finalSendAt = `${formatDay(new Date(), systemTimezone)}T${editSendTime}:00`;
             } else {
-                finalSendAt = moment().tz(systemTimezone).format('YYYY-MM-DDTHH:mm:ss');
+                finalSendAt = formatLocalDateTime(new Date(), systemTimezone, true);
             }
         } else {
             if (!editSendAt) {
@@ -329,7 +328,7 @@ export default function SchedulerPage() {
             } else {
                 toast.error(t("scheduler.updateFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("scheduler.errorOccurred"));
         }
     };
@@ -344,7 +343,7 @@ export default function SchedulerPage() {
             } else {
                 toast.error(t("scheduler.deleteFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("scheduler.deleteFailed"));
         } finally {
             setDeleteId(null);
@@ -579,7 +578,7 @@ export default function SchedulerPage() {
                                                     {msg.cronExpression && <span className="text-xs px-2 py-0.5 rounded font-normal bg-info/10 text-info">{t("scheduler.recurring")}</span>}
                                                 </div>
                                                 <div className="text-sm font-medium mt-1">{msg.content || t("scheduler.mediaOnly")}</div>
-                                                <div className="text-xs text-muted-foreground mt-1">{t("scheduler.nextRun", { time: moment(msg.sendAt).tz(systemTimezone).format('YYYY-MM-DD HH:mm:ss') })}</div>
+                                                <div className="text-xs text-muted-foreground mt-1">{t("scheduler.nextRun", { time: formatLocalDateTime(new Date(msg.sendAt), systemTimezone, true).replace("T", " ") })}</div>
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button variant="ghost" size="sm" onClick={() => handleEdit(msg)}>{t("ui.edit")}</Button>
@@ -605,7 +604,7 @@ export default function SchedulerPage() {
                                                     {msg.status === 'SENT' ? <span className="text-xs px-2 py-0.5 rounded font-normal bg-success/10 text-success flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> {t("status.SENT")}</span> : <span className="text-xs px-2 py-0.5 rounded font-normal bg-destructive/10 text-destructive flex items-center gap-1"><XCircle className="w-3 h-3"/> {t("status.FAILED")}</span>}
                                                 </div>
                                                 <div className="text-sm font-medium mt-1">{msg.content || t("scheduler.mediaOnly")}</div>
-                                                <div className="text-xs text-muted-foreground mt-1">{t("scheduler.processed", { time: moment(msg.sendAt).tz(systemTimezone).format('YYYY-MM-DD HH:mm:ss') })}</div>
+                                                <div className="text-xs text-muted-foreground mt-1">{t("scheduler.processed", { time: formatLocalDateTime(new Date(msg.sendAt), systemTimezone, true).replace("T", " ") })}</div>
                                             </div>
                                             <div className="flex gap-2">
                                                 <Button variant="ghost" size="icon" onClick={() => setDeleteId(msg.id)} className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>

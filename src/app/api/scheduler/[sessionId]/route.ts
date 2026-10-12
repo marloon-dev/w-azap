@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
-import moment from "moment-timezone";
+import { parseDateTimeInZone } from "@/lib/tz";
 import { isHttpUrl } from "@/lib/safe-fetch";
 
 // GET: List Scheduled Messages
@@ -52,7 +52,7 @@ export async function GET(
 
         return NextResponse.json({ status: true, message: "Scheduled messages retrieved successfully", data: messages });
 
-    } catch (error) {
+    } catch {
         return NextResponse.json({ status: false, message: "Internal Server Error", error: "Internal Server Error" }, { status: 500 });
     }
 }
@@ -100,9 +100,10 @@ export async function POST(
         const systemConfig = await prisma.systemConfig.findUnique({ where: { id: "default" } });
         const timezone = systemConfig?.timezone || "America/Sao_Paulo";
 
-        console.log(`[Scheduler:POST] Received sendAt: ${sendAt}, using timezone: ${timezone}`);
-        const utcDate = moment.tz(sendAt, timezone).toDate();
-        console.log(`[Scheduler:POST] Resolved UTC Date: ${utcDate.toISOString()}`);
+        const utcDate = parseDateTimeInZone(sendAt, timezone);
+        if (Number.isNaN(utcDate.getTime())) {
+            return NextResponse.json({ status: false, message: "Invalid sendAt: use YYYY-MM-DDTHH:mm (system timezone) or ISO 8601 with offset", error: "Invalid sendAt" }, { status: 400 });
+        }
 
         const scheduled = await prisma.scheduledMessage.create({
             data: {

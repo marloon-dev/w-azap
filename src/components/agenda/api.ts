@@ -1,6 +1,6 @@
 "use client";
 
-import moment from "moment-timezone";
+import { addDaysToDay, formatDay, formatOffsetIso, formatTime, isoWeekStart, zonedTimeToDate } from "@/lib/tz";
 
 export interface ApiResult<T> {
     ok: boolean;
@@ -25,18 +25,16 @@ export async function agendaRequest<T = unknown>(sessionId: string, path: string
     }
 }
 
-export const DAY = "YYYY-MM-DD";
-
-export const todayIn = (tz: string) => moment().tz(tz).format(DAY);
-export const shiftDay = (day: string, amount: number) => moment(day, DAY).add(amount, "days").format(DAY);
-export const timeIn = (iso: string | Date, tz: string) => moment(iso).tz(tz).format("HH:mm");
-export const dayIn = (iso: string | Date, tz: string) => moment(iso).tz(tz).format(DAY);
+export const todayIn = (tz: string) => formatDay(new Date(), tz);
+export const shiftDay = (day: string, amount: number) => addDaysToDay(day, amount);
+export const timeIn = (iso: string | Date, tz: string) => formatTime(new Date(iso), tz);
+export const dayIn = (iso: string | Date, tz: string) => formatDay(new Date(iso), tz);
 
 /** Wall-clock day + "HH:MM" in the business timezone → ISO instant with offset */
-export const zonedIso = (day: string, time: string, tz: string) => moment.tz(`${day} ${time}`, `${DAY} HH:mm`, tz).format();
+export const zonedIso = (day: string, time: string, tz: string) => formatOffsetIso(zonedTimeToDate(day, time, tz), tz);
 
 /** Monday of the week that contains `day` */
-export const weekStart = (day: string) => moment(day, DAY).isoWeekday(1).format(DAY);
+export const weekStart = (day: string) => isoWeekStart(day);
 
 export function formatDayLong(day: string, locale: string) {
     return new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));

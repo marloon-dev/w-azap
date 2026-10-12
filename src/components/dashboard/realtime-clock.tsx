@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import moment from "moment-timezone";
+import { formatTime } from "@/lib/tz";
 import { useTranslation } from "@/components/i18n-provider";
 
 export const DEFAULT_TIMEZONE = "America/Sao_Paulo";
@@ -30,7 +30,7 @@ export function RealtimeClock() {
 
     useEffect(() => {
         if (!mounted) return;
-        const updateTime = () => setTime(moment().tz(timezone).format("HH:mm"));
+        const updateTime = () => setTime(formatTime(new Date(), timezone));
         updateTime();
         const interval = setInterval(updateTime, 1000);
         return () => clearInterval(interval);
