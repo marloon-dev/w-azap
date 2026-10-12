@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">W-AZAP</string>
+    <string name="setup_title">Connect to your W-AZAP</string>
+    <string name="setup_hint">Address of the server where W-AZAP runs. Use https:// on the internet; http:// only works on your local network.</string>
+    <string name="setup_placeholder">https://w-azap.example.com</string>
+    <string name="setup_connect">Connect</string>
+    <string name="error_invalid_url">Type a full address, e.g. https://w-azap.example.com or http://192.168.0.10:3001</string>
+    <string name="error_needs_https">Outside your local network the address must start with https://, so your password is not sent in the clear.</string>
+    <string name="error_unreachable">Could not open %1$s. Check that W-AZAP is running and that this phone can reach it.</string>
+    <string name="error_certificate">The server certificate is not valid, so the connection was stopped.</string>
+    <string name="retry">Try again</string>
+    <string name="change_server">Change server</string>
+    <string name="exit">Exit</string>
+    <string name="exit_question">Leave W-AZAP or change the server address?</string>
+    <string name="download_started">Downloading %1$s</string>
+    <string name="download_failed">This file cannot be downloaded here.</string>
+    <string name="no_app_for_link">No app can open this link.</string>
+</resources>

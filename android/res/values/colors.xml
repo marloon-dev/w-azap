@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Same tokens as the dashboard (src/app/globals.css) -->
+    <color name="brand">#0B6E4F</color>
+    <color name="on_brand">#FFFFFF</color>
+    <color name="surface">#F4F6F5</color>
+    <color name="text">#16201B</color>
+    <color name="muted">#56635D</color>
+    <color name="danger">#C0352B</color>
+</resources>

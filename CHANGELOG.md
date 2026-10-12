@@ -8,6 +8,10 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+### Adicionado
+- **App para Android** (`android/`): abre o painel do seu W-AZAP no celular, com envio de arquivos, download de mídias para `Download/W-AZAP`, tema claro/escuro, português e inglês e o botão voltar do Android. Pede o endereço do servidor na primeira abertura (e permite trocá-lo depois), exige `https://` fora da rede local e só navega no servidor configurado. Cerca de 40 KB, Android 8 ou mais novo. O `android/build-apk.sh` gera o APK assinado sem Gradle, baixando um JDK e o Android SDK portáteis com checksum conferido.
+- **Download como anexo**: `GET /api/media/{arquivo}?download=1` (com `&name=` opcional) devolve o arquivo como anexo. A página de mídias usa isso no botão de baixar, e o chat usa no app Android.
+
 ### Alterado
 - **Painel bem mais leve**: o relógio, a agenda e o agendador deixaram de usar a `moment-timezone`, que levava a base inteira de fusos horários para o navegador em todas as páginas do painel. Agora usam o `Intl` do próprio JavaScript (`src/lib/tz.ts`). O JavaScript baixado por página do painel caiu cerca de 62% (Painel: de 1.239 KB para 464 KB). Os resultados foram conferidos contra a biblioteca antiga em mais de 1 milhão de comparações (incluindo viradas de horário de verão) e 132 mil nas funções da agenda, sem diferença nos fusos do Brasil.
 - **Agendador**: um `sendAt` impossível (ex.: mês 13) agora é recusado com erro 400, em vez de virar outra data.
@@ -24,6 +28,7 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 - **Rota pública sem uso**: o `proxy.ts` deixava passar sem login qualquer caminho começando com `/api/test`, que não existe mais.
 
 ### Corrigido
+- **Botões invisíveis no celular**: ações que só apareciam com o mouse por cima (baixar e ver mídia, responder mensagem, etiquetar conversa, ações da caixa de entrada) ficam sempre visíveis em telas de toque.
 - **Webhook `connection.update` nunca disparava**: o evento aparecia na tela de webhooks, mas a função que o envia não era chamada. Agora ele dispara quando a sessão conecta, cai, sai ou pede QR code (uma vez por mudança de status).
 
 ## [v2.4.0] - 2026-10-11
