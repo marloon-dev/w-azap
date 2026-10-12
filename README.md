@@ -145,6 +145,28 @@ Quando terminar, o painel abre em `http://localhost:3000` (ou na próxima porta 
 
 Tudo fica em `~/.w-azap`: o `.env` e as mídias em `dados/`, as versões em `versoes/` (a em uso e a anterior; `app/` aponta para a atual), o banco em `mysql/data/` e os logs em `logs/`. O MySQL do instalador usa a porta `3307` e escuta só em `127.0.0.1`. Faça backup do `.env`, porque a `DATA_ENCRYPTION_KEY` protege as sessões do WhatsApp.
 
+
+---
+
+## 📱 App para Android
+
+O app **W-AZAP para Android** (pasta `android/`) abre o painel do seu W-AZAP no celular: é o mesmo painel, sem barra de navegador, com envio de arquivos, download de mídias para a pasta `Download/W-AZAP` e o botão voltar do Android. Ele não roda o servidor; ele se conecta ao W-AZAP que já está rodando no seu Mac ou servidor. Pesa cerca de 40 KB e funciona do Android 8 em diante.
+
+Na primeira abertura, informe o endereço do servidor. Dá para trocar depois: no painel, aperte voltar até aparecer **Trocar servidor**.
+
+- **Pela internet:** use `https://` (proxy reverso com HTTPS, Cloudflare Tunnel etc.). O app recusa `http://` em endereços públicos, para a senha não trafegar aberta.
+- **Na rede de casa:** `http://` é aceito só para endereços locais (`192.168.x.x`, `10.x.x.x`, `172.16–31.x.x`, `*.local` e a faixa `100.64.0.0/10` do Tailscale). O servidor precisa escutar na rede: defina `BIND_HOST="0.0.0.0"` no `.env` e abra `http://IP-DO-MAC:PORTA`.
+
+Por segurança, o app só navega no servidor configurado (links de outros sites abrem no navegador), não expõe nenhuma ponte entre a página e o Android, não lê arquivos locais pela página e interrompe a conexão se o certificado HTTPS for inválido. Ele pede só a permissão de internet.
+
+**Gerar o APK** (sem Android Studio nem Gradle):
+
+```bash
+ACCEPT_ANDROID_SDK_LICENSE=1 ./android/build-apk.sh
+```
+
+Na primeira vez o script baixa um JDK 17 portátil e as ferramentas do Android SDK para `~/.w-azap-android` (conferindo os checksums), cria a chave de assinatura `~/.w-azap-android/w-azap-release.jks` e grava o APK em `android/build/W-AZAP-<versão>.apk`. **Guarde uma cópia da chave e do arquivo de senha ao lado dela:** atualizações do app precisam ser assinadas com a mesma chave. Para instalar, copie o APK para o celular e permita a instalação de fontes desconhecidas quando o Android pedir.
+
 ---
 
 ## 🚀 Instalação rápida

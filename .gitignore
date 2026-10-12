@@ -52,3 +52,6 @@ server.log
 
 # local dev database (portable MySQL)
 /.dev-mysql/
+
+# Android app build output (android/build-apk.sh)
+/android/build/
