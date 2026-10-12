@@ -86,11 +86,17 @@ export async function GET(
 
         const contentType = contentTypeMap[ext] || 'application/octet-stream';
 
+        // ?download=1 sends it as an attachment (used by the media page and the Android app);
+        // ?name= suggests a file name, reduced to safe characters
+        const asAttachment = request.nextUrl.searchParams.get("download") === "1";
+        const suggested = (request.nextUrl.searchParams.get("name") || "").replace(/[^\w.-]/g, "_").slice(0, 100);
+        const downloadName = suggested && !suggested.startsWith(".") ? suggested : filename;
+
         return new NextResponse(fileBuffer, {
             status: 200,
             headers: {
                 'Content-Type': contentType,
-                'Content-Disposition': `inline; filename="${filename}"`,
+                'Content-Disposition': `${asAttachment ? "attachment" : "inline"}; filename="${asAttachment ? downloadName : filename}"`,
                 'Cache-Control': 'private, max-age=3600',
                 'X-Content-Type-Options': 'nosniff',
             },
