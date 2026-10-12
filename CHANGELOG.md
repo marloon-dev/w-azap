@@ -8,6 +8,8 @@ Todas as mudanças relevantes do projeto ficam registradas aqui. O formato segue
 
 ## [Não lançado]
 
+## [v2.5.0] - 2026-10-12
+
 ### Adicionado
 - **App para Android** (`android/`): abre o painel do seu W-AZAP no celular, com envio de arquivos, download de mídias para `Download/W-AZAP`, tema claro/escuro, português e inglês e o botão voltar do Android. Pede o endereço do servidor na primeira abertura (e permite trocá-lo depois), exige `https://` fora da rede local e só navega no servidor configurado. Cerca de 40 KB, Android 8 ou mais novo. O `android/build-apk.sh` gera o APK assinado sem Gradle, baixando um JDK e o Android SDK portáteis com checksum conferido.
 - **Download como anexo**: `GET /api/media/{arquivo}?download=1` (com `&name=` opcional) devolve o arquivo como anexo. A página de mídias usa isso no botão de baixar, e o chat usa no app Android.
