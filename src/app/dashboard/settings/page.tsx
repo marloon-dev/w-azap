@@ -210,7 +210,7 @@ export default function SettingsPage() {
                                 } else {
                                     toast.error(data.message || t("settings.checkFailed"));
                                 }
-                            } catch (e) {
+                            } catch {
                                 toast.error(t("settings.checkError"));
                             } finally {
                                 setSystemLoading(false);

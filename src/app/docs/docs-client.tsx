@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
-import { Menu, Search, ChevronRight, Copy, Check } from "lucide-react";
+import { Menu, Search, ChevronRight } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 interface TocItem {
     text: string;
@@ -23,22 +22,6 @@ interface TocSection {
 interface DocsClientProps {
     content: string;
     toc: TocSection[];
-}
-
-function CopyButton({ code }: { code: string }) {
-    const [copied, setCopied] = useState(false);
-    const handleCopy = useCallback(() => {
-        navigator.clipboard.writeText(code).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }).catch(() => toast.error("Copy failed"));
-    }, [code]);
-    return (
-        <button onClick={handleCopy} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer">
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-            {copied ? "Copied!" : "Copy"}
-        </button>
-    );
 }
 
 export function DocsClient({ content, toc }: DocsClientProps) {
@@ -231,7 +214,7 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                         </div>
                         <div className="ml-3">
                             <p className="text-sm text-info">
-                                For the most up-to-date API reference and interactive testing, please check the <Link href="/swagger" className="font-medium underline hover:text-foreground">Swagger UI</Link> or the <Link href="/dashboard/api-docs" className="font-medium underline hover:text-foreground">Dashboard API Docs</Link>.
+                                For interactive testing, use the <Link href="/swagger" className="font-medium underline hover:text-foreground">Swagger UI</Link>.
                             </p>
                         </div>
                     </div>

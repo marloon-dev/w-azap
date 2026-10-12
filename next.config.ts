@@ -32,7 +32,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["sharp", "bcryptjs"],
+  // Loaded from node_modules at runtime instead of bundled (Baileys also probes optional image libraries)
+  serverExternalPackages: ["sharp", "bcryptjs", "@whiskeysockets/baileys"],
   poweredByHeader: false,
   // Dev only: the app is opened via 127.0.0.1 (separate cookies from other local apps on localhost)
   allowedDevOrigins: ["127.0.0.1", "localhost"],

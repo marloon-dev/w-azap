@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
 import { waManager } from "@/modules/whatsapp/manager";
+import { logger } from "@/lib/logger";
 
 export async function GET(
     request: NextRequest,
@@ -41,14 +42,14 @@ export async function GET(
                 }
             }
         } catch (e) {
-            console.log("Could not fetch own status:", e);
+            logger.debug("Profile", "Could not fetch own status", e);
         }
 
         // Fetch profile picture safely
         let pictureUrl = "";
         try {
             pictureUrl = await instance.socket.profilePictureUrl(myJid, 'image') || "";
-        } catch (e) {
+        } catch {
             // No profile picture set
         }
 

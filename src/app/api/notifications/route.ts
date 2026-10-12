@@ -14,7 +14,7 @@ export async function GET(req: Request) {
             take: 50 // Limit to last 50
         });
         return NextResponse.json({ status: true, message: "Notifications fetched successfully", data: notifications });
-    } catch (e) {
+    } catch {
         return NextResponse.json({ status: false, message: "Error fetching notifications", error: "Error fetching notifications" }, { status: 500 });
     }
 }

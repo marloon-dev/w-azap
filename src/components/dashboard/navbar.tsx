@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -41,7 +41,6 @@ export function Navbar({ appName }: NavbarProps) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [socket, setSocket] = useState<Socket | null>(null);
 
     const fetchNotifications = async () => {
         try {
@@ -52,7 +51,7 @@ export function Navbar({ appName }: NavbarProps) {
                 setNotifications(items);
                 setUnreadCount(items.filter((n: Notification) => !n.read).length);
             }
-        } catch (e) {
+        } catch {
             console.error("Failed to fetch notifications");
         }
     };
@@ -68,14 +67,11 @@ export function Navbar({ appName }: NavbarProps) {
             });
 
             socketInstance.on("connect", () => {
-                console.log("Socket connected for notifications");
                 // Join user-specific room
                 socketInstance.emit("join-user-room", session.user.id);
             });
 
             socketInstance.on("notification:new", (notification: Notification) => {
-                console.log("New notification received:", notification);
-
                 // Add to notifications list
                 setNotifications(prev => [notification, ...prev]);
                 setUnreadCount(prev => prev + 1);
@@ -89,8 +85,6 @@ export function Navbar({ appName }: NavbarProps) {
                     } : undefined,
                 });
             });
-
-            setSocket(socketInstance);
 
             return () => {
                 socketInstance.disconnect();
@@ -115,7 +109,7 @@ export function Navbar({ appName }: NavbarProps) {
                     setUnreadCount(0);
                 }
             }
-        } catch (e) {
+        } catch {
             console.error("Failed to mark read");
         }
     };
@@ -133,7 +127,7 @@ export function Navbar({ appName }: NavbarProps) {
                 });
                 toast.success(t("notifications.deleted"));
             }
-        } catch (e) {
+        } catch {
             console.error("Failed to delete notification");
             toast.error(t("notifications.deleteFailed"));
         }

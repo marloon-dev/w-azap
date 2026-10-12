@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { Check, Monitor, Moon, Sun, SunMoon, type LucideIcon } from "lucide-react";
-import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTheme } from "@/components/theme-provider";

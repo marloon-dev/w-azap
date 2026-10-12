@@ -72,7 +72,7 @@ export async function GET(
                     pingStatus = "Online";
                 }
             }
-        } catch (e) { }
+        } catch { }
 
 
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { WASocket, WAMessage, Contact } from "@whiskeysockets/baileys";
+import type { WASocket, WAMessage } from "@whiskeysockets/baileys";
 import { normalizeMessageContent } from "@whiskeysockets/baileys";
 import { onMessageReceived, onMessageSent, dispatchWebhook, downloadAndSaveMedia } from "@/lib/webhook";
 import { handleBotCommand, setSessionStartTime } from "../bot/command-handler";

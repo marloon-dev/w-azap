@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { WASocket, GroupMetadata } from "@whiskeysockets/baileys";
+import type { WASocket } from "@whiskeysockets/baileys";
 import { logger } from "@/lib/logger";
 
 export async function syncGroups(sock: WASocket, sessionId: string) {

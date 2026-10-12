@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, Trash2, Shield, ShieldCheck, ShieldAlert, User, Users, Lock, Loader2 } from "lucide-react";
+import { UserPlus, Trash2, Shield, ShieldCheck, ShieldAlert, User, Users, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import {
@@ -146,7 +146,7 @@ export default function SessionAccessPage() {
             } else {
                 toast.error(data.message || t("sessionAccess.grantFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("sessionAccess.grantFailed"));
         } finally {
             setSubmitting(false);
@@ -171,7 +171,7 @@ export default function SessionAccessPage() {
             } else {
                 toast.error(data.message || t("sessionAccess.revokeFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("sessionAccess.revokeFailed"));
         } finally {
             setRevokeTarget(null);

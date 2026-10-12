@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { AlertCircle, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { useTranslation } from "@/components/i18n-provider";
 
 interface RegistrationWarningProps {

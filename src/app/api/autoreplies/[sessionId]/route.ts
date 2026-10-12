@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { getAuthenticatedUser, canAccessSession, isAdmin } from "@/lib/api-auth";
+import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
 import { isHttpUrl } from "@/lib/safe-fetch";
 
 // GET: List Auto Replies

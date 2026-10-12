@@ -86,7 +86,6 @@ const fr: Dictionary = {
         deleteFailed: "Échec de la suppression de la notification",
     },
     session: {
-        label: "Session :",
         select: "Choisir une session",
         noneFound: "Aucune session connectée.",
         refresh: "Actualiser les sessions",

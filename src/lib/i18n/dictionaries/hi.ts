@@ -86,7 +86,6 @@ const hi: Dictionary = {
         deleteFailed: "सूचना हटाई नहीं जा सकी",
     },
     session: {
-        label: "सत्र:",
         select: "सत्र चुनें",
         noneFound: "कोई कनेक्टेड सत्र नहीं मिला।",
         refresh: "सत्र रीफ़्रेश करें",

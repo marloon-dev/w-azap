@@ -19,7 +19,7 @@ export async function GET() {
             message: "API key fetched",
             data: { hasKey: !!user?.apiKey, hint: user?.apiKey ? (user.apiKeyHint || "wag_") : null }
         });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ status: false, message: "Failed to fetch API key", error: "Failed to fetch API key" }, { status: 500 });
     }
 }
@@ -56,7 +56,7 @@ export async function DELETE() {
         });
 
         return NextResponse.json({ status: true, message: "API key revoked" });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ status: false, message: "Failed to revoke API key", error: "Failed to revoke API key" }, { status: 500 });
     }
 }

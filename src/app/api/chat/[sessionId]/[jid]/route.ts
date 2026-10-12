@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { resolveToPhoneJid, isLidJid } from "@/lib/jid-utils";
 import { NextResponse, NextRequest } from "next/server";
 import { getAuthenticatedUser, canAccessSession } from "@/lib/api-auth";
 

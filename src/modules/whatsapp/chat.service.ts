@@ -317,7 +317,7 @@ export class ChatService {
             }
 
             onMessageSent(sessionId, webhookMsg).catch(e => console.error("Webhook error:", e));
-        } catch (e) {
+        } catch {
             // Non-blocking — webhook failure shouldn't break message send
         }
 
@@ -395,7 +395,7 @@ export class ChatService {
             }
 
             onMessageSent(sessionId, webhookMsg).catch(e => console.error("Webhook error:", e));
-        } catch (e) {
+        } catch {
             // Non-blocking
         }
 

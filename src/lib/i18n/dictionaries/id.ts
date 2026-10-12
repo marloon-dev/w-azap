@@ -86,7 +86,6 @@ const id: Dictionary = {
         deleteFailed: "Gagal menghapus notifikasi",
     },
     session: {
-        label: "Sesi:",
         select: "Pilih Sesi",
         noneFound: "Tidak ada sesi yang terhubung.",
         refresh: "Muat Ulang Sesi",

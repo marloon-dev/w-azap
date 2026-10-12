@@ -86,7 +86,6 @@ const tr: Dictionary = {
         deleteFailed: "Bildirim silinemedi",
     },
     session: {
-        label: "Oturum:",
         select: "Oturum seçin",
         noneFound: "Bağlı oturum bulunamadı.",
         refresh: "Oturumları yenile",

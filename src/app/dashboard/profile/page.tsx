@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSession } from "@/components/dashboard/session-provider";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { User, Loader2, Camera, UserCircle, Upload, Trash2, CheckCircle2 } from "lucide-react";
+import { User, Loader2, Camera, UserCircle, Trash2, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/components/i18n-provider";
 
 interface ProfileData {

@@ -86,7 +86,6 @@ const ar: Dictionary = {
         deleteFailed: "تعذّر حذف الإشعار",
     },
     session: {
-        label: "الجلسة:",
         select: "اختر جلسة",
         noneFound: "لا توجد جلسات متصلة.",
         refresh: "تحديث الجلسات",

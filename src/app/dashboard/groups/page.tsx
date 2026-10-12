@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { SearchFilter } from "@/components/dashboard/search-filter";
 import { useSession } from "@/components/dashboard/session-provider";
 import { SessionGuard } from "@/components/dashboard/session-guard";
@@ -41,7 +39,7 @@ export default function GroupsPage() {
             } else {
                 setGroups([]);
             }
-        } catch (error) {
+        } catch {
             toast.error(t("groups.fetchFailed"));
         } finally {
             setLoading(false);
@@ -72,7 +70,7 @@ export default function GroupsPage() {
             } else {
                 toast.error(t("groups.createFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("groups.createFailed"));
         }
     };

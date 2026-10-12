@@ -3,8 +3,7 @@ import crypto from "crypto";
 import { normalizeMessageContent, downloadMediaMessage, WAMessage } from "@whiskeysockets/baileys";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-import pino from "pino";
-import { resolveToPhoneJidBySessionId as resolveToPhoneJid, isLidJid } from "./jid-utils";
+import { resolveToPhoneJidBySessionId as resolveToPhoneJid } from "./jid-utils";
 import { logger } from "./logger";
 import { waManager } from "@/modules/whatsapp/manager";
 import { safeFetch, webhooksAllowPrivate } from "./safe-fetch";
@@ -603,7 +602,7 @@ export async function onMessageSent(sessionId: string, message: any, existingFil
     if (!fileUrl) {
         try {
             fileUrl = await downloadAndSaveMedia(message, sessionId);
-        } catch (e) { /* ignore */ }
+        } catch { /* ignore */ }
     }
 
     // --- Consistent JID Normalization (same as onMessageReceived) ---
@@ -675,7 +674,7 @@ export async function fireSentWebhook(
         }
 
         await onMessageSent(sessionId, webhookMsg);
-    } catch (e) {
+    } catch {
         // Non-blocking
     }
 }

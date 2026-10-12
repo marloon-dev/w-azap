@@ -86,7 +86,6 @@ const es: Dictionary = {
         deleteFailed: "No se pudo eliminar la notificación",
     },
     session: {
-        label: "Sesión:",
         select: "Seleccionar sesión",
         noneFound: "No se encontraron sesiones conectadas.",
         refresh: "Actualizar sesiones",

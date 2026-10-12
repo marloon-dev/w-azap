@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Edit, User, Shield, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Trash2, Plus, Edit, User, ShieldAlert, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import {
@@ -93,7 +93,7 @@ export default function UsersPage() {
                 const error = await res.json();
                 toast.error(error.error || t("users.opFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("users.opFailed"));
         }
     };
@@ -116,7 +116,7 @@ export default function UsersPage() {
                 const error = await res.json();
                 toast.error(error.error || t("users.deleteFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("users.deleteUserFailed"));
         } finally {
             setDeleteId(null);
@@ -284,24 +284,3 @@ export default function UsersPage() {
     );
 }
 
-function UsersIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-    )
-}

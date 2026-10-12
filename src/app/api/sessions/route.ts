@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 import { waManager } from "@/modules/whatsapp/manager";
-import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser, getAccessibleSessions } from "@/lib/api-auth";
 
 export const dynamic = 'force-dynamic';

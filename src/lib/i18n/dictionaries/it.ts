@@ -86,7 +86,6 @@ const it: Dictionary = {
         deleteFailed: "Impossibile eliminare la notifica",
     },
     session: {
-        label: "Sessione:",
         select: "Seleziona sessione",
         noneFound: "Nessuna sessione connessa trovata.",
         refresh: "Aggiorna sessioni",

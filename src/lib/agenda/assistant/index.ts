@@ -163,4 +163,3 @@ export async function simulateAgendaMessage(input: { dbSessionId: string; userId
     });
 }
 
-export const SIMULATOR_JID_SUFFIX = "@agenda.local";

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "@/components/dashboard/session-provider";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -291,7 +291,7 @@ export default function LabelsPage() {
                 const data = await res.json();
                 toast.error(data.message || t("labels.assignFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("labels.assignError"));
         }
     };
@@ -314,7 +314,7 @@ export default function LabelsPage() {
             } else {
                 toast.error(t("labels.removeFailed"));
             }
-        } catch (error) {
+        } catch {
             toast.error(t("labels.removeError"));
         }
     };

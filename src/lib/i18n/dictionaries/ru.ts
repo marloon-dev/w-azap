@@ -86,7 +86,6 @@ const ru: Dictionary = {
         deleteFailed: "Не удалось удалить уведомление",
     },
     session: {
-        label: "Сессия:",
         select: "Выберите сессию",
         noneFound: "Подключённые сессии не найдены.",
         refresh: "Обновить сессии",
