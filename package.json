@@ -102,7 +102,7 @@
     "swagger-ui-react": "^5.34.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "wa-sticker-formatter": {
